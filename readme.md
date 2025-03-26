@@ -6,7 +6,7 @@ Introduces new versions of the pumpjack and the mining drills.
 Operates in one of two modes, blueprint or resource placement.
 
 Blueprint mode disables resource placement so blueprints can be made.  
-Then select a resource and place the blueprint.
+Then select a resource and place the blueprint or place resources interactively.  
 
 Shortcut to hide and disable the resource selector button.  
 
