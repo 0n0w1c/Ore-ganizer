@@ -1,15 +1,15 @@
 if not mods["space-age"] then return end
 
-local BASE_GRAPHICS                    = "__space-age__/graphics/"
-local ICONS                            = BASE_GRAPHICS .. "icons/"
-local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "big-mining-drill/"
+local BASE_GRAPHICS      = "__space-age__/graphics/"
+local ICONS              = BASE_GRAPHICS .. "icons/"
+local ENTITY_GRAPHICS    = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS     = ENTITY_GRAPHICS .. "big-mining-drill/"
 
-local mining_drill                     = data.raw["mining-drill"]["big-mining-drill"]
+local mining_drill       = data.raw["mining-drill"]["big-mining-drill"]
 
 local surface_conditions = mining_drill.surface_conditions
 if not IGNORE then
-    surface_conditions                 = { { min = 1, property = "gravity" } }
+    surface_conditions = { { min = 1, property = "gravity" } }
 end
 
 local rmd_mining_drill_displayer       = {

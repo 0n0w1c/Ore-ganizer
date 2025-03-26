@@ -1,15 +1,15 @@
 require("constants")
 
-local BASE_GRAPHICS              = "__base__/graphics/"
-local ICONS                      = BASE_GRAPHICS .. "icons/"
-local ENTITY_GRAPHICS            = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS             = ENTITY_GRAPHICS .. "pumpjack/"
+local BASE_GRAPHICS      = "__base__/graphics/"
+local ICONS              = BASE_GRAPHICS .. "icons/"
+local ENTITY_GRAPHICS    = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS     = ENTITY_GRAPHICS .. "pumpjack/"
 
-local mining_drill               = data.raw["mining-drill"]["pumpjack"]
+local mining_drill       = data.raw["mining-drill"]["pumpjack"]
 
 local surface_conditions = mining_drill.surface_conditions
 if not IGNORE then
-    surface_conditions                 = { { min = 1, property = "gravity" } }
+    surface_conditions = { { min = 1, property = "gravity" } }
 end
 
 local rmd_mining_drill_displayer = {
