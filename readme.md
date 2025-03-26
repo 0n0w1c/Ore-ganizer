@@ -14,5 +14,5 @@ Shortcut to hide and disable the resource selector button.
 * Resource amount per tile  
 * Ignore planetary restrictions  
 
-#### Known limitation:
-* Copy and Paste is not supported (pipette (Q) is supported)
+#### Known limitations:
+* Undo/Redo is not supported

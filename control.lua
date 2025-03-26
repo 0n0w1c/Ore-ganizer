@@ -2,9 +2,6 @@ require("constants")
 
 local mod_gui = require("mod-gui")
 
-local AMOUNT = settings.startup["rmd-resource-amount"].value
-local IGNORE = settings.startup["rmd-resource-ignore"].value
-
 local TILES_TO_EXCLUDE =
 {
     ["ammoniacal-ocean"] = true,
@@ -132,12 +129,14 @@ local function return_item_to_player(player, item_name)
     local stack = player.cursor_stack
 
     if stack and stack.valid then
-        if stack.valid_for_read and (
+        if stack.valid_for_read and
+            (
                 stack.is_blueprint or
                 stack.is_blueprint_book or
                 stack.is_deconstruction_item or
                 stack.is_upgrade_item
-            ) then
+            )
+        then
             player.insert({ name = item_name, count = 1 })
             return
         end
@@ -167,8 +166,8 @@ local function on_entity_built(event)
     local resource_prototypes = prototypes.get_entity_filtered {
         { filter = "name", name = resource_name }
     }
-    local resource_prototype = resource_prototypes[resource_name]
 
+    local resource_prototype = resource_prototypes[resource_name]
     if not resource_prototype or resource_prototype.type ~= "resource" then return end
 
     local is_fluid_resource = (resource_prototype.resource_category == "basic-fluid")
@@ -481,9 +480,59 @@ local function player_changed_surface(event)
     update_button(player_index)
 end
 
+local function get_displayer_name(entity_name)
+    if entity_name:match("^rmd%-.+%-drill$") then
+        return entity_name .. "-displayer"
+    elseif entity_name == "rmd-pumpjack" then
+        return "rmd-pumpjack-displayer"
+    end
+end
+
+local function swap_blueprint_entities(entities)
+    local modified = false
+
+    for _, entity in pairs(entities) do
+        local new_name = get_displayer_name(entity.name)
+        if new_name then
+            entity.name = new_name
+            modified = true
+        end
+    end
+
+    return modified
+end
+
+local function player_setup_blueprint(event)
+    local player = game.get_player(event.player_index)
+    if not (player and player.valid) then return end
+
+    local blueprint = player.blueprint_to_setup
+    if blueprint and blueprint.valid_for_read then
+        local entities = blueprint.get_blueprint_entities()
+        if not entities then return end
+
+        local modified = swap_blueprint_entities(entities)
+        if modified then
+            blueprint.set_blueprint_entities(entities)
+        end
+    else
+        local stack = player.cursor_stack
+        if not (stack and stack.valid_for_read and stack.is_blueprint) then return end
+
+        local entities = stack.get_blueprint_entities()
+        if not entities then return end
+
+        local modified = swap_blueprint_entities(entities)
+        if modified then
+            stack.set_blueprint_entities(entities)
+        end
+    end
+end
+
 local function register_event_handlers()
     script.on_event(defines.events.on_player_created, player_created)
     script.on_event(defines.events.on_player_changed_surface, player_changed_surface)
+    script.on_event(defines.events.on_player_setup_blueprint, player_setup_blueprint)
 
     script.on_event(defines.events.on_gui_click, on_gui_click)
     script.on_event(defines.events.on_gui_closed, on_gui_closed)
@@ -501,10 +550,7 @@ local function register_event_handlers()
 end
 
 script.on_init(function()
-    if not storage.players then
-        storage.players = {}
-    end
-
+    storage.players = {}
     register_event_handlers()
 end)
 

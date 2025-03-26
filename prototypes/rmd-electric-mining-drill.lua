@@ -1,9 +1,14 @@
-local BASE_GRAPHICS                    = "__base__/graphics/"
-local ICONS                            = BASE_GRAPHICS .. "icons/"
-local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "electric-mining-drill/"
+local BASE_GRAPHICS      = "__base__/graphics/"
+local ICONS              = BASE_GRAPHICS .. "icons/"
+local ENTITY_GRAPHICS    = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS     = ENTITY_GRAPHICS .. "electric-mining-drill/"
 
-local mining_drill                     = data.raw["mining-drill"]["electric-mining-drill"]
+local mining_drill       = data.raw["mining-drill"]["electric-mining-drill"]
+
+local surface_conditions = mining_drill.surface_conditions
+if not IGNORE then
+    surface_conditions = { { min = 1, property = "gravity" } }
+end
 
 local rmd_mining_drill_displayer       = {
     type                               = "simple-entity-with-owner",
@@ -14,6 +19,7 @@ local rmd_mining_drill_displayer       = {
     minable                            = { mining_time = 0.5, result = "rmd-electric-mining-drill" },
     icon                               = ICONS .. "electric-mining-drill.png",
     icon_size                          = 64,
+    surface_conditions                 = surface_conditions,
     radius_visualisation_specification =
     {
         sprite = {

@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.3
+Date: 26.03.2025
+  Bugfixes:
+    - Support added for Copy (Ctrl-C) and Cut (Ctrl-X)
+    - Prevent placement on space platforms (unless ignore planetary restrictions is enabled)
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.0.2
 Date: 26.03.2025
   Bugfixes:

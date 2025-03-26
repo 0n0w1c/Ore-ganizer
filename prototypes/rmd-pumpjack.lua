@@ -7,6 +7,11 @@ local DRILL_GRAPHICS             = ENTITY_GRAPHICS .. "pumpjack/"
 
 local mining_drill               = data.raw["mining-drill"]["pumpjack"]
 
+local surface_conditions = mining_drill.surface_conditions
+if not IGNORE then
+    surface_conditions                 = { { min = 1, property = "gravity" } }
+end
+
 local rmd_mining_drill_displayer = {
     type                               = "simple-entity-with-owner",
     name                               = "rmd-pumpjack-displayer",
@@ -16,6 +21,7 @@ local rmd_mining_drill_displayer = {
     minable                            = { mining_time = 0.5, result = "rmd-pumpjack" },
     icon                               = ICONS .. "pumpjack.png",
     icon_size                          = 64,
+    surface_conditions                 = surface_conditions,
     radius_visualisation_specification =
     {
         sprite = {
