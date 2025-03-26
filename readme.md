@@ -2,7 +2,7 @@
 
 Take control of your resources!  
 
-Introduces new versions of the pumpjack and the mining drills.  
+Introduces new versions of the pumpjack, electric and big electric mining drills.  
 Operates in one of two modes, blueprint or resource placement.
 
 Blueprint mode disables resource placement so blueprints can be made.  
