@@ -10,7 +10,7 @@ local mining_drill                     = data.raw["mining-drill"]["big-mining-dr
 local rmd_mining_drill_displayer       = {
     type                               = "simple-entity-with-owner",
     name                               = "rmd-big-mining-drill-displayer",
-    localised_name                     = { "", { "item-name.rmd-mining-drill" } },
+    localised_name                     = { "", { "item-name.rmd-big-mining-drill" } },
     localised_description              = mining_drill.localised_description,
     placeable_by                       = { item = "rmd-big-mining-drill", count = 1 },
     minable                            = { mining_time = 0.5, result = "rmd-big-mining-drill" },
@@ -488,13 +488,13 @@ rmd_mining_drill_entity.name           = "rmd-big-mining-drill"
 rmd_mining_drill_entity.flags          = { "placeable-neutral", "placeable-player", "player-creation", "no-copy-paste" }
 rmd_mining_drill_entity.placeable_by   = { item = "rmd-big-mining-drill", count = 1 }
 rmd_mining_drill_entity.minable        = { mining_time = 0.5, result = "rmd-big-mining-drill" }
-rmd_mining_drill_entity.localised_name = { "", { "item-name.rmd-mining-drill" } }
+rmd_mining_drill_entity.localised_name = { "", { "item-name.rmd-big-mining-drill" } }
 
 local rmd_mining_drill_item            = table.deepcopy(data.raw["item"]["big-mining-drill"])
 rmd_mining_drill_item.name             = "rmd-big-mining-drill"
 rmd_mining_drill_item.place_result     = "rmd-big-mining-drill-displayer"
 rmd_mining_drill_item.flags            = { "primary-place-result" }
-rmd_mining_drill_item.localised_name   = { "", { "item-name.rmd-mining-drill" } }
+rmd_mining_drill_item.localised_name   = { "", { "item-name.rmd-big-mining-drill" } }
 rmd_mining_drill_item.icons            =
 {
     {
