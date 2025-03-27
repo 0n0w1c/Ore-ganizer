@@ -3,7 +3,7 @@
 Take control of your resources!  
 
 Introduces new versions of the pumpjack, electric and big electric mining drills,  
-which spawns the selected resource when placed.  
+which spawn the selected resource when placed.  
 
 Shortcut to hide and disable the resource selector button.  
 
