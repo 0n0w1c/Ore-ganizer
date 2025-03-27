@@ -3,7 +3,7 @@ Version: 0.0.4
 Date: 26.03.2025
   Bugfixes:
     - Crash when Space Age was not active (due to the addition of surface_conditions in 0.0.3)
-    - Crash attempt to open the resource selector when on a space platform
+    - Crash when attempting to open the resource selector when on a space platform
   Changes:
     - None
 ---------------------------------------------------------------------------------------------------
