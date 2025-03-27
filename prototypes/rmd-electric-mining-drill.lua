@@ -1,14 +1,9 @@
-local BASE_GRAPHICS      = "__base__/graphics/"
-local ICONS              = BASE_GRAPHICS .. "icons/"
-local ENTITY_GRAPHICS    = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS     = ENTITY_GRAPHICS .. "electric-mining-drill/"
+local BASE_GRAPHICS                    = "__base__/graphics/"
+local ICONS                            = BASE_GRAPHICS .. "icons/"
+local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "electric-mining-drill/"
 
-local mining_drill       = data.raw["mining-drill"]["electric-mining-drill"]
-
-local surface_conditions = mining_drill.surface_conditions
-if not IGNORE then
-    surface_conditions = { { min = 1, property = "gravity" } }
-end
+local mining_drill                     = data.raw["mining-drill"]["electric-mining-drill"]
 
 local rmd_mining_drill_displayer       = {
     type                               = "simple-entity-with-owner",
@@ -19,7 +14,6 @@ local rmd_mining_drill_displayer       = {
     minable                            = { mining_time = 0.5, result = "rmd-electric-mining-drill" },
     icon                               = ICONS .. "electric-mining-drill.png",
     icon_size                          = 64,
-    surface_conditions                 = surface_conditions,
     radius_visualisation_specification =
     {
         sprite = {
@@ -313,6 +307,10 @@ rmd_mining_drill_recipe.name           = "rmd-electric-mining-drill"
 rmd_mining_drill_recipe.results        = { { type = "item", name = "rmd-electric-mining-drill", amount = 1 } }
 
 data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })
+
+if mods["space-age"] and not IGNORE then
+    rmd_mining_drill_displayer.surface_conditions = { { min = 1, property = "gravity" } }
+end
 
 local technology = data.raw["technology"]["electric-mining-drill"]
 local effect =

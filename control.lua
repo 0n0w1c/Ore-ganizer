@@ -306,7 +306,11 @@ local function show_resource_selector_gui(player)
     local resource_prototypes = prototypes.get_entity_filtered { { filter = "type", type = "resource" } }
 
     for name, prototype in pairs(resource_prototypes) do
-        if IGNORE or map_gen_settings.autoplace_settings.entity.settings[name] then
+        local autoplace_settings = map_gen_settings and map_gen_settings.autoplace_settings
+        local allow = IGNORE or
+            (autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name])
+
+        if allow then
             table.insert(items, name)
         end
     end
