@@ -255,7 +255,7 @@ local function update_button(player_index)
 
     local sprite_path = "entity/" .. player_data.selected_resource
     local localized_item_name = (player_data.selected_resource == DISABLED) and
-        { "gui.rmd-blueprint-mode" } or { "entity-name." .. player_data.selected_resource }
+        { "gui.rmd-disabled" } or { "entity-name." .. player_data.selected_resource }
 
     local tool_tip = {
         "",
@@ -267,7 +267,7 @@ local function update_button(player_index)
     }
 
     if player_data.selected_resource == DISABLED or not helpers.is_valid_sprite_path(sprite_path) then
-        sprite_path = "rmd-blueprint-mode"
+        sprite_path = "rmd-disabled"
         player_data.selected_resource = DISABLED
     end
 

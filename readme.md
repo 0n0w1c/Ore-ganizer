@@ -2,11 +2,8 @@
 
 Take control of your resources!  
 
-Introduces new versions of the pumpjack, electric and big electric mining drills.  
-Operates in one of two modes, blueprint or resource placement.
-
-Blueprint mode disables resource placement so blueprints can be made.  
-Then select a resource and place the blueprint or place resources interactively.  
+Introduces new versions of the pumpjack, electric and big electric mining drills,  
+which spawns the selected resource when placed.  
 
 Shortcut to hide and disable the resource selector button.  
 
@@ -14,5 +11,5 @@ Shortcut to hide and disable the resource selector button.
 * Resource amount per tile  
 * Ignore planetary restrictions  
 
-#### Known limitations:
-* Undo/Redo is not supported
+#### Known limitations:  
+* Undo/Redo is not supported  

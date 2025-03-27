@@ -3,10 +3,10 @@ require("constants")
 local rmd_sprite =
 {
   type = "sprite",
-  name = "rmd-blueprint-mode",
-  filename = MOD_PATH .. "/graphics/icons/rmd-toggle-x32.png",
-  width = 32,
-  height = 32,
+  name = "rmd-disabled",
+  filename = MOD_PATH .. "/graphics/icons/rmd-disabled-x64.png",
+  width = 64,
+  height = 64,
   priority = "high"
 }
 

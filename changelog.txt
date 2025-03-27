@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.5
+Date: 26.03.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Removed "Blueprint mode", no longer required, blueprinting works as expected
+    - Changed the shortcut icon and the "Resource placement disabled" icon
+---------------------------------------------------------------------------------------------------
 Version: 0.0.4
 Date: 26.03.2025
   Bugfixes:
