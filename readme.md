@@ -17,3 +17,4 @@ When changing surfaces, the selected resource is cleared, which also blocks plac
 
 #### Known limitations:  
 * Undo/Redo is not supported  
+* Multi-player compatibiility untested  
