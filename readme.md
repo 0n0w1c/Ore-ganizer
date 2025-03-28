@@ -2,7 +2,7 @@
 
 Take control of your resources!  
 
-Introduces new versions of the pumpjack, electric and big electric mining drills,  
+Introduces new versions of the pumpjack, electric and big mining drills,  
 which spawn the selected resource when placed.  
 
 Click the shortcut to open the resource selector and choose a resource.  
