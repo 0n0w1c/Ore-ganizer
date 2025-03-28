@@ -340,6 +340,20 @@ local function on_lua_shortcut(event)
     local player = game.get_player(event.player_index)
     if not player then return end
 
+    local gui_roots = {
+        screen = player.gui.screen,
+        left = player.gui.left,
+        top = player.gui.top,
+        center = player.gui.center,
+        relative = player.gui.relative
+    }
+
+    for name, root in pairs(gui_roots) do
+        for _, child in pairs(root.children) do
+            log(name .. ": " .. (child.name or "<no name>") .. " (" .. child.type .. ")")
+        end
+    end
+
     if player.gui.screen.resource_selector_frame then
         close_resource_selector_gui(player)
     else
