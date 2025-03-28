@@ -55,11 +55,13 @@ local function place_resources(surface, area, resource_name)
 
             local resource_amount = is_fluid and (AMOUNT * FLUID_MULTIPLIER) or AMOUNT
 
-            surface.create_entity({
-                name = resource_name,
-                amount = resource_amount,
-                position = position
-            })
+            surface.create_entity(
+                {
+                    name = resource_name,
+                    amount = resource_amount,
+                    position = position
+                }
+            )
 
             ::continue::
         end
@@ -80,29 +82,27 @@ local function remove_resources(surface, area)
     end
 end
 
-local function return_item_to_player(player, item_name)
+local function return_item_to_player(player, item_name, quality)
     local stack = player.cursor_stack
 
     if stack and stack.valid then
-        if stack.valid_for_read and
-            (
+        if stack.valid_for_read and (
                 stack.is_blueprint or
                 stack.is_blueprint_book or
                 stack.is_deconstruction_item or
                 stack.is_upgrade_item
-            )
-        then
-            player.insert({ name = item_name, count = 1 })
+            ) then
+            player.insert({ name = item_name, count = 1, quality = quality })
             return
         end
 
-        if stack.valid_for_read and stack.name == item_name then
+        if stack.valid_for_read and stack.name == item_name and stack.quality == quality then
             stack.count = stack.count + 1
         else
-            stack.set_stack({ name = item_name, count = 1 })
+            stack.set_stack({ name = item_name, count = 1, quality = quality })
         end
     else
-        player.insert({ name = item_name, count = 1 })
+        player.insert({ name = item_name, count = 1, quality = quality })
     end
 end
 
@@ -121,62 +121,60 @@ local function on_entity_built(event)
 
     local item_name = string.gsub(entity_name, "-displayer$", "")
     local resource_name = storage.players[player.index].selected_resource
+    local quality = entity.quality or nil
+
 
     if resource_name == DISABLED then
         entity.destroy()
-        return_item_to_player(player, item_name)
+        return_item_to_player(player, item_name, quality)
         return
     end
 
     local resource_prototypes = prototypes.get_entity_filtered { { filter = "name", name = resource_name } }
-
     local resource_prototype = resource_prototypes[resource_name]
     if not resource_prototype or resource_prototype.type ~= "resource" then return end
 
     local is_fluid_resource = (resource_prototype.resource_category == "basic-fluid")
-
     local surface = entity.surface
     local force = entity.force
     local position = entity.position
     local direction = entity.direction
 
-    local real_entity_name = string.gsub(entity_name, "-displayer$", "")
+    local real_entity_name = item_name
     local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
     local is_drill = (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-big-mining-drill-displayer")
 
     if is_pumpjack and not is_fluid_resource then
         entity.destroy()
-        return_item_to_player(player, "rmd-pumpjack")
+        return_item_to_player(player, item_name, quality)
         return
     end
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local item = (entity_name == "rmd-big-mining-drill-displayer")
-            and "rmd-big-mining-drill"
-            or "rmd-electric-mining-drill"
-
         if is_fluid_resource or (entity_name == "rmd-electric-mining-drill-displayer" and resource_category == "hard-solid") then
             entity.destroy()
-            return_item_to_player(player, item)
+            return_item_to_player(player, item_name, quality)
             return
         end
     end
 
     local resource_area = get_mining_area(entity)
-
     entity.destroy()
 
     remove_resources(surface, resource_area)
     place_resources(surface, resource_area, resource_name)
 
-    surface.create_entity {
-        name = real_entity_name,
-        force = force,
-        position = position,
-        direction = direction,
-        create_build_effect_smoke = true
-    }
+    surface.create_entity(
+        {
+            name = real_entity_name,
+            force = force,
+            position = position,
+            direction = direction,
+            create_build_effect_smoke = true,
+            quality = quality
+        }
+    )
 end
 
 local function on_entity_mined(event)
@@ -195,11 +193,7 @@ local function get_or_create_player_data(player_index)
     storage.players = storage.players or {}
 
     if not storage.players[player_index] then
-        storage.players[player_index] =
-        {
-            selected_resource = DISABLED,
-            --button_on = true
-        }
+        storage.players[player_index] = { selected_resource = DISABLED }
     end
 
     return storage.players[player_index]
