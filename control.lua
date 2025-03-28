@@ -1,50 +1,5 @@
 require("constants")
 
-local mod_gui = require("mod-gui")
-
-local TILES_TO_EXCLUDE =
-{
-    ["ammoniacal-ocean"] = true,
-    ["ammoniacal-ocean-2"] = true,
-    ["brash-ice"] = true,
-    ["deepwater"] = true,
-    ["deepwater-green"] = true,
-    ["gleba-deep-lake"] = true,
-    ["lava"] = true,
-    ["lava-hot"] = true,
-    ["oil-ocean-deep"] = true,
-    ["oil-ocean-shallow"] = true,
-    ["water"] = true,
-    ["water-green"] = true,
-    ["water-mud"] = true,
-    ["water-shallow"] = true,
-    ["water-wube"] = true,
-    ["wetland-blue-slime"] = true,
-    ["wetland-dead-skin"] = true,
-    ["wetland-green-slime"] = true,
-    ["wetland-jellynut"] = true,
-    ["wetland-light-dead-skin"] = true,
-    ["wetland-light-green-slime"] = true,
-    ["wetland-pink-tentacle"] = true,
-    ["wetland-red-tentacle"] = true,
-    ["wetland-yumako"] = true,
-    ["space-platform-foundation"] = true,
-    ["foundation"] = true
-}
-
---[[
-FOUNDATION_TILES = {
-    ["landfill"] = true,
-    ["space-platform-foundation"] = true,
-    ["foundation"] = true,
-    ["artificial-yumako-soil"] = true,
-    ["overgrowth-yumako-soil"] = true,
-    ["artificial-jellynut-soil"] = true,
-    ["overgrowth-jellynut-soil"] = true,
-    ["ice-platform"] = true
-}
-]]
-
 local function get_mining_area(entity)
     if not (entity and entity.valid) then return {} end
 
@@ -160,26 +115,30 @@ local function on_entity_built(event)
 
     if not player or not storage.players[player.index] then return end
 
-    local resource_name = storage.players[player.index].selected_resource
-    if resource_name == DISABLED then return end
+    local entity_name = entity.name
+    local is_displayer = string.find(entity_name, "^rmd%-.+%-displayer$")
+    if not is_displayer then return end
 
-    local resource_prototypes = prototypes.get_entity_filtered {
-        { filter = "name", name = resource_name }
-    }
+    local item_name = string.gsub(entity_name, "-displayer$", "")
+    local resource_name = storage.players[player.index].selected_resource
+
+    if resource_name == DISABLED then
+        entity.destroy()
+        return_item_to_player(player, item_name)
+        return
+    end
+
+    local resource_prototypes = prototypes.get_entity_filtered { { filter = "name", name = resource_name } }
 
     local resource_prototype = resource_prototypes[resource_name]
     if not resource_prototype or resource_prototype.type ~= "resource" then return end
 
     local is_fluid_resource = (resource_prototype.resource_category == "basic-fluid")
 
-    local entity_name = entity.name
     local surface = entity.surface
     local force = entity.force
     local position = entity.position
     local direction = entity.direction
-
-    local is_displayer = string.find(entity_name, "^rmd%-.+%-displayer$")
-    if not is_displayer then return end
 
     local real_entity_name = string.gsub(entity_name, "-displayer$", "")
     local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
@@ -193,13 +152,13 @@ local function on_entity_built(event)
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local item_name = (entity_name == "rmd-big-mining-drill-displayer")
+        local item = (entity_name == "rmd-big-mining-drill-displayer")
             and "rmd-big-mining-drill"
             or "rmd-electric-mining-drill"
 
         if is_fluid_resource or (entity_name == "rmd-electric-mining-drill-displayer" and resource_category == "hard-solid") then
             entity.destroy()
-            return_item_to_player(player, item_name)
+            return_item_to_player(player, item)
             return
         end
     end
@@ -239,58 +198,11 @@ local function get_or_create_player_data(player_index)
         storage.players[player_index] =
         {
             selected_resource = DISABLED,
-            button_on = true
+            --button_on = true
         }
     end
 
     return storage.players[player_index]
-end
-
-local function update_button(player_index)
-    local player = game.get_player(player_index)
-    if not (player and player.valid) then return end
-
-    local player_data = get_or_create_player_data(player_index)
-    local button_flow = mod_gui.get_button_flow(player)
-
-    local sprite_path = "entity/" .. player_data.selected_resource
-    local localized_item_name = (player_data.selected_resource == DISABLED) and
-        { "gui.rmd-disabled" } or { "entity-name." .. player_data.selected_resource }
-
-    local tool_tip = {
-        "",
-        localized_item_name,
-        "\n",
-        { "tool-tip.rmd-tool-tip" },
-        "\n",
-        { "tool-tip.rmd-clear-hint" }
-    }
-
-    if player_data.selected_resource == DISABLED or not helpers.is_valid_sprite_path(sprite_path) then
-        sprite_path = "rmd-disabled"
-        player_data.selected_resource = DISABLED
-    end
-
-    local existing = button_flow[THIS_MOD]
-
-    if player_data.button_on then
-        if not existing then
-            button_flow.add {
-                type = "sprite-button",
-                name = THIS_MOD,
-                sprite = sprite_path,
-                tooltip = tool_tip,
-                style = mod_gui.button_style
-            }
-        else
-            existing.sprite = sprite_path
-            existing.tooltip = tool_tip
-        end
-    elseif existing then
-        existing.destroy()
-    end
-
-    player.set_shortcut_toggled("rmd-toggle-button", storage.players[player_index].button_on)
 end
 
 local function show_resource_selector_gui(player)
@@ -423,47 +335,33 @@ local function on_gui_closed(event)
 end
 
 local function on_lua_shortcut(event)
-    if (not event) or (not event.prototype_name) or (event.prototype_name ~= "rmd-toggle-button") then return end
+    if (not event) or (not event.prototype_name) or (event.prototype_name ~= "rmd-push-button") then return end
 
     local player = game.get_player(event.player_index)
     if not player then return end
 
-    storage.players[player.index].button_on = not storage.players[player.index].button_on
-
-    if not storage.players[player.index].button_on then
-        storage.players[player.index].selected_resource = DISABLED
+    if player.gui.screen.resource_selector_frame then
+        close_resource_selector_gui(player)
+    else
+        show_resource_selector_gui(player)
     end
-
-    update_button(player.index)
 end
 
 local function on_gui_click(event)
-    if event and event.element and event.element.valid then
-        local player = game.get_player(event.player_index)
-        if not (player and player.valid) then return end
+    if not (event and event.element and event.element.valid) then return end
 
-        local player_data = get_or_create_player_data(player.index)
+    local player = game.get_player(event.player_index)
+    if not (player and player.valid) then return end
 
-        if event.element.name == THIS_MOD then
-            if event.button == defines.mouse_button_type.left then
-                if player.gui.screen.resource_selector_frame then
-                    close_resource_selector_gui(player)
-                else
-                    show_resource_selector_gui(player)
-                end
-            elseif event.button == defines.mouse_button_type.right then
-                player_data.selected_resource = DISABLED
-                close_resource_selector_gui(player)
-            end
-            update_button(player.index)
-        elseif event.element.name == "resource_selector_close_button" then
-            close_resource_selector_gui(player)
-        elseif event.element.name:match("^resource_selector_button_") then
-            local selected_resource_name = event.element.name:sub(("resource_selector_button_"):len() + 1)
-            player_data.selected_resource = selected_resource_name
-            close_resource_selector_gui(player)
-            update_button(player.index)
-        end
+    local player_data = get_or_create_player_data(player.index)
+    local element_name = event.element.name
+
+    if element_name == "resource_selector_close_button" then
+        close_resource_selector_gui(player)
+    elseif element_name:match("^resource_selector_button_") then
+        local selected_resource_name = element_name:sub(("resource_selector_button_"):len() + 1)
+        player_data.selected_resource = selected_resource_name
+        close_resource_selector_gui(player)
     end
 end
 
@@ -471,7 +369,6 @@ local function player_created(event)
     local player_index = event.player_index
 
     get_or_create_player_data(player_index)
-    update_button(player_index)
 end
 
 local function player_changed_surface(event)
@@ -481,7 +378,6 @@ local function player_changed_surface(event)
     if not player_data then return end
 
     player_data.selected_resource = DISABLED
-    update_button(player_index)
 end
 
 local function get_displayer_name(entity_name)
@@ -565,7 +461,6 @@ end)
 script.on_configuration_changed(function()
     for _, player in pairs(game.players) do
         get_or_create_player_data(player.index)
-        update_button(player.index)
     end
     register_event_handlers()
 end)

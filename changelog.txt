@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.6
+Date: 27.03.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Removed the mod-gui button, the shortcut controls access to the resource selector
+    - Prevent placement on space platforms (always)
+    - Prevent placement when no resource is selected (more consistent user experience)
+---------------------------------------------------------------------------------------------------
 Version: 0.0.5
 Date: 26.03.2025
   Bugfixes:

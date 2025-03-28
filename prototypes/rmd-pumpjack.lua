@@ -246,11 +246,11 @@ local rmd_mining_drill_recipe          = table.deepcopy(data.raw["recipe"]["pump
 rmd_mining_drill_recipe.name           = "rmd-pumpjack"
 rmd_mining_drill_recipe.results        = { { type = "item", name = "rmd-pumpjack", amount = 1 } }
 
-data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })
-
-if mods["space-age"] and not IGNORE then
+if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 1, property = "gravity" } }
 end
+
+data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })
 
 local technology = data.raw["technology"]["oil-gathering"]
 local effect =

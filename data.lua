@@ -13,15 +13,14 @@ local rmd_sprite =
 local rmd_shortcut =
 {
   type = "shortcut",
-  name = "rmd-toggle-button",
+  name = "rmd-push-button",
   action = "lua",
   icon = MOD_PATH .. "/graphics/icons/rmd-toggle-x32.png",
   icon_size = 32,
   small_icon = MOD_PATH .. "/graphics/icons/rmd-toggle-x24.png",
   small_icon_size = 24,
-  associated_control_input = "give-rmd-toggle-button",
+  associated_control_input = "give-rmd-push-button",
   style = "default",
-  toggleable = true,
   order = "f[toggle-button]"
 }
 
