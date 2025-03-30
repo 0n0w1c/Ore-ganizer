@@ -11,7 +11,7 @@ Resource selection remains in effect until changed or the surface is changed.
 
 Deconstruction removes the resource.  
 
-Construction is blocked for invalid combinations and if a technology is required for mining and it is not yet researched.  
+Construction is blocked for invalid combinations or if a technology is required for mining and it is not yet researched.  
 
 #### Startup Options:  
 * Resource amount per tile  
