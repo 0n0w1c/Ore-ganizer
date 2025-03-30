@@ -13,6 +13,8 @@ Deconstruction removes the resource.
 
 Construction is blocked for invalid combinations or if a technology is required for mining and it is not yet researched.  
 
+No on_tick code or entity tracking, very UPS friendly.
+
 #### Startup Options:  
 * Resource amount per tile  
 * Ignore planetary restrictions  
