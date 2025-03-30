@@ -489,7 +489,7 @@ local rmd_mining_drill_displayer       =
     }
 }
 
-local rmd_mining_drill_entity          = table.deepcopy(mining_drill)
+local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
 rmd_mining_drill_entity.name           = NAME
 rmd_mining_drill_entity.flags          = { "placeable-neutral", "placeable-player", "player-creation" }
 rmd_mining_drill_entity.placeable_by   = { item = NAME, count = 1 }
