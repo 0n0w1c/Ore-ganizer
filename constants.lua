@@ -7,6 +7,8 @@ FLUID_MULTIPLIER = 200
 AMOUNT = settings.startup["rmd-resource-amount"].value
 IGNORE = settings.startup["rmd-resource-ignore"].value
 
+FLUID_MINING_TECHONOLOGIES = { "fluid-mining", "uranium-processing" }
+
 TILES_TO_EXCLUDE =
 {
     ["ammoniacal-ocean"] = true,

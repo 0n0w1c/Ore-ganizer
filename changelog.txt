@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 29.03.2025
+  Bugfixes:
+    - Removed debug logging
+    - Added surface-condition of gravity to the drill and pumpjack entities (safeguard)
+    - Added a technology check for mining technologies requiring fluids (ex. uranium mining)
+    - General refactoring and cleanup
+  Changes:
+    - Added an icon to the resource selector title bar
+    - Changed the resource selector to use dark icon buttons
+    - Prevent placement when ore mining requires a fluid but the technology is not researched
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 28.03.2025
   Bugfixes:
@@ -18,7 +30,7 @@ Date: 27.03.2025
   Bugfixes:
     - None
   Changes:
-    - Removed the mod-gui button, the shortcut controls access to the resource selector
+    - Removed the mod-gui button, the shortcut now controls access to the resource selector
     - Prevent placement on space platforms (always)
     - Prevent placement when no resource is selected (more consistent user experience)
 ---------------------------------------------------------------------------------------------------

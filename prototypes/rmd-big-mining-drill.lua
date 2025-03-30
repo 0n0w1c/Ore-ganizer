@@ -5,20 +5,25 @@ local ICONS                            = BASE_GRAPHICS .. "icons/"
 local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
 local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "big-mining-drill/"
 
-local mining_drill                     = data.raw["mining-drill"]["big-mining-drill"]
+local TO_COPY                          = "big-mining-drill"
+local NAME                             = "rmd-" .. TO_COPY
 
-local rmd_mining_drill_displayer       = {
+local mining_drill                     = data.raw["mining-drill"][TO_COPY]
+
+local rmd_mining_drill_displayer       =
+{
     type                               = "simple-entity-with-owner",
-    name                               = "rmd-big-mining-drill-displayer",
-    localised_name                     = { "", { "item-name.rmd-big-mining-drill" } },
+    name                               = NAME .. "-displayer",
+    localised_name                     = { "", { "item-name." .. NAME } },
     localised_description              = mining_drill.localised_description,
-    placeable_by                       = { item = "rmd-big-mining-drill", count = 1 },
-    minable                            = { mining_time = 0.5, result = "rmd-big-mining-drill" },
+    placeable_by                       = { item = NAME, count = 1 },
+    minable                            = { mining_time = 0.5, result = NAME },
     icon                               = ICONS .. "big-mining-drill.png",
     icon_size                          = 64,
     radius_visualisation_specification =
     {
-        sprite = {
+        sprite =
+        {
             filename = DRILL_GRAPHICS .. "big-mining-drill-radius-visualization.png",
             width = 12,
             height = 12,
@@ -32,7 +37,8 @@ local rmd_mining_drill_displayer       = {
     selection_box                      = mining_drill.selection_box,
     collision_mask                     = { layers = { item = true, meltable = true, object = true, player = true, water_tile = true, is_object = true } },
     hidden_in_factoriopedia            = true,
-    integration_patch                  = {
+    integration_patch                  =
+    {
         east =
         {
             filename = DRILL_GRAPHICS .. "East/big-mining-drill-E-integration.png",
@@ -484,17 +490,17 @@ local rmd_mining_drill_displayer       = {
 }
 
 local rmd_mining_drill_entity          = table.deepcopy(mining_drill)
-rmd_mining_drill_entity.name           = "rmd-big-mining-drill"
-rmd_mining_drill_entity.flags          = { "placeable-neutral", "placeable-player", "player-creation", "no-copy-paste" }
-rmd_mining_drill_entity.placeable_by   = { item = "rmd-big-mining-drill", count = 1 }
-rmd_mining_drill_entity.minable        = { mining_time = 0.5, result = "rmd-big-mining-drill" }
-rmd_mining_drill_entity.localised_name = { "", { "item-name.rmd-big-mining-drill" } }
+rmd_mining_drill_entity.name           = NAME
+rmd_mining_drill_entity.flags          = { "placeable-neutral", "placeable-player", "player-creation" }
+rmd_mining_drill_entity.placeable_by   = { item = NAME, count = 1 }
+rmd_mining_drill_entity.minable        = { mining_time = 0.5, result = NAME }
+rmd_mining_drill_entity.localised_name = { "", { "item-name." .. NAME } }
 
-local rmd_mining_drill_item            = table.deepcopy(data.raw["item"]["big-mining-drill"])
-rmd_mining_drill_item.name             = "rmd-big-mining-drill"
-rmd_mining_drill_item.place_result     = "rmd-big-mining-drill-displayer"
+local rmd_mining_drill_item            = table.deepcopy(data.raw["item"][TO_COPY])
+rmd_mining_drill_item.name             = NAME
+rmd_mining_drill_item.place_result     = NAME .. "-displayer"
 rmd_mining_drill_item.flags            = { "primary-place-result" }
-rmd_mining_drill_item.localised_name   = { "", { "item-name.rmd-big-mining-drill" } }
+rmd_mining_drill_item.localised_name   = { "", { "item-name." .. NAME } }
 rmd_mining_drill_item.icons            =
 {
     {
@@ -507,20 +513,21 @@ rmd_mining_drill_item.icons            =
     }
 }
 
-local rmd_mining_drill_recipe          = table.deepcopy(data.raw["recipe"]["big-mining-drill"])
-rmd_mining_drill_recipe.name           = "rmd-big-mining-drill"
-rmd_mining_drill_recipe.results        = { { type = "item", name = "rmd-big-mining-drill", amount = 1 } }
+local rmd_mining_drill_recipe          = table.deepcopy(data.raw["recipe"][TO_COPY])
+rmd_mining_drill_recipe.name           = NAME
+rmd_mining_drill_recipe.results        = { { type = "item", name = NAME, amount = 1 } }
 
 if mods["space-age"] then
-    rmd_mining_drill_displayer.surface_conditions = { { min = 1, property = "gravity" } }
+    rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }
+    rmd_mining_drill_entity.surface_conditions = { { min = 0.1, property = "gravity" } }
 end
 
 data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })
 
-local technology = data.raw["technology"]["big-mining-drill"]
+local technology = data.raw["technology"][TO_COPY]
 local effect =
 {
-    recipe = "rmd-big-mining-drill",
+    recipe = NAME,
     type = "unlock-recipe"
 }
 
