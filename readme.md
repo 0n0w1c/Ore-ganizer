@@ -2,14 +2,16 @@
 
 Take control of your resources!  
 
-Introduces new versions of the pumpjack, electric and big mining drills,  
-which spawn the selected resource when placed.  
+Introduces new versions of the pumpjack, electric and big mining drills, which spawn the selected resource when placed.  
 
-Click the shortcut to open the resource selector and choose a resource.  
-Then, select the appropriate drill or pumpjack and place it.  
+Click the shortcut to open the resource selector and pick the resource.  
+Then place a resource drill, pumpjack or blueprint as usual.  
 
-Placement is blocked for invalid combinations -- for example, crude oil with electric mining drills.  
-When changing surfaces, the selected resource is cleared, which also blocks placement.  
+Resource selection remains in effect until changed or the surface is changed.  
+
+Deconstruction removes the resource.  
+
+Construction is blocked for invalid combinations and if a technology is required for mining and it is not yet researched.  
 
 #### Startup Options:  
 * Resource amount per tile  
@@ -17,4 +19,4 @@ When changing surfaces, the selected resource is cleared, which also blocks plac
 
 #### Known limitations:  
 * Undo/Redo is not supported  
-* Multi-player compatibiility untested  
+* Multi-player compatibility is untested  
