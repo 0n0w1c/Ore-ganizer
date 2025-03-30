@@ -1,12 +1,14 @@
 {
     "name": "ore-ganizer",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
     "factorio_version": "2.0",
     "dependencies": [
         "base",
-        "? space-age"
+        "? space-age",
+        "(?) bobmining",
+        "(?) bztitanium"
     ]
 }

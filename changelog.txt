@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 30.03.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Resource pumpjacks and mining drills are now upgradable
+      Once upgraded, resources are no longer removed upon deconstruction
+    - Support added for Bob's Mining and Bob's Ores, adds Resource water pumpjack
+---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 29.03.2025
   Bugfixes:

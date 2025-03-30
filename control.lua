@@ -13,6 +13,8 @@ local function get_mining_area(entity)
         prototype_name = "big-mining-drill"
     elseif string.sub(entity_name, 1, 12) == "rmd-pumpjack" then
         prototype_name = "pumpjack"
+    elseif string.sub(entity_name, 1, 19) == "rmd-bob-water-miner" then
+        prototype_name = "pumpjack"
     end
 
     local prototype = prototypes.get_entity_filtered { { filter = "type", type = "mining-drill" } }
@@ -30,6 +32,14 @@ local function get_mining_area(entity)
     }
 end
 
+local function is_fluid_category_supported(fluid_category)
+    if fluid_category == "basic-fluid" or fluid_category == "water" then
+        return true
+    end
+
+    return false
+end
+
 local function place_resources(surface, area, resource_name)
     local resource_prototypes = prototypes.get_entity_filtered {
         { filter = "name", name = resource_name }
@@ -38,7 +48,8 @@ local function place_resources(surface, area, resource_name)
 
     if not prototype or prototype.type ~= "resource" then return end
 
-    local is_fluid = prototype.resource_category == "basic-fluid"
+    --local is_fluid = prototype.resource_category == "basic-fluid"
+    local is_fluid = is_fluid_category_supported(prototype.resource_category)
 
     for x = area.left_top.x, area.right_bottom.x - 1 do
         for y = area.left_top.y, area.right_bottom.y - 1 do
@@ -117,6 +128,22 @@ local function has_any_fluid_mining_technology(force)
     return false
 end
 
+local function is_pumpjack_fluid(category)
+    if category == "basic-fluid" then
+        return true
+    end
+
+    return false
+end
+
+local function is_water_miner_fluid(category)
+    if category == "water" then
+        return true
+    end
+
+    return false
+end
+
 local function on_entity_built(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
@@ -148,10 +175,19 @@ local function on_entity_built(event)
     local position = entity.position
     local direction = entity.direction
 
-    local is_fluid_resource = (resource_prototype.resource_category == "basic-fluid")
+    local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
+    local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
+    local water_miner_fluid = is_water_miner_fluid(resource_prototype.resource_category)
     local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
+    local is_water_miner = entity_name == "rmd-bob-water-miner-displayer"
 
-    if is_pumpjack and not is_fluid_resource then
+    if is_pumpjack and not pumpjack_fluid then
+        entity.destroy()
+        return_item_to_player(player, item_name, quality)
+        return
+    end
+
+    if is_water_miner and not water_miner_fluid then
         entity.destroy()
         return_item_to_player(player, item_name, quality)
         return
@@ -197,12 +233,31 @@ local function on_entity_mined(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
-    if entity.name == "rmd-electric-mining-drill" or entity.name == "rmd-big-mining-drill" or entity.name == "rmd-pumpjack" then
-        local surface = entity.surface
-        local resource_area = get_mining_area(entity)
-
-        remove_resources(surface, resource_area)
+    if entity.name ~= "rmd-electric-mining-drill" and
+        entity.name ~= "rmd-big-mining-drill" and
+        entity.name ~= "rmd-pumpjack" and
+        entity.name ~= "rmd-bob-water-miner" then
+        return
     end
+
+    if entity.to_be_upgraded() then return end
+
+    if event.player_index then
+        local player = game.get_player(event.player_index)
+        if player and player.valid then
+            local cursor = player.cursor_stack
+            if cursor and cursor.valid_for_read then
+                local place_result = cursor.prototype and cursor.prototype.place_result
+                if place_result and place_result.type == "mining-drill" then
+                    return
+                end
+            end
+        end
+    end
+
+    local surface = entity.surface
+    local resource_area = get_mining_area(entity)
+    remove_resources(surface, resource_area)
 end
 
 local function get_or_create_player_data(player_index)
@@ -229,6 +284,7 @@ local function show_resource_selector_gui(player)
 
     for name, prototype in pairs(resource_prototypes) do
         local autoplace_settings = map_gen_settings and map_gen_settings.autoplace_settings
+        local category = prototype.resource_category
         local allow = IGNORE or
             (autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name])
 

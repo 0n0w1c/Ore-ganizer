@@ -1,12 +1,16 @@
+if not mods["bobmining"] then return end
+
 require("constants")
 
-local BASE_GRAPHICS                    = "__base__/graphics/"
-local ICONS                            = BASE_GRAPHICS .. "icons/"
-local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "pumpjack/"
+local BASE_GRAPHICS   = "__base__/graphics/"
+local ICONS           = BASE_GRAPHICS .. "icons/"
+local ENTITY_GRAPHICS = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS  = ENTITY_GRAPHICS .. "pumpjack/"
 
-local TO_COPY                          = "pumpjack"
-local NAME                             = "rmd-" .. TO_COPY
+local TO_COPY         = "bob-water-miner-1"
+local NAME            = string.sub("rmd-" .. TO_COPY, 1, -3)
+
+if not data.raw["mining-drill"][TO_COPY] then return end
 
 local mining_drill                     = data.raw["mining-drill"][TO_COPY]
 
@@ -18,8 +22,8 @@ local rmd_mining_drill_displayer       =
     localised_description              = mining_drill.localised_description,
     placeable_by                       = { item = NAME, count = 1 },
     minable                            = { mining_time = 0.5, result = NAME },
-    icon                               = ICONS .. "pumpjack.png",
-    icon_size                          = 64,
+    icon                               = mining_drill.icon,
+    icon_size                          = mining_drill.icon_size,
     radius_visualisation_specification =
     {
         sprite =
@@ -257,7 +261,7 @@ end
 
 data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })
 
-local technology = data.raw["technology"]["oil-gathering"]
+local technology = data.raw["technology"]["bob-water-miner-1"]
 local effect =
 {
     recipe = NAME,
