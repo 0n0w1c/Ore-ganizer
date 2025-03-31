@@ -1,5 +1,8 @@
+require("constants")
+
 if mods["bobmining"] then
-    local items                              = data.raw["item"]
+    local items = data.raw["item"]
+
     items["rmd-electric-mining-drill"].icons =
     {
         {
@@ -25,12 +28,38 @@ if mods["bobmining"] then
             }
         }
     end
+
+    local mining_drill = data.raw["mining-drill"]["rmd-electric-mining-drill"]
+    mining_drill.icons =
+    {
+        {
+            icon = items["stone"].icon,
+        },
+        {
+            icon = items["electric-mining-drill"].icon,
+            icon_size = items["electric-mining-drill"].icon_size,
+            shift = { -8, -8 }
+        }
+    }
+
+    local simple_entity = data.raw["simple-entity-with-owner"]["rmd-electric-mining-drill-displayer"]
+    simple_entity.icons =
+    {
+        {
+            icon = items["stone"].icon,
+        },
+        {
+            icon = items["electric-mining-drill"].icon,
+            icon_size = items["electric-mining-drill"].icon_size,
+            shift = { -8, -8 }
+        }
+    }
 end
 
-local mining_drills = data.raw["mining-drill"]
+local mining_drills                                     = data.raw["mining-drill"]
 
 mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drills["electric-mining-drill"].next_upgrade
-mining_drills["rmd-pumpjack"].next_upgrade = mining_drills["pumpjack"].next_upgrade
+mining_drills["rmd-pumpjack"].next_upgrade              = mining_drills["pumpjack"].next_upgrade
 
 if mods["space-age"] then
     mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drills["big-mining-drill"].next_upgrade

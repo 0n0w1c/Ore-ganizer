@@ -48,7 +48,6 @@ local function place_resources(surface, area, resource_name)
 
     if not prototype or prototype.type ~= "resource" then return end
 
-    --local is_fluid = prototype.resource_category == "basic-fluid"
     local is_fluid = is_fluid_category_supported(prototype.resource_category)
 
     for x = area.left_top.x, area.right_bottom.x - 1 do
