@@ -71,10 +71,10 @@ else
 end
 
 if mods["bobmining"] then
-    if mining_drills["bob-water-miner"] and mining_drills["bob-water-miner"].next_upgrade then
-        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner"].next_upgrade
+    if mining_drills["bob-water-miner-1"] and mining_drills["bob-water-miner-1"].next_upgrade then
+        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner-1"].next_upgrade
     else
-        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner"].name
+        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner-1"].name
     end
 end
 

@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.5
+Date: 31.03.2025
+  Bugfixes:
+    - Bob Mining: Crash due to incorrect water pumpjack name when assigning next_upgrade
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.1.4
 Date: 31.03.2025
   Bugfixes:

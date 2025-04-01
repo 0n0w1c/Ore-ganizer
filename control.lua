@@ -64,7 +64,7 @@ local function place_resources(surface, area, resource_name, player_index)
             if #cliffs > 0 then goto continue end
 
 
-            local amount = storage.players[player_index].resource_amount
+            local amount = storage.players[player_index].resource_amount or 5000
             local resource_amount = is_fluid and (amount * FLUID_MULTIPLIER) or amount
 
             surface.create_entity(
