@@ -57,31 +57,24 @@ if mods["bobmining"] then
 end
 
 local mining_drills = data.raw["mining-drill"]
+local mining_drill
 
-if mining_drills["electric-mining-drill"].next_upgrade then
-    mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drills["electric-mining-drill"].next_upgrade
-else
-    mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drills["electric-mining-drill"].name
+mining_drill = mining_drills["electric-mining-drill"]
+if mining_drill then
+    mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end
 
-if mining_drills["pumpjack"].next_upgrade then
-    mining_drills["rmd-pumpjack"].next_upgrade = mining_drills["pumpjack"].next_upgrade
-else
-    mining_drills["rmd-pumpjack"].next_upgrade = mining_drills["pumpjack"].name
+mining_drill = mining_drills["pumpjack"]
+if mining_drill then
+    mining_drills["rmd-pumpjack"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end
 
-if mods["bobmining"] then
-    if mining_drills["bob-water-miner-1"] and mining_drills["bob-water-miner-1"].next_upgrade then
-        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner-1"].next_upgrade
-    else
-        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner-1"].name
-    end
+mining_drill = mining_drills["big-mining-drill"]
+if mods["space-age"] and mining_drill then
+    mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end
 
-if mods["space-age"] then
-    if mining_drills["big-mining-drill"].next_upgrade then
-        mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drills["big-mining-drill"].next_upgrade
-    else
-        mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drills["big-mining-drill"].name
-    end
+mining_drill = mining_drills["bob-water-miner-1"]
+if mods["bobmining"] and mining_drill then
+    mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end

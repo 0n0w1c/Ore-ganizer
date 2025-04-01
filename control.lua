@@ -278,17 +278,14 @@ end
 
 local function get_or_create_player_data(player_index)
     storage.players = storage.players or {}
+    local player_data = storage.players[player_index] or {}
 
-    if not storage.players[player_index] then
-        storage.players[player_index] =
-        {
-            ignore_planetary_restrictions = false,
-            resource_amount = 5000,
-            selected_resource = DISABLED
-        }
-    end
+    player_data.ignore_planetary_restrictions = player_data.ignore_planetary_restrictions or false
+    player_data.resource_amount = player_data.resource_amount or 5000
+    player_data.selected_resource = player_data.selected_resource or DISABLED
 
-    return storage.players[player_index]
+    storage.players[player_index] = player_data
+    return player_data
 end
 
 local function show_resource_selector_gui(player)
@@ -400,7 +397,7 @@ local function show_resource_selector_gui(player)
     settings_flow.add {
         type = "textfield",
         name = "rmd_resource_amount_field",
-        text = tostring(storage.players[player.index].resource_amount or ""),
+        text = tostring(storage.players[player.index].resource_amount or "5000"),
         numeric = true,
         tooltip = { "gui.rmd-resource-amount-tooltip" },
         style = "short_number_textfield"
