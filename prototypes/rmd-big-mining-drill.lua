@@ -19,6 +19,7 @@ local rmd_mining_drill_displayer       =
     localised_description              = mining_drill.localised_description,
     placeable_by                       = { item = NAME, count = 1 },
     minable                            = { mining_time = 0.5, result = NAME },
+    hidden                             = true,
     icons                              =
     {
         {
@@ -46,7 +47,7 @@ local rmd_mining_drill_displayer       =
     collision_box                      = mining_drill.collision_box,
     selection_box                      = mining_drill.selection_box,
     collision_mask                     = { layers = { item = true, meltable = true, object = true, player = true, water_tile = true, is_object = true } },
-    hidden_in_factoriopedia            = false,
+    hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
     integration_patch                  =
     {

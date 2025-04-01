@@ -56,11 +56,32 @@ if mods["bobmining"] then
     }
 end
 
-local mining_drills                                     = data.raw["mining-drill"]
+local mining_drills = data.raw["mining-drill"]
 
-mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drills["electric-mining-drill"].next_upgrade
-mining_drills["rmd-pumpjack"].next_upgrade              = mining_drills["pumpjack"].next_upgrade
+if mining_drills["electric-mining-drill"].next_upgrade then
+    mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drills["electric-mining-drill"].next_upgrade
+else
+    mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drills["electric-mining-drill"].name
+end
+
+if mining_drills["pumpjack"].next_upgrade then
+    mining_drills["rmd-pumpjack"].next_upgrade = mining_drills["pumpjack"].next_upgrade
+else
+    mining_drills["rmd-pumpjack"].next_upgrade = mining_drills["pumpjack"].name
+end
+
+if mods["bobmining"] then
+    if mining_drills["bob-water-miner"] and mining_drills["bob-water-miner"].next_upgrade then
+        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner"].next_upgrade
+    else
+        mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drills["bob-water-miner"].name
+    end
+end
 
 if mods["space-age"] then
-    mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drills["big-mining-drill"].next_upgrade
+    if mining_drills["big-mining-drill"].next_upgrade then
+        mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drills["big-mining-drill"].next_upgrade
+    else
+        mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drills["big-mining-drill"].name
+    end
 end

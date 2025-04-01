@@ -40,7 +40,7 @@ local function is_fluid_category_supported(fluid_category)
     return false
 end
 
-local function place_resources(surface, area, resource_name)
+local function place_resources(surface, area, resource_name, player_index)
     local resource_prototypes = prototypes.get_entity_filtered {
         { filter = "name", name = resource_name }
     }
@@ -63,7 +63,9 @@ local function place_resources(surface, area, resource_name)
             }
             if #cliffs > 0 then goto continue end
 
-            local resource_amount = is_fluid and (AMOUNT * FLUID_MULTIPLIER) or AMOUNT
+
+            local amount = storage.players[player_index].resource_amount
+            local resource_amount = is_fluid and (amount * FLUID_MULTIPLIER) or amount
 
             surface.create_entity(
                 {
@@ -155,24 +157,39 @@ local function on_entity_built(event)
     local is_displayer = string.find(entity_name, "^rmd%-.+%-displayer$")
     if not is_displayer then return end
 
+    local surface = entity.surface
+    local force = entity.force
+    local position = entity.position
+    local direction = entity.direction
+
     local item_name = string.gsub(entity_name, "-displayer$", "")
     local resource_name = storage.players[player.index].selected_resource
     local quality = entity.quality or nil
 
-    if resource_name == DISABLED then
+    if entity.surface.planet then
+        if resource_name == DISABLED then
+            entity.destroy()
+            return_item_to_player(player, item_name, quality)
+            return
+        end
+    else
         entity.destroy()
-        return_item_to_player(player, item_name, quality)
+        surface.create_entity
+        ({
+            name = item_name,
+            force = force,
+            position = position,
+            direction = direction,
+            create_build_effect_smoke = true,
+            quality = quality
+        })
         return
     end
 
     local resource_prototypes = prototypes.get_entity_filtered { { filter = "name", name = resource_name } }
     local resource_prototype = resource_prototypes[resource_name]
-    if not resource_prototype or resource_prototype.type ~= "resource" then return end
 
-    local surface = entity.surface
-    local force = entity.force
-    local position = entity.position
-    local direction = entity.direction
+    if not resource_prototype or resource_prototype.type ~= "resource" then return end
 
     local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
     local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
@@ -213,7 +230,7 @@ local function on_entity_built(event)
     entity.destroy()
 
     remove_resources(surface, resource_area)
-    place_resources(surface, resource_area, resource_name)
+    place_resources(surface, resource_area, resource_name, player.index)
 
     surface.create_entity
     (
@@ -263,7 +280,12 @@ local function get_or_create_player_data(player_index)
     storage.players = storage.players or {}
 
     if not storage.players[player_index] then
-        storage.players[player_index] = { selected_resource = DISABLED }
+        storage.players[player_index] =
+        {
+            ignore_planetary_restrictions = false,
+            resource_amount = 5000,
+            selected_resource = DISABLED
+        }
     end
 
     return storage.players[player_index]
@@ -283,8 +305,7 @@ local function show_resource_selector_gui(player)
 
     for name, prototype in pairs(resource_prototypes) do
         local autoplace_settings = map_gen_settings and map_gen_settings.autoplace_settings
-        local category = prototype.resource_category
-        local allow = IGNORE or
+        local allow = storage.players[player.index].ignore_planetary_restrictions or
             (autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name])
 
         if allow then
@@ -348,6 +369,42 @@ local function show_resource_selector_gui(player)
             direction = "vertical",
             style = "inside_shallow_frame",
         }
+
+    local settings_flow = inner_frame.add {
+        type = "flow",
+        name = "rmd_settings_flow",
+        direction = "horizontal",
+    }
+    settings_flow.style.vertical_align = "center"
+
+    settings_flow.add {
+        type = "checkbox",
+        name = "rmd_ignore_planetary_restrictions_checkbox",
+        state = storage.players[player.index].ignore_planetary_restrictions or false,
+        caption = { "gui.rmd-ignore-planetary-restrictions" },
+        tooltip = { "gui.rmd-ignore-planetary-restrictions-tooltip" }
+    }.style.left_margin = 6
+
+    settings_flow.add {
+        type = "empty-widget",
+        style = "draggable_space_header",
+        ignored_by_interaction = true
+    }.style.horizontally_stretchable = true
+
+    settings_flow.add {
+        type = "label",
+        caption = { "gui.rmd-resource-amount" },
+        style = "label"
+    }
+
+    settings_flow.add {
+        type = "textfield",
+        name = "rmd_resource_amount_field",
+        text = tostring(storage.players[player.index].resource_amount or ""),
+        numeric = true,
+        tooltip = { "gui.rmd-resource-amount-tooltip" },
+        style = "short_number_textfield"
+    }.style.right_margin = 4
 
     local scroll_pane = inner_frame.add
         {
@@ -503,12 +560,44 @@ local function player_setup_blueprint(event)
     end
 end
 
+local function gui_check_state_changed(event)
+    local player = game.get_player(event.player_index)
+    local element = event.element
+
+    if element.name == "rmd_ignore_planetary_restrictions_checkbox" then
+        storage.players[player.index].ignore_planetary_restrictions = element.state
+        storage.players[player.index].selected_resource = DISABLED
+    end
+    show_resource_selector_gui(player)
+end
+
+local function gui_text_changed(event)
+    local element = event.element
+    local player = game.get_player(event.player_index)
+    if not (player and element and element.valid) then return end
+
+    if element.name == "rmd_resource_amount_field" then
+        local num = tonumber(element.text)
+
+        if num and math.floor(num) == num and num > 0 and num <= 100000 then
+            storage.players[player.index].resource_amount = num
+            element.style.font_color = nil
+            element.style = "short_number_textfield"
+        else
+            element.style.font_color = { r = 0.8, g = 0, b = 0, a = 0.5 }
+            player.print({ "gui.rmd-invalid-amount-range" })
+        end
+    end
+end
+
 local function register_event_handlers()
     script.on_event(defines.events.on_player_created, player_created)
     script.on_event(defines.events.on_player_changed_surface, player_changed_surface)
     script.on_event(defines.events.on_player_setup_blueprint, player_setup_blueprint)
 
     script.on_event(defines.events.on_gui_click, on_gui_click)
+    script.on_event(defines.events.on_gui_checked_state_changed, gui_check_state_changed)
+    script.on_event(defines.events.on_gui_text_changed, gui_text_changed)
     script.on_event(defines.events.on_gui_closed, on_gui_closed)
     script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 
