@@ -15,9 +15,9 @@ Construction is blocked for invalid combinations or if a technology is required 
 
 No on_tick code or entity tracking, very UPS friendly.
 
-#### Startup Options:  
-* Resource amount per tile  
+#### Runtime settings:  
 * Ignore planetary restrictions  
+* Resource amount (per tile)  
 
 #### Known limitations:  
 * Undo/Redo is not supported  
