@@ -22,3 +22,8 @@ No on_tick code or entity tracking, very UPS friendly.
 #### Known limitations:  
 * Undo/Redo is not supported  
 * Multi-player compatibility is untested  
+
+#### Supported mods:  
+[Bob's Mining](https://mods.factorio.com/mod/bobmining)  
+[Titanium](https://mods.factorio.com/mod/bztitanium)  
+[Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
