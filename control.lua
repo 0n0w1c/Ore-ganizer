@@ -15,6 +15,8 @@ local function get_mining_area(entity)
         prototype_name = "pumpjack"
     elseif string.sub(entity_name, 1, 19) == "rmd-bob-water-miner" then
         prototype_name = "pumpjack"
+    elseif string.sub(entity_name, 1, 11) == "rmd-oil_rig" then
+        prototype_name = "pumpjack"
     end
 
     local prototype = prototypes.get_entity_filtered { { filter = "type", type = "mining-drill" } }
@@ -33,7 +35,7 @@ local function get_mining_area(entity)
 end
 
 local function is_fluid_category_supported(fluid_category)
-    if fluid_category == "basic-fluid" or fluid_category == "water" then
+    if fluid_category == "basic-fluid" or fluid_category == "water" or fluid_category == "offshore-fluid" then
         return true
     end
 
@@ -49,13 +51,14 @@ local function place_resources(surface, area, resource_name, player_index)
     if not prototype or prototype.type ~= "resource" then return end
 
     local is_fluid = is_fluid_category_supported(prototype.resource_category)
-
     for x = area.left_top.x, area.right_bottom.x - 1 do
         for y = area.left_top.y, area.right_bottom.y - 1 do
             local position = { x = x, y = y }
 
             local tile = surface.get_tile(x, y)
-            if TILES_TO_EXCLUDE[tile.name] then goto continue end
+            if TILES_TO_EXCLUDE[tile.name] and resource_name ~= "offshore-oil" then goto continue end
+
+            if resource_name == "offshore-oil" and not WATER_TILES[tile.name] then goto continue end
 
             local cliffs = surface.find_entities_filtered {
                 area = { { x, y }, { x + 1, y + 1 } },
@@ -66,7 +69,6 @@ local function place_resources(surface, area, resource_name, player_index)
 
             local amount = storage.players[player_index].resource_amount or 5000
             local resource_amount = is_fluid and (amount * FLUID_MULTIPLIER) or amount
-
             surface.create_entity(
                 {
                     name = resource_name,
@@ -145,6 +147,30 @@ local function is_water_miner_fluid(category)
     return false
 end
 
+local function is_oil_rig_fluid(category)
+    if category == "offshore-fluid" then
+        return true
+    end
+
+    return false
+end
+
+local function on_water(entity)
+    if not (entity and entity.valid) then return false end
+
+    local surface = entity.surface
+    local area = entity.selection_box
+    local tiles = surface.find_tiles_filtered { area = area }
+
+    for _, tile in pairs(tiles) do
+        if not WATER_TILES[tile.name] then
+            return false
+        end
+    end
+
+    return true
+end
+
 local function on_entity_built(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
@@ -171,6 +197,12 @@ local function on_entity_built(event)
             entity.destroy()
             return_item_to_player(player, item_name, quality)
             return
+        elseif resource_name == "offshore-oil" then
+            if not on_water(entity) then
+                entity.destroy()
+                return_item_to_player(player, item_name, quality)
+                return
+            end
         end
     else
         entity.destroy()
@@ -194,8 +226,10 @@ local function on_entity_built(event)
     local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
     local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
     local water_miner_fluid = is_water_miner_fluid(resource_prototype.resource_category)
+    local oil_rig_fluid = is_oil_rig_fluid(resource_prototype.resource_category)
     local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
     local is_water_miner = entity_name == "rmd-bob-water-miner-displayer"
+    local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
 
     if is_pumpjack and not pumpjack_fluid then
         entity.destroy()
@@ -204,6 +238,12 @@ local function on_entity_built(event)
     end
 
     if is_water_miner and not water_miner_fluid then
+        entity.destroy()
+        return_item_to_player(player, item_name, quality)
+        return
+    end
+
+    if is_oil_rig and not oil_rig_fluid then
         entity.destroy()
         return_item_to_player(player, item_name, quality)
         return
@@ -231,7 +271,6 @@ local function on_entity_built(event)
 
     remove_resources(surface, resource_area)
     place_resources(surface, resource_area, resource_name, player.index)
-
     surface.create_entity
     (
         {
@@ -252,7 +291,8 @@ local function on_entity_mined(event)
     if entity.name ~= "rmd-electric-mining-drill" and
         entity.name ~= "rmd-big-mining-drill" and
         entity.name ~= "rmd-pumpjack" and
-        entity.name ~= "rmd-bob-water-miner" then
+        entity.name ~= "rmd-bob-water-miner" and
+        entity.name ~= "rmd-oil_rig" then
         return
     end
 
@@ -410,6 +450,7 @@ local function show_resource_selector_gui(player)
             horizontal_scroll_policy = "never",
             vertical_scroll_policy = "auto",
         }
+    scroll_pane.style = "scroll_pane"
     scroll_pane.style.maximal_height = 300
     scroll_pane.style.minimal_width = 400
     scroll_pane.style.padding = 4
@@ -513,6 +554,8 @@ local function get_displayer_name(entity_name)
         return entity_name .. "-displayer"
     elseif entity_name == "rmd-pumpjack" then
         return "rmd-pumpjack-displayer"
+    elseif entity_name == "rmd-oil_rig" then
+        return "rmd-oil_rig-displayer"
     end
 end
 

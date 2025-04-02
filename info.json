@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -9,6 +9,7 @@
         "base",
         "? space-age",
         "(?) bobmining",
-        "(?) bztitanium"
+        "(?) bztitanium",
+        "(?) cargo-ships"
     ]
 }

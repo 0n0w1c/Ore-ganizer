@@ -10,6 +10,14 @@ FLUID_MINING_TECHONOLOGIES =
     "uranium-processing"
 }
 
+WATER_TILES =
+{
+    ["water"] = true,
+    ["deepwater"] = true,
+    ["water-green"] = true,
+    ["deepwater-green"] = true
+}
+
 TILES_TO_EXCLUDE =
 {
     ["ammoniacal-ocean"] = true,

@@ -78,3 +78,9 @@ mining_drill = mining_drills["bob-water-miner-1"]
 if mods["bobmining"] and mining_drill then
     mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end
+
+mining_drill = mining_drills["oil_rig"]
+if mods["cargo-ships"] and mining_drill then
+    data.raw["simple-entity-with-owner"]["rmd-oil_rig-displayer"].collision_mask = mining_drill.collision_mask
+    mining_drills["rmd-oil_rig"].collision_mask = mining_drill.collision_mask
+end
