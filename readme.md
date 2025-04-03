@@ -19,9 +19,10 @@ No on_tick code or entity tracking, very UPS friendly.
 * Ignore planetary restrictions  
 * Resource amount (per tile)  
 
-#### Known limitations:  
+#### Important notes:  
 * Undo/Redo is not supported  
-* Multi-player compatibility is untested  
+* Replaces existing resources  
+* Cargo Ships: Placing the Resource oil rig on offshore oil, removes the offshore oil  
 
 #### Supported mods:  
 [Bob's Mining](https://mods.factorio.com/mod/bobmining)  

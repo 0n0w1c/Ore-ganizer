@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.8
+Date: 02.04.2025
+  Bugfixes:
+    - Improved support for Cargo Ship's oil rig
+  Changes:
+    - Added flying text to notify why construction was blocked
+    - Cargo Ships: Resource oil rig will place a Cargo Ship's oil rig (tracked by Cargo Ships)
+    - Attempting to place a Resource oil rig on existing offshore oil will remove the offshore oil
+---------------------------------------------------------------------------------------------------
 Version: 0.1.7
 Date: 02.04.2025
   Bugfixes:

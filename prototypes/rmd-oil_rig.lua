@@ -3,7 +3,6 @@ if not mods["cargo-ships"] then return end
 require("constants")
 
 local BASE_GRAPHICS                    = "__base__/graphics/"
---local BASE_GRAPHICS                    = "__cargo-ships-graphics__/graphics/"
 local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
 local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "electric-mining-drill/"
 
@@ -47,13 +46,11 @@ local rmd_mining_drill_displayer       =
     max_health                         = mining_drill.max_health,
     collision_box                      = mining_drill.collision_box,
     selection_box                      = mining_drill.selection_box,
-    --collision_mask                     = { layers = { item = true, meltable = true, object = true, player = true, water_tile = true, is_object = true } },
     collision_mask                     = { layers = { object = true, train = true } },
     hidden_in_factoriopedia            = true,
-    factoriopedia_alternative          = NAME,
+    factoriopedia_alternative          = TO_COPY,
     picture                            = mining_drill.base_picture
 }
-
 local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
 rmd_mining_drill_entity.name           = NAME
 rmd_mining_drill_entity.placeable_by   = { item = NAME, count = 1 }
