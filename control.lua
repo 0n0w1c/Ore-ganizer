@@ -239,17 +239,19 @@ local function on_entity_built(event)
             end
         end
     else
-        entity.destroy()
-        surface.create_entity
-        ({
-            name = item_name,
-            force = force,
-            position = position,
-            direction = direction,
-            create_build_effect_smoke = true,
-            quality = quality
-        })
-        return
+        if not (script.active_mods["Subsurface"] and string.find(surface.name, "_subsurface_")) then
+            entity.destroy()
+            surface.create_entity
+            ({
+                name = item_name,
+                force = force,
+                position = position,
+                direction = direction,
+                create_build_effect_smoke = true,
+                quality = quality
+            })
+            return
+        end
     end
 
     local resource_prototypes = prototypes.get_entity_filtered { { filter = "name", name = resource_name } }

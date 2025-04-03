@@ -78,17 +78,3 @@ mining_drill = mining_drills["bob-water-miner-1"]
 if mods["bobmining"] and mining_drill then
     mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end
-
---[[
-mining_drill = mining_drills["oil_rig"]
-if mods["cargo-ships"] and mining_drill then
-    local displayer = data.raw["simple-entity-with-owner"]["rmd-oil_rig-displayer"]
-    if displayer then
-        displayer.collision_mask = mining_drill.collision_mask
-    end
-    --    mining_drills["rmd-oil_rig"].collision_mask = mining_drill.collision_mask
-    --    mining_drill.fast_replaceable_group = "mining-drill"
-    --    mining_drills["rmd-oil_rig"].fast_replaceable_group = mining_drill.fast_replaceable_group
-    --    mining_drills["rmd-oil_rig"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
-end
-]]
