@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.10
+Date: 03.04.2025
+  Bugfixes:
+    - Incorrectly displayed Resource selector when state of any checkbox changed
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.1.9
 Date: 03.04.2025
   Bugfixes:

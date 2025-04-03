@@ -660,8 +660,8 @@ local function gui_check_state_changed(event)
     if element.name == "rmd_ignore_planetary_restrictions_checkbox" then
         storage.players[player.index].ignore_planetary_restrictions = element.state
         storage.players[player.index].selected_resource = DISABLED
+        show_resource_selector_gui(player)
     end
-    show_resource_selector_gui(player)
 end
 
 local function gui_text_changed(event)
