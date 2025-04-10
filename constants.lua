@@ -4,6 +4,8 @@ MOD_PATH = "__" .. MOD_NAME .. "__"
 DISABLED = "disabled"
 FLUID_MULTIPLIER = 200
 
+COLLISION_MASK = { layers = { item = true, object = true, player = true, water_tile = true, is_object = true } }
+
 FLUID_MINING_TECHONOLOGIES =
 {
     "fluid-mining", -- bztitanium

@@ -2,7 +2,7 @@
 
 Take control of your resources!  
 
-Introduces new versions of the pumpjack, electric and big mining drills, which spawn the selected resource when placed.  
+Introduces new versions of the pumpjack, and mining drills, which spawn the selected resource when placed.  
 
 Click the shortcut to open the resource selector and pick the resource.  
 Then place a resource drill, pumpjack or blueprint as usual.  
@@ -14,6 +14,8 @@ Deconstruction removes the resource.
 Construction is blocked for invalid combinations or if a technology is required for mining and it is not yet researched.  
 
 No on_tick code or entity tracking, very UPS friendly.
+
+*New: Map generator preset for "No resources"*
 
 #### Runtime settings:  
 * Ignore planetary restrictions  

@@ -43,7 +43,7 @@ local rmd_mining_drill_displayer       =
     max_health                         = mining_drill.max_health,
     collision_box                      = mining_drill.collision_box,
     selection_box                      = mining_drill.selection_box,
-    collision_mask                     = { layers = { item = true, meltable = true, object = true, player = true, water_tile = true, is_object = true } },
+    collision_mask                     = COLLISION_MASK,
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
     picture                            =

@@ -7,7 +7,9 @@ local function get_mining_area(entity)
     local entity_name = entity.name
 
     local prototype_name = entity_name
-    if string.sub(entity_name, 1, 25) == "rmd-electric-mining-drill" then
+    if string.sub(entity_name, 1, 23) == "rmd-burner-mining-drill" then
+        prototype_name = "burner-mining-drill"
+    elseif string.sub(entity_name, 1, 25) == "rmd-electric-mining-drill" then
         prototype_name = "electric-mining-drill"
     elseif string.sub(entity_name, 1, 20) == "rmd-big-mining-drill" then
         prototype_name = "big-mining-drill"
@@ -20,7 +22,13 @@ local function get_mining_area(entity)
     end
 
     local prototype = prototypes.get_entity_filtered { { filter = "type", type = "mining-drill" } }
-    local radius = prototype[prototype_name].mining_drill_radius or 1
+
+    local radius
+    if prototype_name == "burner-mining-drill" then
+        radius = prototype.mining_drill_radius or prototype.resource_searching_radius or 1
+    else
+        radius = prototype[prototype_name].mining_drill_radius or 1
+    end
 
     return {
         left_top = {
@@ -288,7 +296,7 @@ local function on_entity_built(event)
         return
     end
 
-    local is_drill = (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-big-mining-drill-displayer")
+    local is_drill = (entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-big-mining-drill-displayer")
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
@@ -302,7 +310,7 @@ local function on_entity_built(event)
             return
         end
 
-        if (entity_name == "rmd-electric-mining-drill-displayer" and resource_category == "hard-solid") then
+        if (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-electric-mining-drill-displayer") and resource_category == "hard-solid" then
             player.create_local_flying_text { text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true }
             entity.destroy()
             return_item_to_player(player, item_name, quality)
@@ -342,7 +350,8 @@ local function on_entity_mined(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
-    if entity.name ~= "rmd-electric-mining-drill" and
+    if entity.name ~= "rmd-burner-mining-drill" and
+        entity.name ~= "rmd-electric-mining-drill" and
         entity.name ~= "rmd-big-mining-drill" and
         entity.name ~= "rmd-pumpjack" and
         entity.name ~= "rmd-bob-water-miner" then
@@ -589,7 +598,19 @@ end
 
 local function player_created(event)
     local player_index = event.player_index
+    local player = game.get_player(player_index)
+    if not player then return end
 
+    if player and player.valid then
+        local inserted = 0
+
+        if player.character and player.character.valid then
+            inserted = player.character.insert { name = "iron-plate", count = 1 }
+        else
+            inserted = player.insert { name = "iron-plate", count = 1 }
+        end
+    end
+    player.insert { name = "iron-plate", count = 1 }
     get_or_create_player_data(player_index)
 end
 
@@ -683,8 +704,16 @@ local function gui_text_changed(event)
     end
 end
 
+local function cutscene_cancelled(event)
+    local player = game.get_player(event.player_index)
+    if not player or not player.valid or not player.character then return end
+
+    player.character.insert { name = "rmd-burner-mining-drill", count = 1 }
+end
+
 local function register_event_handlers()
     script.on_event(defines.events.on_player_created, player_created)
+    script.on_event(defines.events.on_cutscene_cancelled, cutscene_cancelled)
     script.on_event(defines.events.on_player_changed_surface, player_changed_surface)
     script.on_event(defines.events.on_player_setup_blueprint, player_setup_blueprint)
 

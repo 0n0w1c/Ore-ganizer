@@ -1,5 +1,66 @@
 require("constants")
 
+local disabled_controls = {}
+
+for name, control in pairs(data.raw["autoplace-control"]) do
+    if control.category == "resource" then
+        disabled_controls[name] =
+        {
+            frequency = 0,
+            size = "none",
+            richness = 0
+        }
+    end
+end
+
+data.raw["map-gen-presets"]["default"]["resource-free"] = {
+    order = "z",
+    basic_settings =
+    {
+        starting_area = 1.0,
+        peaceful_mode = true,
+        property_expression_names =
+        {
+            water = 1.0,
+        },
+        autoplace_controls = disabled_controls
+    }
+}
+
+for _, planet in pairs(data.raw["planet"]) do
+    local controls = planet.map_gen_settings and planet.map_gen_settings.autoplace_controls
+    local settings = planet.map_gen_settings
+        and planet.map_gen_settings.autoplace_settings
+        and planet.map_gen_settings.autoplace_settings.entity
+        and planet.map_gen_settings.autoplace_settings.entity.settings
+
+    if controls then
+        for name, _ in pairs(controls) do
+            if data.raw.resource[name] and data.raw.resource[name].autoplace then
+                controls[name] =
+                {
+                    frequency = 0,
+                    size = 0,
+                    richness = 0
+                }
+            end
+        end
+    end
+
+    if settings then
+        for name, _ in pairs(settings) do
+            if data.raw.resource[name] and data.raw.resource[name].autoplace then
+                settings[name] =
+                {
+                    frequency = 0,
+                    size = 0,
+                    richness = 0
+                }
+            end
+        end
+    end
+end
+
 if mods["bobmining"] then
     local items = data.raw["item"]
 

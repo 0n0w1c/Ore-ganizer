@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 10.04.2025
+  Bugfixes:
+    - Resource pumpjack (and drills) can now be placed on ice-platform
+  Changes:
+    - Added Map Generator preset for "No resources"
+    - Added Resource burner mining drill
+    - A Resource burner mining drill is placed in character inventory at end of the cut screen
+---------------------------------------------------------------------------------------------------
 Version: 0.1.10
 Date: 03.04.2025
   Bugfixes:
