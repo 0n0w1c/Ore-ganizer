@@ -7,7 +7,7 @@ for name, control in pairs(data.raw["autoplace-control"]) do
         disabled_controls[name] =
         {
             frequency = 0,
-            size = "none",
+            size = 0,
             richness = 0
         }
     end
