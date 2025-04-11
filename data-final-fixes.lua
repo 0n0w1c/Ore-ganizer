@@ -18,11 +18,7 @@ data.raw["map-gen-presets"]["default"]["resource-free"] = {
     basic_settings =
     {
         starting_area = 1.0,
-        peaceful_mode = true,
-        property_expression_names =
-        {
-            water = 1.0,
-        },
+        property_expression_names = { water = 1.0 },
         autoplace_controls = disabled_controls
     }
 }
