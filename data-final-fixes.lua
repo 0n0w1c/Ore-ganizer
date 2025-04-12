@@ -13,7 +13,7 @@ for name, control in pairs(data.raw["autoplace-control"]) do
     end
 end
 
-data.raw["map-gen-presets"]["default"]["resource-free"] =
+data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
 {
     order = "z",
     basic_settings =
