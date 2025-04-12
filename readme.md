@@ -41,4 +41,4 @@ No on_tick code or entity tracking — very UPS-friendly.
 ---
 
 #### Alternate locales:  
-`de`, `es`, `fr`, `ja`, `pl`, `pt-BR`, `ru`, `tr`, `uk`, `zh-CN`, and `zh-TW`
+de, es, fr, ja, pl, pt-BR, ru, tr, uk, zh-CN, and zh-TW
