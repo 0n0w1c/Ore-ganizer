@@ -1,35 +1,43 @@
-#### Ore-ganizer  
+#### Ore-ganizer
 
-Take control of your resources!  
+Take control of your resources!
 
-Introduces new versions of the pumpjack and mining drills, which spawn the selected resource when placed.  
+Introduces new versions of the pumpjack and mining drills that spawn the selected resource when placed.
 
-Click the shortcut to open the resource selector and pick the resource.  
-Then place a resource drill, pumpjack or blueprint as usual.  
+Click the shortcut to open the resource selector and choose a resource.  
+Then place a resource drill, pumpjack, or blueprint as usual.
 
-Resource selection remains in effect until changed or the surface is changed.  
+The selected resource remains active until changed or the surface is changed.
 
-Deconstruction removes the resource.  
+Deconstruction removes the resource.
 
-Construction is blocked for invalid combinations or if a technology is required for mining and it is not yet researched.  
+Construction is blocked for invalid combinations or if a required mining technology has not been researched.
 
-No on_tick code or entity tracking, very UPS friendly.
+No on_tick code or entity tracking — very UPS-friendly.
 
-*New: Map generator preset for "No resources"*
+*New: Map generator preset — “No resources”*
 
-#### Runtime settings:  
+---
+
+#### Runtime settings:
 * Ignore planetary restrictions  
-* Resource amount (per tile)  
+* Resource amount (per tile)
 
-#### Important notes:  
-* Undo/Redo is not supported  
+---
+
+#### Important notes:
+* Undo/redo is not supported  
 * Replaces existing resources  
-* Cargo Ships: Placing the Resource oil rig on offshore oil, removes the offshore oil  
+* Cargo Ships: Placing the Resource oil rig on offshore oil removes the offshore oil
 
-#### Supported mods:  
+---
+
+#### Supported mods:
 [Bob's Mining](https://mods.factorio.com/mod/bobmining)  
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)
 
-Alternate locales: de, es, fr, ja, pl, pt-BR, ru, tr, uk, zh-CN, and zh-TW  
+---
+
+**Alternate locales:** `de`, `es`, `fr`, `ja`, `pl`, `pt-BR`, `ru`, `tr`, `uk`, `zh-CN`, and `zh-TW`
