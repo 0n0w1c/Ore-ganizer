@@ -433,7 +433,7 @@ local function show_resource_selector_gui(player)
     titlebar_flow.add
     {
         type = "label",
-        caption = { "", "[technology=electric-mining-drill]", "  ", { "gui.rmd-resource-selector" } },
+        caption = { "gui.rmd-resource-selector" },
         ignored_by_interaction = true,
         style = "frame_title",
     }
