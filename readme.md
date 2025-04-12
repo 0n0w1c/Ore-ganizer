@@ -31,3 +31,5 @@ No on_tick code or entity tracking, very UPS friendly.
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)
+
+Locale: de, es, fr, ja, ru, and zh-CN  
