@@ -32,4 +32,4 @@ No on_tick code or entity tracking, very UPS friendly.
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)
 
-Locale: de, es, fr, ja, ru, and zh-CN  
+Locale: de, es, fr, ja, pt-BR, ru, and zh-CN  
