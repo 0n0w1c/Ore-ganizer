@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.8
+Date: 13.04.2025
+  Bugfixes:
+    - Corrected the technology research required for uranium mining
+    - Check to prevent placement of a Resource burner mining drill with ore that requires a fluid
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.2.7
 Date: 12.04.2025
   Bugfixes:

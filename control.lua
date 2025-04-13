@@ -310,7 +310,15 @@ local function on_entity_built(event)
             return
         end
 
-        if (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-electric-mining-drill-displayer") and resource_category == "hard-solid" then
+        if (entity_name == "rmd-electric-mining-drill-displayer"
+                or entity_name == "rmd-burner-mining-drill-displayer") and resource_category == "hard-solid" then
+            player.create_local_flying_text { text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true }
+            entity.destroy()
+            return_item_to_player(player, item_name, quality)
+            return
+        end
+
+        if entity_name == "rmd-burner-mining-drill-displayer" and is_required_fluid then
             player.create_local_flying_text { text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true }
             entity.destroy()
             return_item_to_player(player, item_name, quality)

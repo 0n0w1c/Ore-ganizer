@@ -9,7 +9,7 @@ COLLISION_MASK = { layers = { item = true, object = true, player = true, water_t
 FLUID_MINING_TECHONOLOGIES =
 {
     "fluid-mining", -- bztitanium
-    "uranium-processing"
+    "uranium-mining"
 }
 
 WATER_TILES =
