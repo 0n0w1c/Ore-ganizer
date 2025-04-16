@@ -1,28 +1,51 @@
 require("constants")
 
-local disabled_controls = {}
-
-for name, control in pairs(data.raw["autoplace-control"]) do
-    if control.category == "resource" then
-        disabled_controls[name] =
+if mods["space-age"] then
+    local aquilo = data.raw["planet"] and data.raw["planet"]["aquilo"]
+    if aquilo and aquilo.map_gen_settings then
+        aquilo.map_gen_settings.autoplace_settings.entity.settings["rmd-aquilo-islands"] = {}
+        aquilo.map_gen_settings.autoplace_controls =
         {
-            frequency = 0,
-            size = 0,
-            richness = 0
+            aquilo_crude_oil = {},
+            fluorine_vent = {},
+            lithium_brine = {},
+            rmd_aquilo_islands = {}
         }
     end
-end
 
-data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
-{
-    order = "z",
-    basic_settings =
+    data.raw["noise-expression"]["aquilo_island_peaks"] =
     {
-        starting_area = 1.0,
-        property_expression_names = { water = 1.0 },
-        autoplace_controls = disabled_controls
+        type = "noise-expression",
+        name = "aquilo_island_peaks",
+        expression =
+        "max(1.7 * (0.3 + aquilo_starting_island), 1.5 * (0.5 + max(aquilo_starting_crude_oil, aquilo_crude_oil_spots, aquilo_starting_lithium_brine, aquilo_lithium_brine_spots, aquilo_starting_flourine_vent, aquilo_flourine_vent_spots, aquilo_starting_rmd_aquilo_islands_spots, aquilo_rmd_aquilo_islands_spots)))"
     }
-}
+
+    local disabled_controls = {}
+
+    for name, control in pairs(data.raw["autoplace-control"]) do
+        if control.category == "resource" then
+            if name ~= "rmd_aquilo_islands" then
+                disabled_controls[name] =
+                {
+                    frequency = 0,
+                    size = 0,
+                    richness = 0
+                }
+            end
+        end
+    end
+
+    data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
+    {
+        order = "z",
+        basic_settings = {
+            starting_area = 1.0,
+            property_expression_names = { water = 1.0 },
+            autoplace_controls = disabled_controls,
+        }
+    }
+end
 
 if mods["bobmining"] then
     local items = data.raw["item"]

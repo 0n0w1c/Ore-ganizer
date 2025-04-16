@@ -719,7 +719,30 @@ local function cutscene_cancelled(event)
     player.character.insert { name = "rmd-burner-mining-drill", count = 1 }
 end
 
+local function remove_all_aquilo_island_resources(surface)
+    for _, entity in ipairs(surface.find_entities_filtered { name = "rmd-aquilo-islands", type = "resource" }) do
+        if entity.valid then entity.destroy() end
+    end
+end
+
+local function surface_created(event)
+    local surface = game.surfaces[event.surface_index]
+    if surface.name == "aquilo" then
+        remove_all_aquilo_island_resources(surface)
+    end
+end
+
+local function chunk_generated(event)
+    local surface = event.surface
+    if surface.name == "aquilo" then
+        remove_all_aquilo_island_resources(surface)
+    end
+end
+
 local function register_event_handlers()
+    script.on_event(defines.events.on_chunk_generated, chunk_generated)
+    script.on_event(defines.events.on_surface_created, surface_created)
+
     script.on_event(defines.events.on_player_created, player_created)
     script.on_event(defines.events.on_cutscene_cancelled, cutscene_cancelled)
     script.on_event(defines.events.on_player_changed_surface, player_changed_surface)

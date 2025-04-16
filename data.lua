@@ -1,5 +1,6 @@
 require("constants")
 
+
 local rmd_shortcut =
 {
     type                     = "shortcut",
@@ -22,3 +23,4 @@ require("prototypes/rmd-big-mining-drill")
 require("prototypes/rmd-pumpjack")
 require("prototypes/rmd-bob-water-miner")
 require("prototypes/rmd-oil_rig")
+require("prototypes/rmd-aquilo-islands")
