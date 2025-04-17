@@ -8,3 +8,5 @@ This resource setting will generate ice islands without resources, producing *va
 
 If active and left at its default settings, it will generate a few empty ice islands on Aquilo.  
 You can experiment with the setting in the *Map Generator* using the *Preview* option.
+
+Note: The *Richness* slider has no effect
