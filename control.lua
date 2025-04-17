@@ -276,21 +276,21 @@ local function on_entity_built(event)
     local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
 
     if is_pumpjack and not pumpjack_fluid then
-        player.create_local_flying_text { text = { "rmd-message.rmd-error-not-pumpjack-fluid", entity.localised_name }, create_at_cursor = true }
+        player.create_local_flying_text { text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true }
         entity.destroy()
         return_item_to_player(player, item_name, quality)
         return
     end
 
     if is_water_miner and not water_miner_fluid then
-        player.create_local_flying_text { text = { "rmd-message.rmd-error-not-water-miner-fluid", entity.localised_name }, create_at_cursor = true }
+        player.create_local_flying_text { text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true }
         entity.destroy()
         return_item_to_player(player, item_name, quality)
         return
     end
 
     if is_oil_rig and not oil_rig_fluid then
-        player.create_local_flying_text { text = { "rmd-message.rmd-error-not-oil_rig-fluid", entity.localised_name }, create_at_cursor = true }
+        player.create_local_flying_text { text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true }
         entity.destroy()
         return_item_to_player(player, item_name, quality)
         return
