@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 17.04.2025
+  Bugfixes:
+    - Removed placement restriction on Foundation tiles
+    - Readded meltable to the displayer's collision mask
+    - Removed player.print and localised string on invalid resource amount entered
+    - Removed on_player_created event handler
+    - Cargo Ships: Resource offshore oil rig can be placed on ammoniacal oceans
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.2.12
 Date: 17.04.2025
   Bugfixes:

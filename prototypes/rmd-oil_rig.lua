@@ -46,7 +46,7 @@ local rmd_mining_drill_displayer       =
     max_health                         = mining_drill.max_health,
     collision_box                      = mining_drill.collision_box,
     selection_box                      = mining_drill.selection_box,
-    collision_mask                     = { layers = { object = true, train = true } },
+    collision_mask                     = { layers = { meltable = true, object = true, train = true } },
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = TO_COPY,
     picture                            = mining_drill.base_picture

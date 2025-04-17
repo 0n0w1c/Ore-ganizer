@@ -4,20 +4,33 @@ MOD_PATH = "__" .. MOD_NAME .. "__"
 DISABLED = "disabled"
 FLUID_MULTIPLIER = 200
 
-COLLISION_MASK = { layers = { item = true, object = true, player = true, water_tile = true, is_object = true } }
+COLLISION_MASK =
+{
+    layers =
+    {
+        item = true,
+        object = true,
+        player = true,
+        water_tile = true,
+        meltable = true,
+        is_object = true
+    }
+}
 
 FLUID_MINING_TECHONOLOGIES =
 {
-    "fluid-mining", -- bztitanium
+    "fluid-mining",
     "uranium-mining"
 }
 
 WATER_TILES =
 {
-    ["water"] = true,
+    ["ammoniacal-ocean"] = true,
+    ["ammoniacal-ocean-2"] = true,
     ["deepwater"] = true,
-    ["water-green"] = true,
-    ["deepwater-green"] = true
+    ["deepwater-green"] = true,
+    ["water"] = true,
+    ["water-green"] = true
 }
 
 TILES_TO_EXCLUDE =
@@ -49,8 +62,7 @@ TILES_TO_EXCLUDE =
     ["wetland-pink-tentacle"] = true,
     ["wetland-red-tentacle"] = true,
     ["wetland-yumako"] = true,
-    ["space-platform-foundation"] = true,
-    ["foundation"] = true
+    ["space-platform-foundation"] = true
 }
 
 --[[
