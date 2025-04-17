@@ -1,6 +1,5 @@
 require("constants")
 
-
 local rmd_shortcut =
 {
     type                     = "shortcut",
