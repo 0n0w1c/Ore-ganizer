@@ -415,7 +415,7 @@ local function show_resource_selector_gui(player)
         local allow = storage.players[player.index].ignore_planetary_restrictions or
             (autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name])
 
-        if allow then
+        if allow and not prototype.hidden then
             table.insert(items, name)
         end
     end

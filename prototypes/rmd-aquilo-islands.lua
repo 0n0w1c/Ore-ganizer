@@ -56,17 +56,30 @@ data.extend({
     }
 })
 
-local aquilo_islands = util.table.deepcopy(data.raw.resource["fluorine-vent"])
+local aquilo_islands = util.table.deepcopy(data.raw["resource"]["fluorine-vent"])
+
 aquilo_islands.name = "rmd-aquilo-islands"
 aquilo_islands.icon = MOD_PATH .. "/graphics/icons/rmd-transparent-x64.png"
 aquilo_islands.icon_size = 64
 aquilo_islands.hidden = true
 aquilo_islands.map_color = { r = 0.5, g = 0.5, b = 0.5, a = 0 }
+aquilo_islands.stateless_visualisation = nil
 aquilo_islands.autoplace = {
     control = "rmd_aquilo_islands",
     probability_expression = "rmd_aquilo_islands_probability",
     richness_expression = "rmd_aquilo_islands_richness"
 }
+aquilo_islands.stages = {
+    sheet = {
+        filename = MOD_PATH .. "/graphics/icons/rmd-transparent-x64.png",
+        width = 64,
+        height = 64,
+        frame_count = 1,
+        variation_count = 1,
+        priority = "extra-high"
+    }
+}
+aquilo_islands.stage_counts = { 0 }
 aquilo_islands.minable = {
     mining_time = 1,
     results = {

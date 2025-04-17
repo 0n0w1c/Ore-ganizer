@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.11
+Date: 16.04.2025
+  Bugfixes:
+    - Exclude hidden resources from the Resource selector
+    - Replaced some visuals for Factoriopedia
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.2.10
 Date: 16.04.2025
   Bugfixes:
