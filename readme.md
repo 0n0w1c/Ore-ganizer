@@ -16,7 +16,7 @@ Construction is blocked for invalid combinations or if a required mining technol
 No on_tick code or entity tracking — very UPS-friendly.
 
 *New: Map generator preset — “No resources”*  
-And now includes an Aquilo Islands map generator resource setting.  
+And now includes the *Aquilo Islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
 
 ---
 
