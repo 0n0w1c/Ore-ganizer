@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.12
+Date: 17.04.2025
+  Bugfixes:
+    - Refactored placement rules to prevent construction on an excluded tile
+  Changes:
+    - Placement restrictions on various tiles are more vanilla-like
+      Placement on ice-platform is no longer permitted (reverting change 0.2.0)
+---------------------------------------------------------------------------------------------------
 Version: 0.2.11
 Date: 16.04.2025
   Bugfixes:

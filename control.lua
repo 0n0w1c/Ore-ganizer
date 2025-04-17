@@ -1,5 +1,27 @@
 require("constants")
 
+local function find_excluded_tile_under_entity(entity)
+    if not (entity and entity.valid) then return nil end
+
+    local surface = entity.surface
+    if not surface then return nil end
+
+    local box = entity.selection_box
+    local left_top = { x = math.floor(box.left_top.x), y = math.floor(box.left_top.y) }
+    local right_bottom = { x = math.ceil(box.right_bottom.x), y = math.ceil(box.right_bottom.y) }
+
+    for x = left_top.x, right_bottom.x - 1 do
+        for y = left_top.y, right_bottom.y - 1 do
+            local tile = surface.get_tile(x, y)
+            if TILES_TO_EXCLUDE[tile.name] then
+                return tile.name
+            end
+        end
+    end
+
+    return nil
+end
+
 local function get_mining_area(entity)
     if not (entity and entity.valid) then return {} end
 
@@ -204,6 +226,16 @@ local function destroy_offshore_oil(entity)
     return found
 end
 
+local function area_contains_excluded_tiles(surface, area)
+    local tiles = surface.find_tiles_filtered { area = area }
+
+    for _, tile in ipairs(tiles) do
+        if TILES_TO_EXCLUDE[tile.name] then return tile.name end
+    end
+
+    return nil
+end
+
 local function on_entity_built(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
@@ -331,6 +363,18 @@ local function on_entity_built(event)
             return_item_to_player(player, item_name, quality)
             return
         end
+    end
+
+    local excluded_tile = find_excluded_tile_under_entity(entity)
+    if excluded_tile then
+        player.create_local_flying_text
+        {
+            text = { "", { "rmd-message.rmd-error-tiles-not-allowed" }, " ", excluded_tile },
+            create_at_cursor = true
+        }
+        entity.destroy()
+        return_item_to_player(player, item_name, quality)
+        return
     end
 
     local resource_area = get_mining_area(entity)
