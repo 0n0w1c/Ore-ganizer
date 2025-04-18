@@ -149,6 +149,7 @@ local function return_item_to_player(player, item_name, quality)
     end
 end
 
+-- fix this, which research is required?
 local function has_any_fluid_mining_technology(force)
     for _, tech_name in pairs(FLUID_MINING_TECHONOLOGIES) do
         local tech = force.technologies[tech_name]
@@ -230,13 +231,25 @@ local function destroy_offshore_oil(entity)
     return found
 end
 
+local function get_or_create_player_data(player_index)
+    storage.players = storage.players or {}
+    local player_data = storage.players[player_index] or {}
+
+    player_data.ignore_planetary_restrictions = player_data.ignore_planetary_restrictions or false
+    player_data.resource_amount = player_data.resource_amount or 5000
+    player_data.selected_resource = player_data.selected_resource or DISABLED
+
+    storage.players[player_index] = player_data
+    return player_data
+end
+
 local function on_entity_built(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
     local player = event.player_index and game.get_player(event.player_index)
         or (entity.last_user and entity.last_user.valid and entity.last_user.is_player() and entity.last_user)
-    if not player or not storage.players[player.index] then return end
+    if not player then return end
 
     local entity_name = entity.name
     local is_displayer = string.find(entity_name, "^rmd%-.+%-displayer$")
@@ -247,8 +260,20 @@ local function on_entity_built(event)
     local position = entity.position
     local direction = entity.direction
 
+    get_or_create_player_data(player.index)
+
     local item_name = string.gsub(entity_name, "-displayer$", "")
+
     local resource_name = storage.players[player.index].selected_resource
+    if not resource_name then resource_name = DISABLED end
+
+    if resource_name == DISABLED then
+        player.create_local_flying_text({ text = { "rmd-message.rmd-error-no-resource", entity.localised_name }, create_at_cursor = true })
+        entity.destroy()
+        return_item_to_player(player, item_name, quality)
+        return
+    end
+
     local quality = entity.quality or nil
 
     if entity.surface.planet then
@@ -423,22 +448,12 @@ local function on_entity_mined(event)
     remove_resources(surface, resource_area)
 end
 
-local function get_or_create_player_data(player_index)
-    storage.players = storage.players or {}
-    local player_data = storage.players[player_index] or {}
-
-    player_data.ignore_planetary_restrictions = player_data.ignore_planetary_restrictions or false
-    player_data.resource_amount = player_data.resource_amount or 5000
-    player_data.selected_resource = player_data.selected_resource or DISABLED
-
-    storage.players[player_index] = player_data
-    return player_data
-end
-
 local function show_resource_selector_gui(player)
     if player.gui.screen.resource_selector_frame then
         player.gui.screen.resource_selector_frame.destroy()
     end
+
+    get_or_create_player_data(player.index)
 
     local surface = player.surface
     local map_gen_settings = surface.map_gen_settings
@@ -449,8 +464,14 @@ local function show_resource_selector_gui(player)
 
     for name, prototype in pairs(resource_prototypes) do
         local autoplace_settings = map_gen_settings and map_gen_settings.autoplace_settings
-        local allow = storage.players[player.index].ignore_planetary_restrictions or
-            (autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name])
+
+        local allow = false
+        local player_settings = storage.players and storage.players[player.index]
+        if player_settings and player_settings.ignore_planetary_restrictions == true then
+            allow = true
+        elseif autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name] then
+            allow = true
+        end
 
         if allow and not prototype.hidden then
             table.insert(items, name)

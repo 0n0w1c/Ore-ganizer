@@ -20,6 +20,7 @@ COLLISION_MASK =
 FLUID_MINING_TECHONOLOGIES =
 {
     "fluid-mining",
+    "mining-with-fluid",
     "uranium-mining"
 }
 

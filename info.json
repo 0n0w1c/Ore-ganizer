@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -11,6 +11,7 @@
         "(?) bobmining",
         "(?) bztitanium",
         "(?) cargo-ships",
+        "(?) pypostprocessing",
         "(?) Subsurface"
     ]
 }

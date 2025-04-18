@@ -112,7 +112,7 @@ if mining_drill then
 end
 
 mining_drill = mining_drills["pumpjack"]
-if mining_drill then
+if mining_drill and not mods["pypostprocessing"] then
     mining_drills["rmd-pumpjack"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
 end
 
@@ -124,4 +124,15 @@ end
 mining_drill = mining_drills["bob-water-miner-1"]
 if mods["bobmining"] and mining_drill then
     mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
+end
+
+if mods["pypostprocessing"] then
+    local technology = data.raw["technology"]["electric-mining-drill"]
+    local effect =
+    {
+        recipe = "rmd-electric-mining-drill",
+        type = "unlock-recipe"
+    }
+
+    table.insert(technology.effects, effect)
 end
