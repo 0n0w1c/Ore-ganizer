@@ -1,7 +1,7 @@
 ## Why was the Aquilo Island map generator resource added?
 
 Aquilo map generation works a little differently: ice islands are placed wherever resources are generated.  
-So if you choose the *No resources* preset, no islands will be created on Aquilo.  
+So if the *No resources* preset is selected, no islands will be created on Aquilo.  
 This resource setting will generate ice islands without resources, producing *vanilla-like* map generation.  
 
 ## What effect will it have with other map presets?
