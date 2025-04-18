@@ -28,7 +28,7 @@ And now includes the *Aquilo Islands* map generator resource setting (see [FAQ](
 
 #### Important notes:
 * Undo/redo is not supported  
-* Replaces existing resources  
+* Will replace existing resources  
 * Cargo Ships: Placing the Resource oil rig on offshore oil removes the offshore oil
 
 ---
