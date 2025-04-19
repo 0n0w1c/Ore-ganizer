@@ -17,11 +17,16 @@ COLLISION_MASK =
     }
 }
 
+CATEGORIES = {
+    ["basic-fluid"] = true,
+    ["basic-solid"] = true,
+    ["hard-solid"] = true
+}
+
 FLUID_MINING_TECHONOLOGIES =
 {
-    "fluid-mining",
-    "mining-with-fluid",
-    "uranium-mining"
+    ["bztitanium"] = "fluid-mining",
+    ["base"] = "uranium-mining"
 }
 
 WATER_TILES =

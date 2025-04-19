@@ -149,16 +149,16 @@ local function return_item_to_player(player, item_name, quality)
     end
 end
 
--- fix this, which research is required?
-local function has_any_fluid_mining_technology(force)
-    for _, tech_name in pairs(FLUID_MINING_TECHONOLOGIES) do
-        local tech = force.technologies[tech_name]
-        if tech and tech.researched then
-            return true
-        end
+local function is_fluid_mining_researched(force)
+    local technology = FLUID_MINING_TECHONOLOGIES["base"]
+
+    if script.active_mods["bztitanium"] then
+        technology = FLUID_MINING_TECHONOLOGIES["bztitanium"]
     end
 
-    return false
+    local researched = force.technologies[technology].researched
+
+    return researched
 end
 
 local function is_displayer_drill(entity_name)
@@ -243,6 +243,12 @@ local function get_or_create_player_data(player_index)
     return player_data
 end
 
+local function destroy_and_return(player, entity, item_name, quality, message)
+    player.create_local_flying_text({ text = { message, entity.localised_name }, create_at_cursor = true })
+    entity.destroy()
+    return_item_to_player(player, item_name, quality)
+end
+
 local function on_entity_built(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
@@ -259,35 +265,28 @@ local function on_entity_built(event)
     local force = entity.force
     local position = entity.position
     local direction = entity.direction
+    local quality = entity.quality
 
     get_or_create_player_data(player.index)
 
     local item_name = string.gsub(entity_name, "-displayer$", "")
-
     local resource_name = storage.players[player.index].selected_resource
-    if not resource_name then resource_name = DISABLED end
 
-    if resource_name == DISABLED then
-        player.create_local_flying_text({ text = { "rmd-message.rmd-error-no-resource", entity.localised_name }, create_at_cursor = true })
-        entity.destroy()
-        return_item_to_player(player, item_name, quality)
-        return
+    local prototype = prototypes.entity[resource_name]
+    if not (prototype and prototype.type == "resource") then
+        resource_name = DISABLED
     end
 
-    local quality = entity.quality or nil
+    if resource_name == DISABLED then
+        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-no-resource")
+    end
 
     if entity.surface.planet then
         if resource_name == DISABLED then
-            player.create_local_flying_text({ text = { "rmd-message.rmd-error-no-resource", entity.localised_name }, create_at_cursor = true })
-            entity.destroy()
-            return_item_to_player(player, item_name, quality)
-            return
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-no-resource")
         elseif resource_name == "offshore-oil" then
             if destroy_offshore_oil(entity) then
-                player.create_local_flying_text({ text = { "rmd-message.rmd-offshore-oil-removed", entity.localised_name }, create_at_cursor = true })
-                entity.destroy()
-                return_item_to_player(player, item_name, quality)
-                return
+                return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-offshore-oil-removed")
             end
         end
     else
@@ -308,8 +307,9 @@ local function on_entity_built(event)
 
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
     local resource_prototype = resource_prototypes[resource_name]
-
-    if not resource_prototype or resource_prototype.type ~= "resource" then return end
+    if not resource_prototype or resource_prototype.type ~= "resource" then
+        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
+    end
 
     local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
     local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
@@ -321,65 +321,46 @@ local function on_entity_built(event)
     local is_drill = is_displayer_drill(entity_name)
 
     if is_pumpjack and not pumpjack_fluid then
-        player.create_local_flying_text({ text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true })
-        entity.destroy()
-        return_item_to_player(player, item_name, quality)
-        return
+        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
     end
 
     if is_water_miner and not water_miner_fluid then
-        player.create_local_flying_text({ text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true })
-        entity.destroy()
-        return_item_to_player(player, item_name, quality)
-        return
+        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
     end
 
     if is_oil_rig and not oil_rig_fluid then
-        player.create_local_flying_text({ text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true })
-        entity.destroy()
-        return_item_to_player(player, item_name, quality)
-        return
+        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
     end
 
     if is_oil_rig and not on_water(entity) then
-        player.create_local_flying_text({ text = { "rmd-message.rmd-error-not-on-land", entity.localised_name }, create_at_cursor = true })
-        entity.destroy()
-        return_item_to_player(player, item_name, quality)
-        return
+        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-not-on-land")
     end
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
+        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
-        local has_fluid_mining = has_any_fluid_mining_technology(force)
+        local is_researched = is_fluid_mining_researched(force)
 
-        if is_fluid_resource then
-            player.create_local_flying_text({ text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true })
-            entity.destroy()
-            return_item_to_player(player, item_name, quality)
-            return
+        if not is_minable then
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if (entity_name == "rmd-electric-mining-drill-displayer"
-                or entity_name == "rmd-burner-mining-drill-displayer") and resource_category == "hard-solid" then
-            player.create_local_flying_text({ text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true })
-            entity.destroy()
-            return_item_to_player(player, item_name, quality)
-            return
+        if is_fluid_resource then
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
         if entity_name == "rmd-burner-mining-drill-displayer" and is_required_fluid then
-            player.create_local_flying_text({ text = { "rmd-message.rmd-error-invalid-selection", entity.localised_name }, create_at_cursor = true })
-            entity.destroy()
-            return_item_to_player(player, item_name, quality)
-            return
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if (is_required_fluid and not has_fluid_mining) then
-            player.create_local_flying_text({ text = { "rmd-message.rmd-error-research-required", entity.localised_name }, create_at_cursor = true })
-            entity.destroy()
-            return_item_to_player(player, item_name, quality)
-            return
+        if (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer")
+            and resource_category == "hard-solid" then
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
+        end
+
+        if (is_required_fluid and not is_researched) then
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-research-required")
         end
     end
 
@@ -403,17 +384,15 @@ local function on_entity_built(event)
     remove_resources(surface, resource_area)
     place_resources(surface, resource_area, resource_name, player.index)
     surface.create_entity
-    (
-        {
-            name = item_name,
-            force = force,
-            position = position,
-            direction = direction,
-            create_build_effect_smoke = true,
-            raise_built = true,
-            quality = quality
-        }
-    )
+    ({
+        name = item_name,
+        force = force,
+        position = position,
+        direction = direction,
+        create_build_effect_smoke = true,
+        raise_built = true,
+        quality = quality
+    })
 end
 
 local function on_entity_mined(event)
@@ -593,21 +572,24 @@ local function show_resource_selector_gui(player)
 
     for _, item_name in pairs(items) do
         if item_name ~= DISABLED then
-            local style = "slot_button"
-            if item_name == selected then
-                style = "slot_sized_button_pressed"
+            local prototype = prototypes.entity[item_name]
+            if prototype and prototype.type == "resource" then
+                local category = prototype.resource_category
+                if CATEGORIES[category] then
+                    local style = (item_name == selected) and "slot_sized_button_pressed" or "slot_button"
+
+                    local button = grid.add
+                        {
+                            type = "choose-elem-button",
+                            name = "resource_selector_button_" .. item_name,
+                            elem_type = "entity",
+                            entity = item_name,
+                            style = style,
+                        }
+
+                    button.locked = true
+                end
             end
-
-            local button = grid.add
-                {
-                    type = "choose-elem-button",
-                    name = "resource_selector_button_" .. item_name,
-                    elem_type = "entity",
-                    entity = item_name,
-                    style = style,
-                }
-
-            button.locked = true
         end
     end
 

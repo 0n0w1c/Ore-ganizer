@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.2
+Date: 18.04.2025
+  Bugfixes:
+    - Refactored flying text, next_upgrade assignment, and technology research required
+    - Added check against the resource category, limit Resource selector to vanilla-like resources
+    - Added check if currently selected resource is still exists
+  Changes:
+    - Flagged Pyanodons as incompatible
+---------------------------------------------------------------------------------------------------
 Version: 0.3.1
 Date: 17.04.2025
   Bugfixes:

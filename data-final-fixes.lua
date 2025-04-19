@@ -103,36 +103,35 @@ if mods["bobmining"] then
     }
 end
 
+local function resolve_upgrade_target(base_name)
+    local base = data.raw["mining-drill"][base_name]
+
+    if base and base.next_upgrade then
+        local upgrade_name = base.next_upgrade
+        local upgrade = upgrade_name and data.raw["mining-drill"][upgrade_name]
+
+        if upgrade and not data.raw["item"][upgrade_name].hidden then
+            return upgrade_name
+        end
+    end
+
+    return base.name
+end
+
 local mining_drills = data.raw["mining-drill"]
-local mining_drill
 
-mining_drill = mining_drills["electric-mining-drill"]
-if mining_drill then
-    mining_drills["rmd-electric-mining-drill"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
+if mining_drills["pumpjack"] and not mining_drills["pumpjack"].hidden then
+    mining_drills["rmd-pumpjack"].next_upgrade = resolve_upgrade_target("pumpjack")
 end
 
-mining_drill = mining_drills["pumpjack"]
-if mining_drill and not mods["pypostprocessing"] then
-    mining_drills["rmd-pumpjack"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
+if mining_drills["electric-mining-drill"] and not mining_drills["electric-mining-drill"].hidden then
+    mining_drills["rmd-electric-mining-drill"].next_upgrade = resolve_upgrade_target("electric-mining-drill")
 end
 
-mining_drill = mining_drills["big-mining-drill"]
-if mods["space-age"] and mining_drill then
-    mining_drills["rmd-big-mining-drill"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
+if mods["space-age"] and mining_drills["big-mining-drill"] and not mining_drills["big-mining-drill"].hidden then
+    mining_drills["rmd-big-mining-drill"].next_upgrade = resolve_upgrade_target("big-mining-drill")
 end
 
-mining_drill = mining_drills["bob-water-miner-1"]
-if mods["bobmining"] and mining_drill then
-    mining_drills["rmd-bob-water-miner"].next_upgrade = mining_drill.next_upgrade or mining_drill.name
-end
-
-if mods["pypostprocessing"] then
-    local technology = data.raw["technology"]["electric-mining-drill"]
-    local effect =
-    {
-        recipe = "rmd-electric-mining-drill",
-        type = "unlock-recipe"
-    }
-
-    table.insert(technology.effects, effect)
+if mods["bobmining"] and mining_drills["bob-water-miner-1"] and not mining_drills["bob-water-miner-1"].hidden then
+    mining_drills["rmd-bob-water-miner"].next_upgrade = resolve_upgrade_target("bob-water-miner-1")
 end
