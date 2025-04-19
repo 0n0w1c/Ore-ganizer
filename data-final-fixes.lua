@@ -124,6 +124,10 @@ if mining_drills["pumpjack"] and not mining_drills["pumpjack"].hidden then
     mining_drills["rmd-pumpjack"].next_upgrade = resolve_upgrade_target("pumpjack")
 end
 
+if mining_drills["burner-mining-drill"] and not mining_drills["burner-mining-drill"].hidden then
+    mining_drills["rmd-burner-mining-drill"].next_upgrade = resolve_upgrade_target("burner-mining-drill")
+end
+
 if mining_drills["electric-mining-drill"] and not mining_drills["electric-mining-drill"].hidden then
     mining_drills["rmd-electric-mining-drill"].next_upgrade = resolve_upgrade_target("electric-mining-drill")
 end
