@@ -42,4 +42,4 @@ And now includes the *Aquilo Islands* map generator resource setting (see [FAQ](
 ---
 
 #### Alternate locales:  
-cs, de, es, fr, ja, pl, pt-BR, ru, tr, uk, zh-CN, and zh-TW
+`cs`, `de`, `es`, `fr`, `it`, `ja`, `pl`, `pt-BR`, `ru`, `tr`, `uk`, `zh-CN`, `zh-TW`  

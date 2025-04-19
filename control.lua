@@ -574,8 +574,8 @@ local function show_resource_selector_gui(player)
         if item_name ~= DISABLED then
             local prototype = prototypes.entity[item_name]
             if prototype and prototype.type == "resource" then
-                --local category = prototype.resource_category
-                --if CATEGORIES[category] then
+                local category = prototype.resource_category
+                if CATEGORIES[category] then
                     local style = (item_name == selected) and "slot_sized_button_pressed" or "slot_button"
 
                     local button = grid.add
@@ -588,7 +588,7 @@ local function show_resource_selector_gui(player)
                         }
 
                     button.locked = true
-                --end
+                end
             end
         end
     end

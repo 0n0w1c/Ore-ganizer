@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.5
+Date: 19.04.2025
+  Bugfixes:
+    - Reactivated the check against the resource category
+  Changes:
+    - Added locale translation (ChatGPT) it
+    - Flagged Cursed Filter Mining Drill as incompatible
+---------------------------------------------------------------------------------------------------
 Version: 0.3.4
 Date: 19.04.2025
   Bugfixes:
