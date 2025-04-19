@@ -22,8 +22,7 @@ local rmd_mining_drill_displayer       =
     icons                              =
     {
         {
-            icon = data.raw["item"]["stone"].icon,
-            icon_size = data.raw["item"]["stone"].icon_size
+            icon = STONE_ICON
         },
         {
             icon = "__cargo-ships-graphics__/graphics/icons/oil_rig.png",
@@ -59,8 +58,7 @@ rmd_mining_drill_entity.localised_name = { "", { "item-name." .. NAME } }
 rmd_mining_drill_entity.icons          =
 {
     {
-        icon = data.raw["item"]["stone"].icon,
-        icon_size = data.raw["item"]["stone"].icon_size
+        icon = STONE_ICON
     },
     {
         icon = "__cargo-ships-graphics__/graphics/icons/oil_rig.png",
@@ -78,8 +76,7 @@ rmd_mining_drill_item.localised_name   = { "", { "item-name." .. NAME } }
 rmd_mining_drill_item.icons            =
 {
     {
-        icon = data.raw["item"]["stone"].icon,
-        icon_size = data.raw["item"]["stone"].icon_size
+        icon = STONE_ICON
     },
     {
         icon = "__cargo-ships-graphics__/graphics/icons/oil_rig.png",

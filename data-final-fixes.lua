@@ -53,7 +53,7 @@ if mods["bobmining"] then
     items["rmd-electric-mining-drill"].icons =
     {
         {
-            icon = items["stone"].icon,
+            icon = STONE_ICON
         },
         {
             icon = items["electric-mining-drill"].icon,
@@ -66,7 +66,7 @@ if mods["bobmining"] then
         items["rmd-bob-water-miner"].icons =
         {
             {
-                icon = items["stone"].icon,
+                icon = STONE_ICON
             },
             {
                 icon = items["bob-water-miner-1"].icon,
@@ -80,7 +80,7 @@ if mods["bobmining"] then
     mining_drill.icons =
     {
         {
-            icon = items["stone"].icon,
+            icon = STONE_ICON
         },
         {
             icon = items["electric-mining-drill"].icon,
@@ -93,7 +93,7 @@ if mods["bobmining"] then
     simple_entity.icons =
     {
         {
-            icon = items["stone"].icon,
+            icon = STONE_ICON
         },
         {
             icon = items["electric-mining-drill"].icon,

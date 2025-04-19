@@ -23,7 +23,7 @@ local rmd_mining_drill_displayer       =
     icons                              =
     {
         {
-            icon = data.raw["item"]["stone"].icon,
+            icon = STONE_ICON
         },
         {
             icon = mining_drill.icon,
@@ -509,7 +509,7 @@ rmd_mining_drill_entity.localised_name = { "", { "item-name." .. NAME } }
 rmd_mining_drill_entity.icons          =
 {
     {
-        icon = data.raw["item"]["stone"].icon,
+        icon = STONE_ICON
     },
     {
         icon = mining_drill.icon,
@@ -526,7 +526,7 @@ rmd_mining_drill_item.localised_name   = { "", { "item-name." .. NAME } }
 rmd_mining_drill_item.icons            =
 {
     {
-        icon = data.raw["item"]["stone"].icon,
+        icon = STONE_ICON
     },
     {
         icon = mining_drill.icon,
