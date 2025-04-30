@@ -1,8 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.7
+Date: 30.04.2025
+  Bugfixes:
+    - Update fast_replaceable_group when assigning the next_upgrade
+  Changes:
+    - The No resources map generator preset is available without Space Age
+    - Flagged Krastorio2 as incompatible, modifies resources
+---------------------------------------------------------------------------------------------------
 Version: 0.3.6
 Date: 19.04.2025
   Bugfixes:
-    - Mod compatibility: load error due to item.stone or icon being removed
+    - Mod compatibility: prevent load error due to stone item or icon being removed by another mod
   Changes:
     - None
 ---------------------------------------------------------------------------------------------------

@@ -20,36 +20,35 @@ if mods["space-age"] then
         expression =
         "max(1.7 * (0.3 + aquilo_starting_island), 1.5 * (0.5 + max(aquilo_starting_crude_oil, aquilo_crude_oil_spots, aquilo_starting_lithium_brine, aquilo_lithium_brine_spots, aquilo_starting_flourine_vent, aquilo_flourine_vent_spots, aquilo_starting_rmd_aquilo_islands_spots, aquilo_rmd_aquilo_islands_spots)))"
     }
+end
 
-    local disabled_controls = {}
+local disabled_controls = {}
 
-    for name, control in pairs(data.raw["autoplace-control"]) do
-        if control.category == "resource" then
-            if name ~= "rmd_aquilo_islands" then
-                disabled_controls[name] =
-                {
-                    frequency = 0,
-                    size = 0,
-                    richness = 0
-                }
-            end
+for name, control in pairs(data.raw["autoplace-control"]) do
+    if control.category == "resource" then
+        if name ~= "rmd_aquilo_islands" then
+            disabled_controls[name] =
+            {
+                frequency = 0,
+                size = 0,
+                richness = 0
+            }
         end
     end
-
-    data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
-    {
-        order = "z",
-        basic_settings = {
-            starting_area = 1.0,
-            property_expression_names = { water = 1.0 },
-            autoplace_controls = disabled_controls,
-        }
-    }
 end
+
+data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
+{
+    order = "z",
+    basic_settings = {
+        starting_area = 1.0,
+        property_expression_names = { water = 1.0 },
+        autoplace_controls = disabled_controls,
+    }
+}
 
 if mods["bobmining"] then
     local items = data.raw["item"]
-
     items["rmd-electric-mining-drill"].icons =
     {
         {
@@ -122,20 +121,30 @@ local mining_drills = data.raw["mining-drill"]
 
 if mining_drills["pumpjack"] and not mining_drills["pumpjack"].hidden then
     mining_drills["rmd-pumpjack"].next_upgrade = resolve_upgrade_target("pumpjack")
+    mining_drills["rmd-pumpjack"].fast_replaceable_group =
+        mining_drills["pumpjack"].fast_replaceable_group
 end
 
 if mining_drills["burner-mining-drill"] and not mining_drills["burner-mining-drill"].hidden then
     mining_drills["rmd-burner-mining-drill"].next_upgrade = resolve_upgrade_target("burner-mining-drill")
+    mining_drills["rmd-burner-mining-drill"].fast_replaceable_group =
+        mining_drills["burner-mining-drill"].fast_replaceable_group
 end
 
 if mining_drills["electric-mining-drill"] and not mining_drills["electric-mining-drill"].hidden then
     mining_drills["rmd-electric-mining-drill"].next_upgrade = resolve_upgrade_target("electric-mining-drill")
+    mining_drills["rmd-electric-mining-drill"].fast_replaceable_group =
+        mining_drills["electric-mining-drill"].fast_replaceable_group
 end
 
 if mods["space-age"] and mining_drills["big-mining-drill"] and not mining_drills["big-mining-drill"].hidden then
     mining_drills["rmd-big-mining-drill"].next_upgrade = resolve_upgrade_target("big-mining-drill")
+    mining_drills["rmd-big-mining-drill"].fast_replaceable_group =
+        mining_drills["electric-big-drill"].fast_replaceable_group
 end
 
 if mods["bobmining"] and mining_drills["bob-water-miner-1"] and not mining_drills["bob-water-miner-1"].hidden then
     mining_drills["rmd-bob-water-miner"].next_upgrade = resolve_upgrade_target("bob-water-miner-1")
+    mining_drills["rmd-bob-water-miner"].fast_replaceable_group =
+        mining_drills["bob-water-miner-1"].fast_replaceable_group
 end
