@@ -140,7 +140,7 @@ end
 if mods["space-age"] and mining_drills["big-mining-drill"] and not mining_drills["big-mining-drill"].hidden then
     mining_drills["rmd-big-mining-drill"].next_upgrade = resolve_upgrade_target("big-mining-drill")
     mining_drills["rmd-big-mining-drill"].fast_replaceable_group =
-        mining_drills["electric-big-drill"].fast_replaceable_group
+        mining_drills["big-mining-drill"].fast_replaceable_group
 end
 
 if mods["bobmining"] and mining_drills["bob-water-miner-1"] and not mining_drills["bob-water-miner-1"].hidden then
