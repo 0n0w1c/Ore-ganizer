@@ -4,7 +4,7 @@ Date: 11.05.2025
   Bugfixes:
     - None
   Changes:
-    - Changed Aquilo Islands to Ice Islands in the map generator settings
+    - Changed Aquilo islands to Ice islands in the map generator settings
     - Flagged Krastorio2 Spaced Out as incompatible, same as K2, modifies resources
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.8
