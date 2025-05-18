@@ -6,6 +6,11 @@ STONE_ICON = "__base__/graphics/icons/stone.png"
 DISABLED = "disabled"
 FLUID_MULTIPLIER = 200
 
+EXCLUDED_CONTROLS =
+{
+    ["rmd_aquilo_islands"] = true
+}
+
 COLLISION_MASK =
 {
     layers =
@@ -19,7 +24,8 @@ COLLISION_MASK =
     }
 }
 
-CATEGORIES = {
+CATEGORIES =
+{
     ["basic-fluid"] = true,
     ["basic-solid"] = true,
     ["hard-solid"] = true

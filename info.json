@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.3.9",
+    "version": "0.4.0",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -12,9 +12,9 @@
         "? bztitanium",
         "? cargo-ships",
         "? Subsurface",
+        "(?) Krastorio2",
+        "(?) Krastorio2-spaced-out",
         "! Cursed-FMD",
-        "! Krastorio2",
-        "! Krastorio2-spaced-out",
         "! pypostprocessing",
         "! pyrawores"
     ]

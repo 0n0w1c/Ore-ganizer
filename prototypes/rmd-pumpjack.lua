@@ -1,3 +1,5 @@
+if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then return end
+
 require("constants")
 
 local BASE_GRAPHICS                    = "__base__/graphics/"

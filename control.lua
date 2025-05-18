@@ -452,6 +452,10 @@ local function show_resource_selector_gui(player)
             allow = true
         end
 
+        if name == "kr-mineral-water" then
+            allow = false
+        end
+
         if allow and not prototype.hidden then
             table.insert(items, name)
         end

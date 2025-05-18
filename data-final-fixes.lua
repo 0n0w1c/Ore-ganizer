@@ -22,11 +22,26 @@ if mods["space-age"] then
     }
 end
 
+if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
+    EXCLUDED_CONTROLS["crude-oil"] = true
+    EXCLUDED_CONTROLS["kr-imersite"] = true
+    EXCLUDED_CONTROLS["kr-mineral-water"] = true
+
+    local recipe = data.raw["recipe"]["rmd-electric-mining-drill"]
+    recipe.ingredients = data.raw["recipe"]["electric-mining-drill"].ingredients
+    if mods["quality"] then
+        local recycling = require("__quality__/prototypes/recycling")
+
+        recycling.generate_recycling_recipe(recipe)
+        recipe.auto_recycle = nil
+    end
+end
+
 local disabled_controls = {}
 
 for name, control in pairs(data.raw["autoplace-control"]) do
     if control.category == "resource" then
-        if name ~= "rmd_aquilo_islands" then
+        if not EXCLUDED_CONTROLS[name] then
             disabled_controls[name] =
             {
                 frequency = 0,
@@ -40,27 +55,28 @@ end
 data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
 {
     order = "z",
-    basic_settings = {
+    basic_settings =
+    {
         starting_area = 1.0,
         property_expression_names = { water = 1.0 },
         autoplace_controls = disabled_controls,
     }
 }
 
-if mods["bobmining"] then
-    local items = data.raw["item"]
-    items["rmd-electric-mining-drill"].icons =
+local items = data.raw["item"]
+items["rmd-electric-mining-drill"].icons =
+{
     {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = items["electric-mining-drill"].icon,
-            icon_size = items["electric-mining-drill"].icon_size,
-            shift = { -8, -8 }
-        }
+        icon = STONE_ICON
+    },
+    {
+        icon = items["electric-mining-drill"].icon,
+        icon_size = items["electric-mining-drill"].icon_size,
+        shift = { -8, -8 }
     }
+}
 
+if mods["bobmining"] then
     if items["bob-water-miner-1"] then
         items["rmd-bob-water-miner"].icons =
         {
@@ -119,10 +135,12 @@ end
 
 local mining_drills = data.raw["mining-drill"]
 
-if mining_drills["pumpjack"] and not mining_drills["pumpjack"].hidden then
-    mining_drills["rmd-pumpjack"].next_upgrade = resolve_upgrade_target("pumpjack")
-    mining_drills["rmd-pumpjack"].fast_replaceable_group =
-        mining_drills["pumpjack"].fast_replaceable_group
+if not mods["Krastorio2"] and not mods["Krastorio2-spaced-out"] then
+    if mining_drills["pumpjack"] and not mining_drills["pumpjack"].hidden then
+        mining_drills["rmd-pumpjack"].next_upgrade = resolve_upgrade_target("pumpjack")
+        mining_drills["rmd-pumpjack"].fast_replaceable_group =
+            mining_drills["pumpjack"].fast_replaceable_group
+    end
 end
 
 if mining_drills["burner-mining-drill"] and not mining_drills["burner-mining-drill"].hidden then
