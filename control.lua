@@ -28,13 +28,15 @@ local function get_mining_area(entity)
     local position = entity.position
     local entity_name = entity.name
 
-    local prototype_name = entity_name
+    local prototype_name = ""
     if string.sub(entity_name, 1, 23) == "rmd-burner-mining-drill" then
         prototype_name = "burner-mining-drill"
     elseif string.sub(entity_name, 1, 25) == "rmd-electric-mining-drill" then
         prototype_name = "electric-mining-drill"
     elseif string.sub(entity_name, 1, 20) == "rmd-big-mining-drill" then
         prototype_name = "big-mining-drill"
+    elseif string.sub(entity_name, 1, 32) == "rmd-kr-electric-mining-drill-mk2" then
+        prototype_name = "kr-electric-mining-drill-mk2"
     elseif string.sub(entity_name, 1, 12) == "rmd-pumpjack" then
         prototype_name = "pumpjack"
     elseif string.sub(entity_name, 1, 19) == "rmd-bob-water-miner" then
@@ -42,6 +44,8 @@ local function get_mining_area(entity)
     elseif string.sub(entity_name, 1, 11) == "rmd-oil_rig" then
         prototype_name = "pumpjack"
     end
+
+    if prototype_name == "" then return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } } end
 
     local prototype = prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })
 
@@ -402,6 +406,7 @@ local function on_entity_mined(event)
     if entity.name ~= "rmd-burner-mining-drill" and
         entity.name ~= "rmd-electric-mining-drill" and
         entity.name ~= "rmd-big-mining-drill" and
+        entity.name ~= "rmd-kr-electric-mining-drill-mk2" and
         entity.name ~= "rmd-pumpjack" and
         entity.name ~= "rmd-bob-water-miner" then
         return

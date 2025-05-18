@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 18.05.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Krastorio2 and Krastorio2 Spaced Out: Added the Resource electric mining drill MK2
+---------------------------------------------------------------------------------------------------
 Version: 0.4.0
 Date: 17.05.2025
   Bugfixes:

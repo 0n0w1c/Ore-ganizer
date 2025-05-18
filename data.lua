@@ -18,6 +18,7 @@ data.extend({ rmd_shortcut })
 
 require("prototypes/rmd-burner-mining-drill")
 require("prototypes/rmd-electric-mining-drill")
+require("prototypes/rmd-kr-electric-mining-drill-mk2")
 require("prototypes/rmd-big-mining-drill")
 require("prototypes/rmd-pumpjack")
 require("prototypes/rmd-bob-water-miner")
