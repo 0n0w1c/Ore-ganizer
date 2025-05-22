@@ -1,6 +1,6 @@
 require("constants")
 
-if mods["space-age"] then
+if mods["space-age"] and not mods["EverythingOnNauvis"] then
     local aquilo = data.raw["planet"] and data.raw["planet"]["aquilo"]
     if aquilo and aquilo.map_gen_settings then
         aquilo.map_gen_settings.autoplace_settings.entity.settings["rmd-aquilo-islands"] = {}
@@ -37,6 +37,11 @@ if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
     end
 end
 
+if mods["EverythingOnNauvis"] then
+    EXCLUDED_CONTROLS["ammonia_ocean"] = true
+    EXCLUDED_CONTROLS["vulcanus_volcanism"] = true
+end
+
 local disabled_controls = {}
 
 for name, control in pairs(data.raw["autoplace-control"]) do
@@ -57,8 +62,6 @@ data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
     order = "z",
     basic_settings =
     {
-        starting_area = 1.0,
-        property_expression_names = { water = 1.0 },
         autoplace_controls = disabled_controls,
     }
 }

@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.2
+Date: 21.05.2025
+  Bugfixes:
+    - Remove richness from the aquilo islands autoplace-control
+  Changes:
+    - Added support for Everything On Nauvis
+    - Removed the Richness slider for Ice islands map generator settings
+---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 18.05.2025
   Bugfixes:

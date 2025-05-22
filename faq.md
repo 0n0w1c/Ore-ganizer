@@ -9,4 +9,3 @@ This resource setting will generate islands without resources, producing *vanill
 If active and default settings, it will generate a few empty islands on Aquilo.  
 You can experiment with the setting in the *Map Generator* using the *Preview* option.
 
-*Note:* The *Richness* slider has no effect.  

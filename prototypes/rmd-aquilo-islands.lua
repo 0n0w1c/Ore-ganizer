@@ -1,4 +1,4 @@
-if not mods["space-age"] then return end
+if not mods["space-age"] or mods["EverythingOnNauvis"] then return end
 
 local util = require("util")
 
@@ -26,7 +26,6 @@ data.extend({
         localised_name = { "autoplace-control-name.rmd_aquilo_islands" },
         localised_description = { "autoplace-control-description.rmd_aquilo_islands" },
         category = "resource",
-        richness = true,
         order = "z[rmd-aquilo-islands]"
     }
 })

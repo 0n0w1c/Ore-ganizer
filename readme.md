@@ -35,9 +35,10 @@ And now includes the *Ice islands* map generator resource setting (see [FAQ](htt
 
 #### Supported mods:
 [Bob's Mining](https://mods.factorio.com/mod/bobmining)  
-[Titanium](https://mods.factorio.com/mod/bztitanium)  
+[Everything On Nauvis](https://mods.factorio.com/mod/EverythingOnNauvis)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)
+[Titanium](https://mods.factorio.com/mod/bztitanium)  
 
 ---
 
