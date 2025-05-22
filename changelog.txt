@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.3
+Date: 22.05.2025
+  Bugfixes:
+    - Krastorio2: Incorrectly required a fluid mining research for Rare metal ore
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.4.2
 Date: 21.05.2025
   Bugfixes:

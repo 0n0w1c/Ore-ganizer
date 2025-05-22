@@ -363,7 +363,7 @@ local function on_entity_built(event)
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if (is_required_fluid and not is_researched) then
+        if (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore" then
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-research-required")
         end
     end
