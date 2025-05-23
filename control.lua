@@ -622,17 +622,19 @@ local function on_gui_closed(event)
     end
 end
 
-local function on_lua_shortcut(event)
-    if (not event) or (not event.prototype_name) or (event.prototype_name ~= "rmd-push-button") then return end
-
-    local player = game.get_player(event.player_index)
-    if not player then return end
-
+local function toggle_resource_selector_gui(player)
     if player.gui.screen.resource_selector_frame then
         close_resource_selector_gui(player)
     else
         show_resource_selector_gui(player)
     end
+end
+
+local function on_lua_shortcut(event)
+    if not event or event.prototype_name ~= "rmd-push-button" then return end
+    local player = game.get_player(event.player_index)
+    if not player then return end
+    toggle_resource_selector_gui(player)
 end
 
 local function on_gui_click(event)
@@ -771,6 +773,12 @@ local function chunk_generated(event)
     end
 end
 
+script.on_event("rmd-toggle-resource-selector", function(event)
+    local player = game.get_player(event.player_index)
+    if not player then return end
+    toggle_resource_selector_gui(player)
+end)
+
 local function register_event_handlers()
     script.on_event(defines.events.on_chunk_generated, chunk_generated)
     script.on_event(defines.events.on_surface_created, surface_created)
@@ -794,6 +802,8 @@ local function register_event_handlers()
     script.on_event(defines.events.on_robot_mined_entity, on_entity_mined)
     script.on_event(defines.events.on_entity_died, on_entity_mined)
     script.on_event(defines.events.script_raised_destroy, on_entity_mined)
+
+    script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 end
 
 script.on_init(function()

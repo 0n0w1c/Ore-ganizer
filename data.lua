@@ -9,12 +9,20 @@ local rmd_shortcut =
     icon_size                = 64,
     small_icon               = MOD_PATH .. "/graphics/icons/rmd-push-button-x64.png",
     small_icon_size          = 64,
-    associated_control_input = "give-rmd-push-button",
+    associated_control_input = "rmd-toggle-resource-selector",
     style                    = "default",
     order                    = "z[rmd-shortcut]"
 }
 
-data.extend({ rmd_shortcut })
+local rmd_keybind =
+{
+    type = "custom-input",
+    name = "rmd-toggle-resource-selector",
+    key_sequence = "CONTROL + R",
+    consuming = "none"
+}
+
+data.extend({ rmd_shortcut, rmd_keybind })
 
 require("prototypes/rmd-burner-mining-drill")
 require("prototypes/rmd-electric-mining-drill")
