@@ -5,7 +5,7 @@ Take control of your resources!
 Introduces new versions of the pumpjack and mining drills that spawn the selected resource when placed.
 
 Click the shortcut (or *Control + R*) to open the resource selector and click a resource.  
-Then place a resource drill, pumpjack, or blueprint as usual.
+Then place a resource drill, pumpjack, or blueprint (with resource drills/pumpjacks) as usual.
 
 The selected resource remains active until changed or the surface is changed.
 
