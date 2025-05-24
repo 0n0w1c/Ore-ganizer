@@ -28,7 +28,7 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 
 #### Important notes:
 * Undo/redo is not supported  
-* Will replace existing resources  
+* Will replace existing resources when placing Resource drills and pumpjacks  
 * Cargo Ships: Placing the Resource oil rig on offshore oil removes the offshore oil
 
 ---
