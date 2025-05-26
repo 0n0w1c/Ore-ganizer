@@ -158,6 +158,8 @@ local function is_fluid_mining_researched(force)
 
     if script.active_mods["bztitanium"] then
         technology = FLUID_MINING_TECHONOLOGIES["bztitanium"]
+    elseif script.active_mods["Spaghetorio"] then
+        return true
     end
 
     local researched = force.technologies[technology].researched

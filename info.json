@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.4.4",
+    "version": "0.4.5",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -11,6 +11,7 @@
         "? bobmining",
         "? bztitanium",
         "? EverythingOnNauvis",
+        "? Spaghetorio",
         "? cargo-ships",
         "? Subsurface",
         "(?) Krastorio2",
