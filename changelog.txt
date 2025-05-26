@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.6
+Date: 26.05.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Added support for Spaghetorio to the No Resources map generator preset
+      Special resources are preset to be auto-placed
+---------------------------------------------------------------------------------------------------
 Version: 0.4.5
 Date: 26.05.2025
   Bugfixes:

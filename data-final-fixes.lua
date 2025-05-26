@@ -42,6 +42,18 @@ if mods["EverythingOnNauvis"] then
     EXCLUDED_CONTROLS["vulcanus_volcanism"] = true
 end
 
+if mods["Spaghetorio"] then
+    EXCLUDED_CONTROLS["sp-core-rift"] = true
+    EXCLUDED_CONTROLS["sp-blunagium"] = true
+    EXCLUDED_CONTROLS["sp-grobgnum"] = true
+    EXCLUDED_CONTROLS["sp-imersite"] = true
+    EXCLUDED_CONTROLS["sp-rukite"] = true
+    EXCLUDED_CONTROLS["sp-yemnuth"] = true
+    EXCLUDED_CONTROLS["sp-algae"] = true
+    EXCLUDED_CONTROLS["sp-wheat"] = true
+    EXCLUDED_CONTROLS["sp-honeycomb-fungus"] = true
+end
+
 local disabled_controls = {}
 
 for name, control in pairs(data.raw["autoplace-control"]) do
