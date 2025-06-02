@@ -37,6 +37,8 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 [Bob's Mining](https://mods.factorio.com/mod/bobmining)  
 [Everything On Nauvis](https://mods.factorio.com/mod/EverythingOnNauvis)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
+[Krastorio 2](https://mods.factorio.com/mod/Krastorio2)  
+[Krastorio 2 Spaced Out](https://mods.factorio.com/mod/Krastorio2-spaced-out)  
 [Spaghetorio](https://mods.factorio.com/mod/Spaghetorio)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)  
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
