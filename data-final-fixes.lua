@@ -91,6 +91,10 @@ items["rmd-electric-mining-drill"].icons =
     }
 }
 
+if mods["water-pumpjack"] and mods["space-age"] then
+    data.raw["offshore-pump"]["water-pumpjack"].surface_conditions = { { min = 0.1, property = "gravity" } }
+end
+
 if mods["bobmining"] then
     if items["bob-water-miner-1"] then
         items["rmd-bob-water-miner"].icons =

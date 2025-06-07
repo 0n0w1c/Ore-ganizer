@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.4.6",
+    "version": "0.4.7",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -16,6 +16,7 @@
         "? Subsurface",
         "? Krastorio2",
         "? Krastorio2-spaced-out",
+        "? water-pumpjack",
         "! Cursed-FMD",
         "! pypostprocessing",
         "! pyrawores"

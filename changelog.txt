@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.7
+Date: 07.06.2025
+  Bugfixes:
+    - Removed obsolete localised strings from all locale files
+  Changes:
+    - Added support for Water Pumpjack (removes planetary restriction)
+---------------------------------------------------------------------------------------------------
 Version: 0.4.6
 Date: 26.05.2025
   Bugfixes:

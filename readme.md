@@ -42,6 +42,7 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 [Spaghetorio](https://mods.factorio.com/mod/Spaghetorio)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)  
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
+[Water Pumpjack](https://mods.factorio.com/mod/water-pumpjack)  
 
 ---
 
