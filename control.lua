@@ -107,7 +107,8 @@ local function place_resources(surface, area, resource_name, player_index)
             ({
                 name = resource_name,
                 amount = resource_amount,
-                position = position
+                position = position,
+                raise_built = true
             })
 
             ::continue::
@@ -122,7 +123,7 @@ local function remove_resources(surface, area)
 
             for _, resource in pairs(resources) do
                 if resource.valid then
-                    resource.destroy()
+                    resource.destroy({ raise_destroy = true })
                 end
             end
         end
@@ -171,6 +172,7 @@ local function is_displayer_drill(entity_name)
     return entity_name == "rmd-burner-mining-drill-displayer"
         or entity_name == "rmd-electric-mining-drill-displayer"
         or entity_name == "rmd-big-mining-drill-displayer"
+        or entity_name == "rmd-kr-electric-mining-drill-mk2-displayer"
 end
 
 local function is_pumpjack_fluid(category)
@@ -297,7 +299,7 @@ local function on_entity_built(event)
         end
     else
         if not (script.active_mods["Subsurface"] and string.find(surface.name, "_subsurface_")) then
-            entity.destroy()
+            entity.destroy({ raise_destroy = true })
             surface.create_entity
             ({
                 name = item_name,
@@ -305,7 +307,8 @@ local function on_entity_built(event)
                 position = position,
                 direction = direction,
                 create_build_effect_smoke = true,
-                quality = quality
+                quality = quality,
+                raise_built = true
             })
             return
         end
@@ -383,7 +386,7 @@ local function on_entity_built(event)
     end
 
     local resource_area = get_mining_area(entity)
-    entity.destroy()
+    entity.destroy({ raise_destroy = true })
 
     if item_name == "rmd-oil_rig" then item_name = "oil_rig" end
 
@@ -396,8 +399,8 @@ local function on_entity_built(event)
         position = position,
         direction = direction,
         create_build_effect_smoke = true,
+        quality = quality,
         raise_built = true,
-        quality = quality
     })
 end
 

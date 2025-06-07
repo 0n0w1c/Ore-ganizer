@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.8
+Date: 07.06.2025
+  Bugfixes:
+    - Added raise event to relevent entity create and destroy calls for both resources and entities
+    - Krastorio 2: Added missing MK2 mining drill displayer to is_displayer_drill()
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.4.7
 Date: 07.06.2025
   Bugfixes:
