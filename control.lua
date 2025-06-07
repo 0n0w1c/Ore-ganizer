@@ -107,8 +107,7 @@ local function place_resources(surface, area, resource_name, player_index)
             ({
                 name = resource_name,
                 amount = resource_amount,
-                position = position,
-                raise_built = true
+                position = position
             })
 
             ::continue::
@@ -123,7 +122,7 @@ local function remove_resources(surface, area)
 
             for _, resource in pairs(resources) do
                 if resource.valid then
-                    resource.destroy({ raise_destroy = true })
+                    resource.destroy()
                 end
             end
         end
