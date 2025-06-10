@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: 09.06.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Bob's Mining: Added Resource electric large area drills (1-4)
+    - Added support for Bob's Ores
+    - Added support for AAI Industry
+    - Added the ko alternate locale
+---------------------------------------------------------------------------------------------------
 Version: 0.4.9
 Date: 07.06.2025
   Bugfixes:

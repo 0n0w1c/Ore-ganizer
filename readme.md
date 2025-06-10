@@ -34,7 +34,9 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 ---
 
 #### Supported mods:
+[AAI Industry](https://mods.factorio.com/mod/aai-industry)  
 [Bob's Mining](https://mods.factorio.com/mod/bobmining)  
+[Bob's Ores](https://mods.factorio.com/mod/bobores)  
 [Everything On Nauvis](https://mods.factorio.com/mod/EverythingOnNauvis)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)  
@@ -47,4 +49,4 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 ---
 
 #### Alternate locales:  
-`cs`, `de`, `es`, `fr`, `it`, `ja`, `pl`, `pt-BR`, `ru`, `tr`, `uk`, `zh-CN`, `zh-TW`  
+`cs`, `de`, `es`, `fr`, `it`, `ja`, `ko`, `pl`, `pt-BR`, `ru`, `tr`, `uk`, `zh-CN`, `zh-TW`  

@@ -28,7 +28,8 @@ CATEGORIES =
 {
     ["basic-fluid"] = true,
     ["basic-solid"] = true,
-    ["hard-solid"] = true
+    ["hard-solid"] = true,
+    ["water"] = true
 }
 
 FLUID_MINING_TECHONOLOGIES =

@@ -91,8 +91,24 @@ items["rmd-electric-mining-drill"].icons =
     }
 }
 
+if mods["aai-industry"] then
+    local technology = data.raw["technology"]["burner-mechanics"]
+    if technology then
+        local recipe = data.raw["recipe"]["rmd-burner-mining-drill"]
+        if recipe then
+            recipe.enabled = false
+
+            local effect = { type = "unlock-recipe", recipe = recipe.name }
+            table.insert(technology.effects, effect)
+        end
+    end
+end
+
 if mods["water-pumpjack"] and mods["space-age"] then
-    data.raw["offshore-pump"]["water-pumpjack"].surface_conditions = { { min = 0.1, property = "gravity" } }
+    local entity = data.raw["offshore-pump"]["water-pumpjack"]
+    if entity then
+        entity.surface_conditions = { { min = 0.1, property = "gravity" } }
+    end
 end
 
 if mods["bobmining"] then

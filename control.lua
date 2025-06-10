@@ -35,6 +35,16 @@ local function get_mining_area(entity)
         prototype_name = "electric-mining-drill"
     elseif string.sub(entity_name, 1, 20) == "rmd-big-mining-drill" then
         prototype_name = "big-mining-drill"
+    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-1" then
+        prototype_name = "bob-area-mining-drill-1"
+    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-2" then
+        prototype_name = "bob-area-mining-drill-2"
+    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-3" then
+        prototype_name = "bob-area-mining-drill-3"
+    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-4" then
+        prototype_name = "bob-area-mining-drill-4"
+    elseif string.sub(entity_name, 1, 21) == "rmd-area-mining-drill" then
+        prototype_name = "area-mining-drill"
     elseif string.sub(entity_name, 1, 32) == "rmd-kr-electric-mining-drill-mk2" then
         prototype_name = "kr-electric-mining-drill-mk2"
     elseif string.sub(entity_name, 1, 12) == "rmd-pumpjack" then
@@ -171,6 +181,11 @@ local function is_displayer_drill(entity_name)
     return entity_name == "rmd-burner-mining-drill-displayer"
         or entity_name == "rmd-electric-mining-drill-displayer"
         or entity_name == "rmd-big-mining-drill-displayer"
+        or entity_name == "rmd-area-mining-drill-displayer"
+        or entity_name == "rmd-bob-area-mining-drill-1-displayer"
+        or entity_name == "rmd-bob-area-mining-drill-2-displayer"
+        or entity_name == "rmd-bob-area-mining-drill-3-displayer"
+        or entity_name == "rmd-bob-area-mining-drill-4-displayer"
         or entity_name == "rmd-kr-electric-mining-drill-mk2-displayer"
 end
 
@@ -410,6 +425,11 @@ local function on_entity_mined(event)
     if entity.name ~= "rmd-burner-mining-drill" and
         entity.name ~= "rmd-electric-mining-drill" and
         entity.name ~= "rmd-big-mining-drill" and
+        entity.name ~= "rmd-bob-area-mining-drill-1" and
+        entity.name ~= "rmd-bob-area-mining-drill-2" and
+        entity.name ~= "rmd-bob-area-mining-drill-3" and
+        entity.name ~= "rmd-bob-area-mining-drill-4" and
+        entity.name ~= "rmd-area-mining-drill" and
         entity.name ~= "rmd-kr-electric-mining-drill-mk2" and
         entity.name ~= "rmd-pumpjack" and
         entity.name ~= "rmd-bob-water-miner" then
