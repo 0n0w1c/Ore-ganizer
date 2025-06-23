@@ -24,6 +24,49 @@ COLLISION_MASK =
     }
 }
 
+DISPLAYER_DRILL_NAMES = {
+    ["rmd-burner-mining-drill-displayer"]          = true,
+    ["rmd-electric-mining-drill-displayer"]        = true,
+    ["rmd-big-mining-drill-displayer"]             = true,
+    ["rmd-area-mining-drill-displayer"]            = true,
+    ["rmd-bob-area-mining-drill-1-displayer"]      = true,
+    ["rmd-bob-area-mining-drill-2-displayer"]      = true,
+    ["rmd-bob-area-mining-drill-3-displayer"]      = true,
+    ["rmd-bob-area-mining-drill-4-displayer"]      = true,
+    ["rmd-kr-electric-mining-drill-mk2-displayer"] = true
+}
+
+RMD_ENTITY_NAMES =
+{
+    ["rmd-burner-mining-drill"]          = true,
+    ["rmd-electric-mining-drill"]        = true,
+    ["rmd-big-mining-drill"]             = true,
+    ["rmd-bob-area-mining-drill-1"]      = true,
+    ["rmd-bob-area-mining-drill-2"]      = true,
+    ["rmd-bob-area-mining-drill-3"]      = true,
+    ["rmd-bob-area-mining-drill-4"]      = true,
+    ["rmd-area-mining-drill"]            = true,
+    ["rmd-kr-electric-mining-drill-mk2"] = true,
+    ["rmd-pumpjack"]                     = true,
+    ["rmd-bob-water-miner"]              = true
+}
+
+RMD_TO_BASE_PROTOTYPE =
+{
+    ["rmd-burner-mining-drill"]          = "burner-mining-drill",
+    ["rmd-electric-mining-drill"]        = "electric-mining-drill",
+    ["rmd-big-mining-drill"]             = "big-mining-drill",
+    ["rmd-bob-area-mining-drill-1"]      = "bob-area-mining-drill-1",
+    ["rmd-bob-area-mining-drill-2"]      = "bob-area-mining-drill-2",
+    ["rmd-bob-area-mining-drill-3"]      = "bob-area-mining-drill-3",
+    ["rmd-bob-area-mining-drill-4"]      = "bob-area-mining-drill-4",
+    ["rmd-area-mining-drill"]            = "area-mining-drill",
+    ["rmd-kr-electric-mining-drill-mk2"] = "kr-electric-mining-drill-mk2",
+    ["rmd-pumpjack"]                     = "pumpjack",
+    ["rmd-bob-water-miner"]              = "pumpjack",
+    ["rmd-oil_rig"]                      = "pumpjack"
+}
+
 CATEGORIES =
 {
     ["basic-fluid"] = true,

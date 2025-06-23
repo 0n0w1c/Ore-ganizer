@@ -28,32 +28,8 @@ local function get_mining_area(entity)
     local position = entity.position
     local entity_name = entity.name
 
-    local prototype_name = ""
-    if string.sub(entity_name, 1, 23) == "rmd-burner-mining-drill" then
-        prototype_name = "burner-mining-drill"
-    elseif string.sub(entity_name, 1, 25) == "rmd-electric-mining-drill" then
-        prototype_name = "electric-mining-drill"
-    elseif string.sub(entity_name, 1, 20) == "rmd-big-mining-drill" then
-        prototype_name = "big-mining-drill"
-    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-1" then
-        prototype_name = "bob-area-mining-drill-1"
-    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-2" then
-        prototype_name = "bob-area-mining-drill-2"
-    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-3" then
-        prototype_name = "bob-area-mining-drill-3"
-    elseif string.sub(entity_name, 1, 27) == "rmd-bob-area-mining-drill-4" then
-        prototype_name = "bob-area-mining-drill-4"
-    elseif string.sub(entity_name, 1, 21) == "rmd-area-mining-drill" then
-        prototype_name = "area-mining-drill"
-    elseif string.sub(entity_name, 1, 32) == "rmd-kr-electric-mining-drill-mk2" then
-        prototype_name = "kr-electric-mining-drill-mk2"
-    elseif string.sub(entity_name, 1, 12) == "rmd-pumpjack" then
-        prototype_name = "pumpjack"
-    elseif string.sub(entity_name, 1, 19) == "rmd-bob-water-miner" then
-        prototype_name = "pumpjack"
-    elseif string.sub(entity_name, 1, 11) == "rmd-oil_rig" then
-        prototype_name = "pumpjack"
-    end
+    local test_name = entity_name:gsub("%-displayer$", "")
+    local prototype_name = RMD_TO_BASE_PROTOTYPE[test_name] or ""
 
     if prototype_name == "" then return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } } end
 
@@ -178,38 +154,21 @@ local function is_fluid_mining_researched(force)
 end
 
 local function is_displayer_drill(entity_name)
-    return entity_name == "rmd-burner-mining-drill-displayer"
-        or entity_name == "rmd-electric-mining-drill-displayer"
-        or entity_name == "rmd-big-mining-drill-displayer"
-        or entity_name == "rmd-area-mining-drill-displayer"
-        or entity_name == "rmd-bob-area-mining-drill-1-displayer"
-        or entity_name == "rmd-bob-area-mining-drill-2-displayer"
-        or entity_name == "rmd-bob-area-mining-drill-3-displayer"
-        or entity_name == "rmd-bob-area-mining-drill-4-displayer"
-        or entity_name == "rmd-kr-electric-mining-drill-mk2-displayer"
+    return DISPLAYER_DRILL_NAMES[entity_name] == true
 end
 
 local function is_pumpjack_fluid(category)
-    if category == "basic-fluid" then
-        return true
-    end
-
+    if category == "basic-fluid" then return true end
     return false
 end
 
 local function is_water_miner_fluid(category)
-    if category == "water" then
-        return true
-    end
-
+    if category == "water" then return true end
     return false
 end
 
 local function is_oil_rig_fluid(category)
-    if category == "offshore-fluid" then
-        return true
-    end
-
+    if category == "offshore-fluid" then return true end
     return false
 end
 
@@ -422,19 +381,7 @@ local function on_entity_mined(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
-    if entity.name ~= "rmd-burner-mining-drill" and
-        entity.name ~= "rmd-electric-mining-drill" and
-        entity.name ~= "rmd-big-mining-drill" and
-        entity.name ~= "rmd-bob-area-mining-drill-1" and
-        entity.name ~= "rmd-bob-area-mining-drill-2" and
-        entity.name ~= "rmd-bob-area-mining-drill-3" and
-        entity.name ~= "rmd-bob-area-mining-drill-4" and
-        entity.name ~= "rmd-area-mining-drill" and
-        entity.name ~= "rmd-kr-electric-mining-drill-mk2" and
-        entity.name ~= "rmd-pumpjack" and
-        entity.name ~= "rmd-bob-water-miner" then
-        return
-    end
+    if not RMD_ENTITY_NAMES[entity.name] then return end
 
     if entity.to_be_upgraded() then return end
 

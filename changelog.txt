@@ -1,10 +1,26 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.4
+Date: 23.06.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Bob's Mining: Resource area mining drill recipes now require Resource area mining drills
+---------------------------------------------------------------------------------------------------
+Version: 0.5.3
+Date: 23.06.2025
+  Bugfixes:
+    - Recycling recipes for modded mining drills are now more consistent
+  Changes:
+    - Some Resource mining drill recycling recipe results have been modified
+    - Krastorio 2 and K2 Spaced Out: Resource electric mining drill MK2 and Resource big mining
+      drill recipes now use Resource electric mining drills
+---------------------------------------------------------------------------------------------------
 Version: 0.5.2
 Date: 23.06.2025
   Bugfixes:
     - None
   Changes:
-    - AAI Industry: Modified Resource electric and big/area drill recipes to use Resource drills
+    - AAI Industry: Resource electric and big/area drill recipes now use Resource mining drills
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.1
 Date: 10.06.2025
