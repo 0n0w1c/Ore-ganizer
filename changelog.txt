@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.2
+Date: 23.06.2025
+  Bugfixes:
+    - None
+  Changes:
+    - AAI Industry: Modified Resource electric and big/area drill recipes to use Resource drills
+---------------------------------------------------------------------------------------------------
 Version: 0.5.1
 Date: 10.06.2025
   Bugfixes:

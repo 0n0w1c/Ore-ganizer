@@ -91,6 +91,22 @@ items["rmd-electric-mining-drill"].icons =
     }
 }
 
+local function replace_ingredient(recipe, from, to)
+    if not recipe or not recipe.ingredients then return end
+
+    for index, ingredient in ipairs(recipe.ingredients) do
+        local name = ingredient.name or ingredient[1]
+
+        if name == from then
+            recipe.ingredients[index] = {
+                type = "item",
+                name = to,
+                amount = ingredient.amount
+            }
+        end
+    end
+end
+
 if mods["aai-industry"] then
     local technology = data.raw["technology"]["burner-mechanics"]
     if technology then
@@ -101,6 +117,18 @@ if mods["aai-industry"] then
             local effect = { type = "unlock-recipe", recipe = recipe.name }
             table.insert(technology.effects, effect)
         end
+    end
+
+    replace_ingredient(data.raw["recipe"]["rmd-electric-mining-drill"], "burner-mining-drill", "rmd-burner-mining-drill")
+
+    if data.raw["recipe"]["rmd-area-mining-drill"] then
+        replace_ingredient(data.raw["recipe"]["rmd-area-mining-drill"], "electric-mining-drill",
+            "rmd-electric-mining-drill")
+    end
+
+    if data.raw["recipe"]["rmd-big-mining-drill"] then
+        replace_ingredient(data.raw["recipe"]["rmd-big-mining-drill"], "electric-mining-drill",
+            "rmd-electric-mining-drill")
     end
 end
 
