@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.1
+Date: 27.06.2025
+  Bugfixes:
+    - Bob's Ores without Bob's Mining: Resource pumpjacks can now place ground and lithia water
+    - Close the Resource selector when the player changes surfaces
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.6.0
 Date: 27.06.2025
   Bugfixes:

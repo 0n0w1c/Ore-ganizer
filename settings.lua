@@ -1,5 +1,5 @@
 local hidden = false
-if mods["bobmining"] or mods["bobores"] then hidden = true end
+if mods["bobmining"] then hidden = true end
 
 data:extend({
     {

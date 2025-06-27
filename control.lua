@@ -158,7 +158,11 @@ local function is_displayer_drill(entity_name)
 end
 
 local function is_pumpjack_fluid(category)
-    if category == "basic-fluid" then return true end
+    if script.active_mods["bobores"] and not script.active_mods["bobmining"] then
+        if category == "basic-fluid" or category == "water" then return true end
+    else
+        if category == "basic-fluid" then return true end
+    end
     return false
 end
 
@@ -628,6 +632,9 @@ end
 
 local function player_changed_surface(event)
     local player_index = event.player_index
+    local player = game.get_player(player_index)
+
+    close_resource_selector_gui(player)
 
     local player_data = get_or_create_player_data(player_index)
     if not player_data then return end

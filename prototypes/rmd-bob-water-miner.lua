@@ -1,6 +1,6 @@
 require("constants")
 
-if not (mods["bobmining"] and mods["bobores"]) then return end
+if not mods["bobmining"] then return end
 
 local BASE_GRAPHICS   = "__base__/graphics/"
 local ENTITY_GRAPHICS = BASE_GRAPHICS .. "entity/"
@@ -10,7 +10,7 @@ local TO_COPY         = "bob-water-miner-1"
 local NAME            = string.sub("rmd-" .. TO_COPY, 1, -3)
 
 if not data.raw["mining-drill"][TO_COPY] then return end
-if not (data.raw["resource"]["bob-ground-water"] or data.raw["resource"]["bob-lithia-water"]) then return end
+--if not (data.raw["resource"]["bob-ground-water"] or data.raw["resource"]["bob-lithia-water"]) then return end
 
 local mining_drill                     = data.raw["mining-drill"][TO_COPY]
 
