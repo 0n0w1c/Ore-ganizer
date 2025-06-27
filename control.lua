@@ -750,6 +750,31 @@ script.on_event("rmd-toggle-resource-selector", function(event)
     toggle_resource_selector_gui(player)
 end)
 
+local function get_swapped_drill_name(name)
+    if name:sub(1, 4) == "rmd-" then
+        return name:sub(5)
+    else
+        return "rmd-" .. name
+    end
+end
+
+script.on_event("rmd-toggle-cursor-drill", function(event)
+    local player = game.get_player(event.player_index)
+    if not player then return end
+
+    local cursor = player.cursor_stack
+    if not (cursor and cursor.valid_for_read) then return end
+
+    local current_name = cursor.name
+    local swapped_name = get_swapped_drill_name(current_name)
+
+    local prototype = prototypes.entity[swapped_name]
+    if not (prototype and prototype.type == "mining-drill") then return end
+
+    cursor.set_stack({ name = swapped_name, count = cursor.count })
+    player.play_sound { path = "utility/inventory_move" }
+end)
+
 local function register_event_handlers()
     script.on_event(defines.events.on_chunk_generated, chunk_generated)
     script.on_event(defines.events.on_surface_created, surface_created)

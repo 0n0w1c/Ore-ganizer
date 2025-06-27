@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.0
+Date: 27.06.2025
+  Bugfixes:
+    - Krastorio 2: Added a Resource electric mining drill MK3
+  Changes:
+    - Added Control + X keybinding to convert mining drills on the player cursor
+    - Added Startup setting: Remove mining drill recipes (default: disabled)
+      Setting not available with Bob's Mining
+---------------------------------------------------------------------------------------------------
 Version: 0.5.4
 Date: 23.06.2025
   Bugfixes:

@@ -1,5 +1,21 @@
 require("constants")
 
+local recipes = data.raw["recipe"]
+
+if not mods["bobmining"] then
+    if settings.startup["rmd-hide-recipes"] and settings.startup["rmd-hide-recipes"].value then
+        for _, recipe in pairs(recipes) do
+            if recipe.name:sub(1, 4) == "rmd-" then
+                local base_name = recipe.name:sub(5)
+                local base_recipe = recipes[base_name]
+                if base_recipe then
+                    base_recipe.hidden = true
+                end
+            end
+        end
+    end
+end
+
 if mods["space-age"] and not mods["EverythingOnNauvis"] then
     local aquilo = data.raw["planet"] and data.raw["planet"]["aquilo"]
     if aquilo and aquilo.map_gen_settings then
@@ -121,14 +137,20 @@ local function replace_result(recipe, from, to)
     end
 end
 
-if mods["space-age"] and data.raw["recipe"]["rmd-big-mining-drill-recycling"] then
-    data.raw["recipe"]["rmd-big-mining-drill-recycling"].results =
-        table.deepcopy(data.raw["recipe"]["big-mining-drill-recycling"].results)
+if mods["space-age"] and recipes["rmd-big-mining-drill"] then
+    replace_ingredient(recipes["rmd-big-mining-drill"],
+        "electric-mining-drill", "rmd-electric-mining-drill")
+
+    if recipes["rmd-big-mining-drill-recycling"] then
+        recipes["rmd-big-mining-drill-recycling"].results =
+            table.deepcopy(recipes["big-mining-drill-recycling"].results)
+
+        replace_result(recipes["rmd-big-mining-drill-recycling"],
+            "electric-mining-drill", "rmd-electric-mining-drill")
+    end
 end
 
 if mods["bobmining"] then
-    local recipes = data.raw["recipe"]
-
     local recipe = recipes["rmd-bob-area-mining-drill-1"]
     if recipe then replace_ingredient(recipe, "electric-mining-drill", "rmd-electric-mining-drill") end
 
@@ -155,7 +177,6 @@ if mods["bobmining"] then
 end
 
 if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
-    local recipes = data.raw["recipe"]
     local recipe = recipes["rmd-electric-mining-drill"]
     recipe.ingredients = table.deepcopy(recipes["electric-mining-drill"].ingredients)
     if mods["quality"] then
@@ -173,6 +194,14 @@ if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
         replace_result(data.raw.recipe["rmd-kr-electric-mining-drill-mk2-recycling"],
             "electric-mining-drill", "rmd-electric-mining-drill")
     end
+    if recipes["rmd-kr-electric-mining-drill-mk3"] then
+        replace_ingredient(data.raw.recipe["rmd-kr-electric-mining-drill-mk3"],
+            "kr-electric-mining-drill-mk2", "rmd-kr-electric-mining-drill-mk2")
+    end
+    if recipes["rmd-kr-electric-mining-drill-mk2-recycling"] then
+        replace_result(data.raw.recipe["rmd-kr-electric-mining-drill-mk2-recycling"],
+            "kr-electric-mining-drill-mk2", "rmd-kr-electric-mining-drill-mk2")
+    end
     if recipes["rmd-big-mining-drill"] then
         replace_ingredient(data.raw.recipe["rmd-big-mining-drill"],
             "electric-mining-drill", "rmd-electric-mining-drill")
@@ -184,7 +213,6 @@ if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
 end
 
 if mods["aai-industry"] then
-    local recipes      = data.raw["recipe"]
     local burner_drill = recipes["rmd-burner-mining-drill"]
     local technology   = data.raw["technology"]["burner-mechanics"]
 
@@ -200,16 +228,8 @@ if mods["aai-industry"] then
     replace_ingredient(recipes["rmd-area-mining-drill"],
         "electric-mining-drill", "rmd-electric-mining-drill")
 
-    replace_ingredient(recipes["rmd-big-mining-drill"],
-        "electric-mining-drill", "rmd-electric-mining-drill")
-
     if recipes["rmd-area-mining-drill-recycling"] then
         replace_result(recipes["rmd-area-mining-drill-recycling"],
-            "electric-mining-drill", "rmd-electric-mining-drill")
-    end
-
-    if recipes["rmd-big-mining-drill-recycling"] then
-        replace_result(recipes["rmd-big-mining-drill-recycling"],
             "electric-mining-drill", "rmd-electric-mining-drill")
     end
 end

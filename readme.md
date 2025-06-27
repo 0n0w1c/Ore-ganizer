@@ -9,6 +9,8 @@ Then place a resource drill, pumpjack, or blueprint (with resource drills/pumpja
 
 The selected resource remains active until changed or the surface is changed.
 
+To convert mining drills, press *Control + X* with a stack of mining drills on the player's cursor.
+
 Deconstruction removes the resource.
 
 Construction is blocked for invalid combinations or if a required mining technology has not been researched.
@@ -17,6 +19,12 @@ No on_tick code or entity tracking — very UPS-friendly.
 
 *New: Map generator preset — “No resources”*  
 Includes the *Ice islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
+
+---
+
+#### Startup setting:
+* Remove mining drill recipes (default: disabled)  
+(Setting not available with Bob's Mining)  
 
 ---
 
