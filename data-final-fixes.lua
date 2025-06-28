@@ -331,3 +331,35 @@ if mods["bobmining"] and mining_drills["bob-water-miner-1"] and not mining_drill
     mining_drills["rmd-bob-water-miner"].fast_replaceable_group =
         mining_drills["bob-water-miner-1"].fast_replaceable_group
 end
+
+if mods["OmegaDrill"] then
+    if recipes["omega-drill"] then
+        replace_ingredient(recipes["rmd-omega-drill"],
+            "electric-mining-drill", "rmd-electric-mining-drill")
+
+        if recipes["rmd-omega-drill-recycling"] then
+            replace_result(recipes["rmd-omega-drill-recycling"],
+                "electric-mining-drill", "rmd-electric-mining-drill")
+        end
+    end
+
+    if recipes["tomega-drill"] then
+        items["tomega-drill"].order = "a[items]-b[tomega-drill]"
+
+        replace_ingredient(recipes["rmd-tomega-drill"],
+            "omega-drill", "rmd-omega-drill")
+
+        replace_ingredient(recipes["rmd-tomega-drill"],
+            "big-mining-drill", "rmd-big-mining-drill")
+
+        if recipes["rmd-tomega-drill-recycling"] then
+            replace_result(recipes["rmd-tomega-drill-recycling"],
+                "omega-drill", "rmd-omega-drill")
+        end
+
+        if recipes["rmd-tomega-drill-recycling"] then
+            replace_result(recipes["rmd-tomega-drill-recycling"],
+                "big-mining-drill", "rmd-big-mining-drill")
+        end
+    end
+end
