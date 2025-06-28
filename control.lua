@@ -425,7 +425,15 @@ local function show_resource_selector_gui(player)
         local autoplace_settings = map_gen_settings and map_gen_settings.autoplace_settings
 
         local allow = false
+
+        if not surface.planet then
+            allow = true
+        elseif surface.planet.name == "nauvis-factory-floor" then
+            allow = true
+        end
+
         local player_settings = storage.players and storage.players[player.index]
+
         if player_settings and player_settings.ignore_planetary_restrictions == true then
             allow = true
         elseif autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name] then

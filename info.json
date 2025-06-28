@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -13,6 +13,7 @@
         "? bobores",
         "? bztitanium",
         "? EverythingOnNauvis",
+        "? factorissimo-2-notnotmelon",
         "? Spaghetorio",
         "? cargo-ships",
         "? Subsurface",

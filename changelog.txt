@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.2
+Date: 27.06.2025
+  Bugfixes:
+    - None
+  Changes:
+    - All resources are now avaiable in the Resource selector for non-planet surfaces
+      The "ignore planetary restrictions" setting is ignored (Subsurface and Factorissimo 3)
+---------------------------------------------------------------------------------------------------
 Version: 0.6.1
 Date: 27.06.2025
   Bugfixes:
