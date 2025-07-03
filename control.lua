@@ -1,5 +1,7 @@
 require("constants")
 
+local blueprint_resources = settings.startup["rmd-blueprint-resources"].value == true
+
 local function find_excluded_tile_under_entity(entity)
     if not (entity and entity.valid) then return nil end
 
@@ -255,7 +257,13 @@ local function on_entity_built(event)
     get_or_create_player_data(player.index)
 
     local item_name = string.gsub(entity_name, "-displayer$", "")
-    local resource_name = storage.players[player.index].selected_resource
+
+    local resource_name
+    if event.tags and event.tags.selected_resource then
+        resource_name = event.tags.selected_resource
+    elseif player then
+        resource_name = storage.players[player.index].selected_resource
+    end
 
     local prototype = prototypes.entity[resource_name]
     if not (prototype and prototype.type == "resource") then
@@ -660,6 +668,65 @@ local function get_displayer_name(entity_name)
     end
 end
 
+local function swap_blueprint_entities(entities, surface)
+    local modified = false
+
+    for _, entity in pairs(entities) do
+        local name = get_displayer_name(entity.name)
+        if name then
+            entity.name = name
+            modified = true
+
+            if blueprint_resources then
+                local resource_entities = surface.find_entities_filtered {
+                    area = {
+                        { entity.position.x - 0.4, entity.position.y - 0.4 },
+                        { entity.position.x + 0.4, entity.position.y + 0.4 }
+                    },
+                    type = "resource"
+                }
+
+                if resource_entities and resource_entities[1] then
+                    entity.tags = entity.tags or {}
+                    entity.tags.selected_resource = resource_entities[1].name
+                end
+            end
+        end
+    end
+
+    return modified
+end
+
+local function player_setup_blueprint(event)
+    local player = game.get_player(event.player_index)
+    if not (player and player.valid) then return end
+
+    local surface = player.surface
+
+    local blueprint = player.blueprint_to_setup
+    if blueprint and blueprint.valid_for_read then
+        local entities = blueprint.get_blueprint_entities()
+        if not entities then return end
+
+        local modified = swap_blueprint_entities(entities, surface)
+        if modified then
+            blueprint.set_blueprint_entities(entities)
+        end
+    else
+        local stack = player.cursor_stack
+        if not (stack and stack.valid_for_read and stack.is_blueprint) then return end
+
+        local entities = stack.get_blueprint_entities()
+        if not entities then return end
+
+        local modified = swap_blueprint_entities(entities, surface)
+        if modified then
+            stack.set_blueprint_entities(entities)
+        end
+    end
+end
+
+--[[
 local function swap_blueprint_entities(entities)
     local modified = false
 
@@ -700,6 +767,7 @@ local function player_setup_blueprint(event)
         end
     end
 end
+]]
 
 local function gui_check_state_changed(event)
     local player = game.get_player(event.player_index)
