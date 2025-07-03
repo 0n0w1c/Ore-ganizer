@@ -22,9 +22,9 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 
 ---
 
-#### Startup setting:
-* Remove mining drill recipes (default: disabled)  
-(Setting not available with Bob's Mining)  
+#### Startup settings:
+* Blueprint resources (default: disabled)
+* Remove mining drill recipes (default: disabled) - not available with Bob's Mining  
 
 ---
 
