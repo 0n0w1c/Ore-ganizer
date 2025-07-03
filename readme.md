@@ -11,6 +11,8 @@ The selected resource remains active until changed or the surface is changed.
 
 To convert mining drills, press *Control + X* with a stack of mining drills on the player's cursor.
 
+Pipette (Q) on a resource node to auto-select the resource and place a Resource mining drill on the cursor.  
+
 Deconstruction removes the resource.
 
 Construction is blocked for invalid combinations or if a required mining technology has not been researched.
