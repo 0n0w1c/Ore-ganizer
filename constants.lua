@@ -79,6 +79,7 @@ RMD_TO_BASE_PROTOTYPE =
 CATEGORIES =
 {
     ["basic-fluid"] = true,
+    ["offshore-fluid"] = true,
     ["basic-solid"] = true,
     ["hard-solid"] = true,
     ["water"] = true
