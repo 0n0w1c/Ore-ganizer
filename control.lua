@@ -646,7 +646,7 @@ local function on_gui_click(event)
     end
 end
 
-local function player_changed_surface(event)
+local function on_player_changed_surface(event)
     local player_index = event.player_index
     local player = game.get_player(player_index)
 
@@ -697,7 +697,7 @@ local function swap_blueprint_entities(entities, surface)
     return modified
 end
 
-local function player_setup_blueprint(event)
+local function on_player_setup_blueprint(event)
     local player = game.get_player(event.player_index)
     if not (player and player.valid) then return end
 
@@ -726,50 +726,7 @@ local function player_setup_blueprint(event)
     end
 end
 
---[[
-local function swap_blueprint_entities(entities)
-    local modified = false
-
-    for _, entity in pairs(entities) do
-        local new_name = get_displayer_name(entity.name)
-        if new_name then
-            entity.name = new_name
-            modified = true
-        end
-    end
-
-    return modified
-end
-
-local function player_setup_blueprint(event)
-    local player = game.get_player(event.player_index)
-    if not (player and player.valid) then return end
-
-    local blueprint = player.blueprint_to_setup
-    if blueprint and blueprint.valid_for_read then
-        local entities = blueprint.get_blueprint_entities()
-        if not entities then return end
-
-        local modified = swap_blueprint_entities(entities)
-        if modified then
-            blueprint.set_blueprint_entities(entities)
-        end
-    else
-        local stack = player.cursor_stack
-        if not (stack and stack.valid_for_read and stack.is_blueprint) then return end
-
-        local entities = stack.get_blueprint_entities()
-        if not entities then return end
-
-        local modified = swap_blueprint_entities(entities)
-        if modified then
-            stack.set_blueprint_entities(entities)
-        end
-    end
-end
-]]
-
-local function gui_check_state_changed(event)
+local function on_gui_check_state_changed(event)
     local player = game.get_player(event.player_index)
     if not player then return end
 
@@ -782,7 +739,7 @@ local function gui_check_state_changed(event)
     end
 end
 
-local function gui_text_changed(event)
+local function on_gui_text_changed(event)
     local element = event.element
     local player = game.get_player(event.player_index)
     if not (player and element and element.valid) then return end
@@ -800,7 +757,7 @@ local function gui_text_changed(event)
     end
 end
 
-local function cutscene_cancelled(event)
+local function on_cutscene_cancelled(event)
     local player = game.get_player(event.player_index)
     if not player or not player.valid or not player.character then return end
 
@@ -813,17 +770,63 @@ local function remove_all_aquilo_island_resources(surface)
     end
 end
 
-local function surface_created(event)
+local function on_surface_created(event)
     local surface = game.surfaces[event.surface_index]
     if surface.name == "aquilo" then
         remove_all_aquilo_island_resources(surface)
     end
 end
 
-local function chunk_generated(event)
+local function on_chunk_generated(event)
     local surface = event.surface
     if surface.name == "aquilo" then
         remove_all_aquilo_island_resources(surface)
+    end
+end
+
+local function on_player_cursor_stack_changed(event)
+    local player = game.get_player(event.player_index)
+    if not player or not player.valid then return end
+
+    local cursor = player.cursor_stack
+    if not (cursor and cursor.valid_for_read) then return end
+
+    local selected = player.selected
+    if not selected or selected.type ~= "resource" then return end
+
+    local player_data = get_or_create_player_data(player.index)
+    player_data.selected_resource = selected.name
+
+    local rmd_mining_drill = "rmd-" .. cursor.name
+    if prototypes.item[rmd_mining_drill] then
+        local exists = prototypes.entity[rmd_mining_drill]
+
+        if exists then
+            local count = player.get_item_count(rmd_mining_drill)
+            if count > 0 then
+                local stack_size = prototypes.item[rmd_mining_drill].stack_size
+                local place_count = math.min(count, stack_size)
+
+                local original_name = cursor.name
+                local original_count = cursor.count
+
+                cursor.clear()
+
+                player.insert {
+                    name = original_name,
+                    count = original_count
+                }
+
+                local removed = player.remove_item {
+                    name = rmd_mining_drill,
+                    count = place_count
+                }
+                cursor.set_stack {
+                    name = rmd_mining_drill,
+                    count = removed
+                }
+            end
+        end
     end
 end
 
@@ -859,16 +862,17 @@ script.on_event("rmd-toggle-cursor-drill", function(event)
 end)
 
 local function register_event_handlers()
-    script.on_event(defines.events.on_chunk_generated, chunk_generated)
-    script.on_event(defines.events.on_surface_created, surface_created)
+    script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
+    script.on_event(defines.events.on_surface_created, on_surface_created)
 
-    script.on_event(defines.events.on_cutscene_cancelled, cutscene_cancelled)
-    script.on_event(defines.events.on_player_changed_surface, player_changed_surface)
-    script.on_event(defines.events.on_player_setup_blueprint, player_setup_blueprint)
+    script.on_event(defines.events.on_cutscene_cancelled, on_cutscene_cancelled)
+    script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
+    script.on_event(defines.events.on_player_setup_blueprint, on_player_setup_blueprint)
+    script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_stack_changed)
 
     script.on_event(defines.events.on_gui_click, on_gui_click)
-    script.on_event(defines.events.on_gui_checked_state_changed, gui_check_state_changed)
-    script.on_event(defines.events.on_gui_text_changed, gui_text_changed)
+    script.on_event(defines.events.on_gui_checked_state_changed, on_gui_check_state_changed)
+    script.on_event(defines.events.on_gui_text_changed, on_gui_text_changed)
     script.on_event(defines.events.on_gui_closed, on_gui_closed)
     script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 

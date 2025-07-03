@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.1
+Date: 03.07.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Pipette (Q) on a resource will change selected resource and swap to a Resource mining drill
+---------------------------------------------------------------------------------------------------
 Version: 0.7.0
 Date: 02.07.2025
   Bugfixes:
