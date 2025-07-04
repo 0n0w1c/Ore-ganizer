@@ -24,10 +24,20 @@ data:extend({
 data:extend({
     {
         type = "bool-setting",
+        name = "rmd-trim-mining-area",
+        setting_type = "startup",
+        default_value = false,
+        order = "c"
+    }
+})
+
+data:extend({
+    {
+        type = "bool-setting",
         name = "rmd-hide-recipes",
         setting_type = "startup",
         default_value = false,
-        order = "c",
+        order = "d",
         hidden = hidden
     }
 })

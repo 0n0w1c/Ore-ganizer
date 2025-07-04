@@ -30,19 +30,10 @@ local function get_mining_area(entity)
     local position = entity.position
     local entity_name = entity.name
 
-    local test_name = entity_name:gsub("%-displayer$", "")
-    local prototype_name = RMD_TO_BASE_PROTOTYPE[test_name] or ""
-
+    local prototype_name = entity_name:gsub("%-displayer$", "")
     if prototype_name == "" then return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } } end
 
-    local prototype = prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })
-
-    local radius
-    if prototype_name == "burner-mining-drill" then
-        radius = prototype.mining_drill_radius or prototype.resource_searching_radius or 1
-    else
-        radius = prototype[prototype_name].mining_drill_radius or 1
-    end
+    local radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 1
 
     return {
         left_top = {
@@ -791,41 +782,55 @@ local function on_player_cursor_stack_changed(event)
     local cursor = player.cursor_stack
     if not (cursor and cursor.valid_for_read) then return end
 
+    local surface = player.surface
+
     local selected = player.selected
-    if not selected or selected.type ~= "resource" then return end
+    local resource = nil
+
+    if selected and selected.valid and selected.type == "resource" then
+        resource = selected
+    elseif selected and selected.valid and selected.type == "mining-drill" and string.sub(selected.name, 1, 4) == "rmd-" then
+        local found = surface.find_entities_filtered {
+            position = selected.position,
+            radius = 1,
+            type = "resource"
+        }
+        if #found > 0 then
+            resource = found[1]
+        end
+    end
+
+    if not (resource and resource.valid) then return end
 
     local player_data = get_or_create_player_data(player.index)
-    player_data.selected_resource = selected.name
+    player_data.selected_resource = resource.name
 
     local rmd_mining_drill = "rmd-" .. cursor.name
+
     if prototypes.item[rmd_mining_drill] then
-        local exists = prototypes.entity[rmd_mining_drill]
+        local count = player.get_item_count(rmd_mining_drill)
+        if count > 0 then
+            local stack_size = prototypes.item[rmd_mining_drill].stack_size
+            local place_count = math.min(count, stack_size)
 
-        if exists then
-            local count = player.get_item_count(rmd_mining_drill)
-            if count > 0 then
-                local stack_size = prototypes.item[rmd_mining_drill].stack_size
-                local place_count = math.min(count, stack_size)
+            local original_name = cursor.name
+            local original_count = cursor.count
 
-                local original_name = cursor.name
-                local original_count = cursor.count
+            cursor.clear()
 
-                cursor.clear()
+            player.insert {
+                name = original_name,
+                count = original_count
+            }
 
-                player.insert {
-                    name = original_name,
-                    count = original_count
-                }
-
-                local removed = player.remove_item {
-                    name = rmd_mining_drill,
-                    count = place_count
-                }
-                cursor.set_stack {
-                    name = rmd_mining_drill,
-                    count = removed
-                }
-            end
+            local removed = player.remove_item {
+                name = rmd_mining_drill,
+                count = place_count
+            }
+            cursor.set_stack {
+                name = rmd_mining_drill,
+                count = removed
+            }
         end
     end
 end

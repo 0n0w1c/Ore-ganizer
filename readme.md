@@ -25,6 +25,7 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 ---
 
 #### Startup settings:
+* Trim Resource mining drill area (default: disabled)  
 * Resource slow electric mining drill (default: disabled)  
 * Blueprint resources (default: disabled)  
 * Remove mining drill recipes (default: disabled) - not available with Bob's Mining  

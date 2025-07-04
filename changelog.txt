@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.3
+Date: 04.07.2025
+  Bugfixes:
+    - Pipette not working with Resource slow electric drill
+    - Refined the handling of the pipette tool
+  Changes:
+    - Added startup setting: Trim Resource mining drill area (default: disabled)
+---------------------------------------------------------------------------------------------------
 Version: 0.7.2
 Date: 04.07.2025
   Bugfixes:

@@ -332,26 +332,23 @@ end
 rescale_direction_table(rmd_mining_drill_displayer.integration_patch, SCALE_FACTOR)
 rescale_direction_table(rmd_mining_drill_displayer.picture, SCALE_FACTOR)
 
-local rmd_mining_drill_entity = table.deepcopy(mining_drill)
+local rmd_mining_drill_entity                     = table.deepcopy(mining_drill)
 
-rmd_mining_drill_entity.name = NAME
-rmd_mining_drill_entity.localised_name = { "item-name.rmd-slow-electric-mining-drill" }
-rmd_mining_drill_entity.minable.result = "rmd-slow-electric-mining-drill"
-rmd_mining_drill_entity.mining_speed = 0.25
-rmd_mining_drill_entity.energy_usage = "60kW"
+rmd_mining_drill_entity.name                      = NAME
+rmd_mining_drill_entity.localised_name            = { "item-name.rmd-slow-electric-mining-drill" }
+rmd_mining_drill_entity.placeable_by              = { item = NAME, count = 1 }
+rmd_mining_drill_entity.minable.result            = "rmd-slow-electric-mining-drill"
+rmd_mining_drill_entity.mining_speed              = 0.25
+rmd_mining_drill_entity.energy_usage              = "60kW"
 rmd_mining_drill_entity.resource_searching_radius = 0.99
-rmd_mining_drill_entity.module_slots = 0
-rmd_mining_drill_entity.vector_to_place_result = { -0.5, -1.3 }
-rmd_mining_drill_entity.resource_categories = { "basic-solid" }
-rmd_mining_drill_entity.wet_mining_graphics_set = nil
-rmd_mining_drill_entity.input_fluid_box = nil
+rmd_mining_drill_entity.module_slots              = 0
+rmd_mining_drill_entity.vector_to_place_result    = { -0.5, -1.3 }
+rmd_mining_drill_entity.resource_categories       = { "basic-solid" }
+rmd_mining_drill_entity.wet_mining_graphics_set   = nil
+rmd_mining_drill_entity.input_fluid_box           = nil
 
-rmd_mining_drill_entity.collision_box = { { -0.7, -0.7 }, { 0.7, 0.7 } }
-rmd_mining_drill_entity.selection_box = { { -1, -1 }, { 1, 1 } }
-
---- Rescale a mining drill entity’s graphics for a new footprint.
---- @param entity LuaEntityPrototype|table The drill prototype table (deepcopy of electric-mining-drill)
---- @param factor number Scale factor relative to vanilla (e.g., 2/3 for 2×2)
+rmd_mining_drill_entity.collision_box             = { { -0.7, -0.7 }, { 0.7, 0.7 } }
+rmd_mining_drill_entity.selection_box             = { { -1, -1 }, { 1, 1 } }
 
 local function rescale_drill_entity(entity, factor)
     local function rescale_layer(layer)

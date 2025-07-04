@@ -2,16 +2,17 @@ require("constants")
 
 if not mods["space-age"] then return end
 
-local BASE_GRAPHICS                    = "__space-age__/graphics/"
-local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "big-mining-drill/"
+local BASE_GRAPHICS                               = "__space-age__/graphics/"
+local ENTITY_GRAPHICS                             = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS                              = ENTITY_GRAPHICS .. "big-mining-drill/"
 
-local TO_COPY                          = "big-mining-drill"
-local NAME                             = "rmd-" .. TO_COPY
+local TO_COPY                                     = "big-mining-drill"
+local NAME                                        = "rmd-" .. TO_COPY
 
-local mining_drill                     = data.raw["mining-drill"][TO_COPY]
+local mining_drill                                = data.raw["mining-drill"][TO_COPY]
+local radius                                      = get_effective_mining_radius(mining_drill)
 
-local rmd_mining_drill_displayer       =
+local rmd_mining_drill_displayer                  =
 {
     type                               = "simple-entity-with-owner",
     name                               = NAME .. "-displayer",
@@ -40,7 +41,7 @@ local rmd_mining_drill_displayer       =
             height = 12,
             shift = { 0, 0 },
         },
-        distance = mining_drill.resource_searching_radius
+        distance = radius
     },
     flags                              = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
     max_health                         = mining_drill.max_health,
@@ -501,12 +502,13 @@ local rmd_mining_drill_displayer       =
     }
 }
 
-local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
-rmd_mining_drill_entity.name           = NAME
-rmd_mining_drill_entity.placeable_by   = { item = NAME, count = 1 }
-rmd_mining_drill_entity.minable        = { mining_time = 0.5, result = NAME }
-rmd_mining_drill_entity.localised_name = { "", { "item-name." .. NAME } }
-rmd_mining_drill_entity.icons          =
+local rmd_mining_drill_entity                     = table.deepcopy(data.raw["mining-drill"][TO_COPY])
+rmd_mining_drill_entity.name                      = NAME
+rmd_mining_drill_entity.placeable_by              = { item = NAME, count = 1 }
+rmd_mining_drill_entity.resource_searching_radius = radius
+rmd_mining_drill_entity.minable                   = { mining_time = 0.5, result = NAME }
+rmd_mining_drill_entity.localised_name            = { "", { "item-name." .. NAME } }
+rmd_mining_drill_entity.icons                     =
 {
     {
         icon = STONE_ICON
@@ -518,12 +520,12 @@ rmd_mining_drill_entity.icons          =
     }
 }
 
-local rmd_mining_drill_item            = table.deepcopy(data.raw["item"][TO_COPY])
-rmd_mining_drill_item.name             = NAME
-rmd_mining_drill_item.place_result     = NAME .. "-displayer"
-rmd_mining_drill_item.flags            = { "primary-place-result" }
-rmd_mining_drill_item.localised_name   = { "", { "item-name." .. NAME } }
-rmd_mining_drill_item.icons            =
+local rmd_mining_drill_item                       = table.deepcopy(data.raw["item"][TO_COPY])
+rmd_mining_drill_item.name                        = NAME
+rmd_mining_drill_item.place_result                = NAME .. "-displayer"
+rmd_mining_drill_item.flags                       = { "primary-place-result" }
+rmd_mining_drill_item.localised_name              = { "", { "item-name." .. NAME } }
+rmd_mining_drill_item.icons                       =
 {
     {
         icon = STONE_ICON
@@ -535,9 +537,9 @@ rmd_mining_drill_item.icons            =
     }
 }
 
-local rmd_mining_drill_recipe          = table.deepcopy(data.raw["recipe"][TO_COPY])
-rmd_mining_drill_recipe.name           = NAME
-rmd_mining_drill_recipe.results        = { { type = "item", name = NAME, amount = 1 } }
+local rmd_mining_drill_recipe                     = table.deepcopy(data.raw["recipe"][TO_COPY])
+rmd_mining_drill_recipe.name                      = NAME
+rmd_mining_drill_recipe.results                   = { { type = "item", name = NAME, amount = 1 } }
 
 if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }

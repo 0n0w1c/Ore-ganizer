@@ -1,5 +1,14 @@
 require("constants")
 
+function get_effective_mining_radius(prototype)
+    if settings.startup["rmd-trim-mining-area"].value == true then
+        local box = prototype.selection_box
+        return (box[2][1] - box[1][1]) / 2
+    else
+        return prototype.resource_searching_radius
+    end
+end
+
 local rmd_shortcut =
 {
     type                     = "shortcut",
