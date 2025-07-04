@@ -1,5 +1,16 @@
 require("constants")
 
+local UPDATED = false
+local major, minor, patch = script.active_mods["base"]:match("^(%d+)%.(%d+)%.(%d+)$")
+
+major = tonumber(major)
+minor = tonumber(minor)
+patch = tonumber(patch)
+
+if patch >= 58 then
+    UPDATED = true
+end
+
 local blueprint_resources = settings.startup["rmd-blueprint-resources"].value == true
 
 local function find_excluded_tile_under_entity(entity)
@@ -38,7 +49,17 @@ local function get_mining_area(entity)
 
     if prototypes.entity[prototype_name].type ~= "mining-drill" then return end
 
-    local radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 1
+    local radius
+    if UPDATED then
+        radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 1
+    else
+        local prototype = prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })
+        if prototype_name == "burner-mining-drill" then
+            radius = prototype.mining_drill_radius or prototype.resource_searching_radius or 1
+        else
+            radius = prototype[prototype_name].mining_drill_radius or 1
+        end
+    end
 
     return {
         left_top = {
