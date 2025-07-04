@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.2
+Date: 04.07.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Added startup setting: Resource slow electric mining drill (default: disabled)
+---------------------------------------------------------------------------------------------------
 Version: 0.7.1
 Date: 03.07.2025
   Bugfixes:

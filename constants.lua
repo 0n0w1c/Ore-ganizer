@@ -27,6 +27,7 @@ COLLISION_MASK =
 DISPLAYER_DRILL_NAMES = {
     ["rmd-burner-mining-drill-displayer"]          = true,
     ["rmd-electric-mining-drill-displayer"]        = true,
+    ["rmd-slow-electric-mining-drill-displayer"]   = true,
     ["rmd-big-mining-drill-displayer"]             = true,
     ["rmd-area-mining-drill-displayer"]            = true,
     ["rmd-bob-area-mining-drill-1-displayer"]      = true,
@@ -43,6 +44,7 @@ RMD_ENTITY_NAMES =
 {
     ["rmd-burner-mining-drill"]          = true,
     ["rmd-electric-mining-drill"]        = true,
+    ["rmd-slow-electric-mining-drill"]   = true,
     ["rmd-big-mining-drill"]             = true,
     ["rmd-bob-area-mining-drill-1"]      = true,
     ["rmd-bob-area-mining-drill-2"]      = true,
@@ -61,6 +63,7 @@ RMD_TO_BASE_PROTOTYPE =
 {
     ["rmd-burner-mining-drill"]          = "burner-mining-drill",
     ["rmd-electric-mining-drill"]        = "electric-mining-drill",
+    ["rmd-slow-electric-mining-drill"]   = "rmd-slow-electric-mining-drill",
     ["rmd-big-mining-drill"]             = "big-mining-drill",
     ["rmd-bob-area-mining-drill-1"]      = "bob-area-mining-drill-1",
     ["rmd-bob-area-mining-drill-2"]      = "bob-area-mining-drill-2",

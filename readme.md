@@ -15,9 +15,9 @@ Pipette (Q) on a resource node to auto-select the resource and place a Resource 
 
 Deconstruction removes the resource.
 
-Construction is blocked for invalid combinations or if a required mining technology has not been researched.
+Construction is blocked for invalid combinations or if a required mining technology has not been researched.  
 
-No on_tick code or entity tracking — very UPS-friendly.
+No on_tick code or entity tracking — very UPS-friendly.  
 
 *New: Map generator preset — “No resources”*  
 Includes the *Ice islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
@@ -25,7 +25,8 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 ---
 
 #### Startup settings:
-* Blueprint resources (default: disabled)
+* Resource slow electric mining drill (default: disabled)  
+* Blueprint resources (default: disabled)  
 * Remove mining drill recipes (default: disabled) - not available with Bob's Mining  
 
 ---
