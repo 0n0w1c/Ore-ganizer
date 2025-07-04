@@ -31,7 +31,12 @@ local function get_mining_area(entity)
     local entity_name = entity.name
 
     local prototype_name = entity_name:gsub("%-displayer$", "")
-    if prototype_name == "" then return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } } end
+    if prototype_name == "" or prototypes.entity[prototype_name].type ~= "mining-drill" then
+        log("Error: prototype name = " .. tostring(prototype_name))
+        return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
+    end
+
+    if prototypes.entity[prototype_name].type ~= "mining-drill" then return end
 
     local radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 1
 
