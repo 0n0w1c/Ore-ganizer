@@ -2,6 +2,47 @@ require("constants")
 
 local recipes = data.raw["recipe"]
 
+local function scale_ingredients(ingredients, factor)
+    local min_amount = 1
+    local scaled = {}
+    for _, ingredient in ipairs(ingredients) do
+        local name, amount, type
+
+        if ingredient.name then
+            name = ingredient.name
+            amount = ingredient.amount
+            type = ingredient.type
+        end
+
+        if name and amount then
+            local scaled_amount = math.max(min_amount, math.ceil(amount * factor))
+            table.insert(scaled, { type = type, name = name, amount = scaled_amount })
+        end
+    end
+    return scaled
+end
+
+local function scale_energy_usage(energy_usage, factor)
+    local value, unit = energy_usage:match("^(%d+%.?%d*)(%a+)$")
+    if not value or not unit then return "0kW" end
+
+    local scaled_value = tonumber(value) * factor
+    return ("%g%s"):format(scaled_value, unit)
+end
+
+if settings.startup["rmd-slow-miner"].value == true then
+    local recipe = recipes["rmd-slow-electric-mining-drill"]
+    if recipe then
+        recipe.ingredients = scale_ingredients(recipe.ingredients, 2 / 3)
+    end
+
+    local electric_drill = data.raw["mining-drill"]["electric-mining-drill"]
+    local mining_drill = data.raw["mining-drill"]["rmd-slow-electric-mining-drill"]
+    if mining_drill then
+        mining_drill.energy_usage = scale_energy_usage(electric_drill.energy_usage, 1 / 2)
+    end
+end
+
 if not mods["bobmining"] then
     if settings.startup["rmd-hide-recipes"] and settings.startup["rmd-hide-recipes"].value then
         for _, recipe in pairs(recipes) do
