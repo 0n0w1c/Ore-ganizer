@@ -419,6 +419,19 @@ local function on_entity_mined(event)
     if not RMD_ENTITY_NAMES[entity.name] then return end
     if entity.to_be_upgraded() then return end
 
+    if event.player_index then
+        local player = game.get_player(event.player_index)
+        if player and player.valid then
+            local cursor = player.cursor_stack
+            if cursor and cursor.valid_for_read then
+                local place_result = cursor.prototype and cursor.prototype.place_result
+                if place_result and place_result.type == "mining-drill" then
+                    return
+                end
+            end
+        end
+    end
+
     local surface = entity.surface
     local resource_area = get_mining_area(entity)
     remove_resources(surface, resource_area)
@@ -715,30 +728,22 @@ local function on_player_setup_blueprint(event)
     if not (player and player.valid) then return end
 
     local surface = player.surface
+    local stack = player.blueprint_to_setup
     local copy_and_paste = false
 
-    local blueprint = player.blueprint_to_setup
-    if blueprint and blueprint.valid_for_read then
-        local entities = blueprint.get_blueprint_entities()
-        if not entities then return end
-
-        local modified = swap_blueprint_entities(entities, copy_and_paste, surface)
-        if modified then
-            blueprint.set_blueprint_entities(entities)
+    if not (stack and stack.valid_for_read) then
+        stack = player.cursor_stack
+        if not (stack and stack.valid_for_read and stack.is_blueprint) then
+            return
         end
-    else
-        local stack = player.cursor_stack
-        if not (stack and stack.valid_for_read and stack.is_blueprint) then return end
-
-        local entities = stack.get_blueprint_entities()
-        if not entities then return end
-
         copy_and_paste = true
+    end
 
-        local modified = swap_blueprint_entities(entities, copy_and_paste, surface)
-        if modified then
-            stack.set_blueprint_entities(entities)
-        end
+    local entities = stack.get_blueprint_entities()
+    if not entities then return end
+
+    if swap_blueprint_entities(entities, copy_and_paste, surface) then
+        stack.set_blueprint_entities(entities)
     end
 end
 
@@ -808,7 +813,11 @@ local function on_player_cursor_stack_changed(event)
     if not (cursor and cursor.valid_for_read) then return end
 
     local selected = player.selected
-    if selected and selected.valid and selected.type ~= "resource" then return end
+    if not (selected and selected.valid) then return end
+    if selected.type ~= "resource" then return end
+
+    local player_data = get_or_create_player_data(player.index)
+    player_data.selected_resource = selected.name
 
     local rmd_mining_drill = "rmd-" .. cursor.name
 

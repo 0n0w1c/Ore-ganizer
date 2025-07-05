@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.2
+Date: 05.07.2025
+  Bugfixes:
+    - Restored logic to on_entity_mined event handler removed in 0.7.7
+    - Corrected logic in on_player_cursor_stack_changed event handler
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.8.1
 Date: 05.07.2025
   Bugfixes:
