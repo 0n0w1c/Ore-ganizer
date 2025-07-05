@@ -32,7 +32,7 @@ Date: 04.07.2025
 Version: 0.7.4
 Date: 04.07.2025
   Bugfixes:
-    - Crash when attempting to place mining drills
+    - Crash when attempting to place and mine mining drills with Factiorio <= 2.0.55
   Changes:
     - None
 ---------------------------------------------------------------------------------------------------
