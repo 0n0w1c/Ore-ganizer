@@ -5,7 +5,7 @@ Date: 05.07.2025
     - None
   Changes:
     - Resource slow mining drill recipe ingredients scale to 2/3 of the electric mining drill,
-      power consumption is scaled to 1/2 of the electric mining drill.
+      power consumption scales to 1/2 of the electric mining drill.
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.7
 Date: 04.07.2025
