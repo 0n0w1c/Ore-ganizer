@@ -30,7 +30,7 @@ local function scale_energy_usage(energy_usage, factor)
     return ("%g%s"):format(scaled_value, unit)
 end
 
-if settings.startup["rmd-slow-miner"].value == true then
+if settings.startup["rmd-slow-miner"].value then
     local recipe = recipes["rmd-slow-electric-mining-drill"]
     if recipe then
         recipe.ingredients = scale_ingredients(recipe.ingredients, 2 / 3)
