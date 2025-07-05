@@ -11,7 +11,7 @@ if patch >= 58 then
     UPDATED = true
 end
 
-local blueprint_resources = settings.startup["rmd-blueprint-resources"].value == true
+local BLUEPRINT_RESOURCES = settings.startup["rmd-blueprint-resources"].value == true
 
 local function find_excluded_tile_under_entity(entity)
     if not (entity and entity.valid) then return nil end
@@ -677,7 +677,22 @@ local function get_displayer_name(entity_name)
     end
 end
 
-local function swap_blueprint_entities(entities, surface)
+local function tag_resource(entity, surface)
+    local resource = surface.find_entities_filtered {
+        area = {
+            { entity.position.x - 0.4, entity.position.y - 0.4 },
+            { entity.position.x + 0.4, entity.position.y + 0.4 }
+        },
+        type = "resource"
+    }
+
+    if resource and resource[1] then
+        entity.tags = entity.tags or {}
+        entity.tags.selected_resource = resource[1].name
+    end
+end
+
+local function swap_blueprint_entities(entities, copy_and_paste, surface)
     local modified = false
 
     for _, entity in pairs(entities) do
@@ -686,19 +701,8 @@ local function swap_blueprint_entities(entities, surface)
             entity.name = name
             modified = true
 
-            if blueprint_resources then
-                local resource_entities = surface.find_entities_filtered {
-                    area = {
-                        { entity.position.x - 0.4, entity.position.y - 0.4 },
-                        { entity.position.x + 0.4, entity.position.y + 0.4 }
-                    },
-                    type = "resource"
-                }
-
-                if resource_entities and resource_entities[1] then
-                    entity.tags = entity.tags or {}
-                    entity.tags.selected_resource = resource_entities[1].name
-                end
+            if BLUEPRINT_RESOURCES or copy_and_paste then
+                tag_resource(entity, surface)
             end
         end
     end
@@ -711,13 +715,14 @@ local function on_player_setup_blueprint(event)
     if not (player and player.valid) then return end
 
     local surface = player.surface
+    local copy_and_paste = false
 
     local blueprint = player.blueprint_to_setup
     if blueprint and blueprint.valid_for_read then
         local entities = blueprint.get_blueprint_entities()
         if not entities then return end
 
-        local modified = swap_blueprint_entities(entities, surface)
+        local modified = swap_blueprint_entities(entities, copy_and_paste, surface)
         if modified then
             blueprint.set_blueprint_entities(entities)
         end
@@ -728,7 +733,9 @@ local function on_player_setup_blueprint(event)
         local entities = stack.get_blueprint_entities()
         if not entities then return end
 
-        local modified = swap_blueprint_entities(entities, surface)
+        copy_and_paste = true
+
+        local modified = swap_blueprint_entities(entities, copy_and_paste, surface)
         if modified then
             stack.set_blueprint_entities(entities)
         end
@@ -800,6 +807,47 @@ local function on_player_cursor_stack_changed(event)
     local cursor = player.cursor_stack
     if not (cursor and cursor.valid_for_read) then return end
 
+    local selected = player.selected
+    if selected and selected.valid and selected.type ~= "resource" then return end
+
+    local rmd_mining_drill = "rmd-" .. cursor.name
+
+    if prototypes.item[rmd_mining_drill] then
+        local count = player.get_item_count(rmd_mining_drill)
+        if count > 0 then
+            local stack_size = prototypes.item[rmd_mining_drill].stack_size
+            local place_count = math.min(count, stack_size)
+
+            local original_name = cursor.name
+            local original_count = cursor.count
+
+            cursor.clear()
+
+            player.insert {
+                name = original_name,
+                count = original_count
+            }
+
+            local removed = player.remove_item {
+                name = rmd_mining_drill,
+                count = place_count
+            }
+            cursor.set_stack {
+                name = rmd_mining_drill,
+                count = removed
+            }
+        end
+    end
+end
+
+--[[
+local function on_player_cursor_stack_changed(event)
+    local player = game.get_player(event.player_index)
+    if not player or not player.valid then return end
+
+    local cursor = player.cursor_stack
+    if not (cursor and cursor.valid_for_read) then return end
+
     local surface = player.surface
 
     local selected = player.selected
@@ -852,6 +900,7 @@ local function on_player_cursor_stack_changed(event)
         end
     end
 end
+]]
 
 script.on_event("rmd-toggle-resource-selector", function(event)
     local player = game.get_player(event.player_index)
