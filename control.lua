@@ -43,7 +43,6 @@ local function get_mining_area(entity)
 
     local prototype_name = entity_name:gsub("%-displayer$", "")
     if prototype_name == "" or prototypes.entity[prototype_name].type ~= "mining-drill" then
-        log("Error: prototype name = " .. tostring(prototype_name))
         return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
     end
 
@@ -148,14 +147,21 @@ local function return_item_to_player(player, item_name, quality)
             return
         end
 
-        if stack.valid_for_read and stack.name == item_name and stack.quality == quality then
-            stack.count = stack.count + 1
-        else
+        if not stack.valid_for_read then
             stack.set_stack({ name = item_name, count = 1, quality = quality })
+            return
         end
-    else
+
+        if stack.name == item_name and stack.quality == quality then
+            stack.count = stack.count + 1
+            return
+        end
+
         player.insert({ name = item_name, count = 1, quality = quality })
+        return
     end
+
+    player.insert({ name = item_name, count = 1, quality = quality })
 end
 
 local function is_fluid_mining_researched(force)
@@ -411,21 +417,7 @@ local function on_entity_mined(event)
     if not (entity and entity.valid) then return end
 
     if not RMD_ENTITY_NAMES[entity.name] then return end
-
     if entity.to_be_upgraded() then return end
-
-    if event.player_index then
-        local player = game.get_player(event.player_index)
-        if player and player.valid then
-            local cursor = player.cursor_stack
-            if cursor and cursor.valid_for_read then
-                local place_result = cursor.prototype and cursor.prototype.place_result
-                if place_result and place_result.type == "mining-drill" then
-                    return
-                end
-            end
-        end
-    end
 
     local surface = entity.surface
     local resource_area = get_mining_area(entity)

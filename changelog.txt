@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.7
+Date: 04.07.2025
+  Bugfixes:
+    - Mining quality Resource mining drills returned normal quality Resource mining drills
+    - Refactored on entity mined event handler
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.7.6
 Date: 04.07.2025
   Bugfixes:
