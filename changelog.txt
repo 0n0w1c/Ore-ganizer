@@ -2,7 +2,8 @@
 Version: 0.8.5
 Date: 06.07.2025
   Bugfixes:
-    - Resource mining drills were not placeable in copied blueprints
+    - Resource mining drills were not placeable in blueprints which were edited and new entities
+      selected
   Changes:
     - None
 ---------------------------------------------------------------------------------------------------
