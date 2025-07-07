@@ -723,6 +723,7 @@ local function swap_blueprint_entities(entities, copy_and_paste, surface)
     return modified
 end
 
+
 local function on_player_setup_blueprint(event)
     local player = game.get_player(event.player_index)
     if not (player and player.valid) then return end
@@ -812,104 +813,62 @@ local function on_player_cursor_stack_changed(event)
     local cursor = player.cursor_stack
     if not (cursor and cursor.valid_for_read) then return end
 
+    if cursor.is_selection_tool then
+        if cursor.is_blueprint then
+            local entities = cursor.get_blueprint_entities()
+            if not entities then return end
+
+            if swap_blueprint_entities(entities, false, player.surface) then
+                cursor.set_blueprint_entities(entities)
+            end
+        elseif cursor.is_blueprint_setup then
+            if cursor.is_blueprint then
+                local entities = cursor.get_blueprint_entities()
+                if not entities then return end
+
+                if swap_blueprint_entities(entities, false, player.surface) then
+                    cursor.set_blueprint_entities(entities)
+                end
+            end
+        end
+    end
+
     local selected = player.selected
     if not (selected and selected.valid) then return end
-    if selected.type ~= "resource" then return end
+    if selected.type == "resource" then
+        local player_data = get_or_create_player_data(player.index)
+        player_data.selected_resource = selected.name
 
-    local player_data = get_or_create_player_data(player.index)
-    player_data.selected_resource = selected.name
+        local rmd_mining_drill = "rmd-" .. cursor.name
 
-    local rmd_mining_drill = "rmd-" .. cursor.name
+        if prototypes.item[rmd_mining_drill] then
+            local count = player.get_item_count(rmd_mining_drill)
+            if count > 0 then
+                local stack_size = prototypes.item[rmd_mining_drill].stack_size
+                local place_count = math.min(count, stack_size)
 
-    if prototypes.item[rmd_mining_drill] then
-        local count = player.get_item_count(rmd_mining_drill)
-        if count > 0 then
-            local stack_size = prototypes.item[rmd_mining_drill].stack_size
-            local place_count = math.min(count, stack_size)
+                local original_name = cursor.name
+                local original_count = cursor.count
 
-            local original_name = cursor.name
-            local original_count = cursor.count
+                cursor.clear()
 
-            cursor.clear()
+                player.insert {
+                    name = original_name,
+                    count = original_count
+                }
 
-            player.insert {
-                name = original_name,
-                count = original_count
-            }
-
-            local removed = player.remove_item {
-                name = rmd_mining_drill,
-                count = place_count
-            }
-            cursor.set_stack {
-                name = rmd_mining_drill,
-                count = removed
-            }
+                local removed = player.remove_item {
+                    name = rmd_mining_drill,
+                    count = place_count
+                }
+                cursor.set_stack {
+                    name = rmd_mining_drill,
+                    count = removed
+                }
+            end
         end
     end
 end
-
---[[
-local function on_player_cursor_stack_changed(event)
-    local player = game.get_player(event.player_index)
-    if not player or not player.valid then return end
-
-    local cursor = player.cursor_stack
-    if not (cursor and cursor.valid_for_read) then return end
-
-    local surface = player.surface
-
-    local selected = player.selected
-    local resource = nil
-
-    if selected and selected.valid and selected.type == "resource" then
-        resource = selected
-    elseif selected and selected.valid and selected.type == "mining-drill" and string.sub(selected.name, 1, 4) == "rmd-" then
-        local found = surface.find_entities_filtered {
-            position = selected.position,
-            radius = 1,
-            type = "resource"
-        }
-        if #found > 0 then
-            resource = found[1]
-        end
-    end
-
-    if not (resource and resource.valid) then return end
-
-    local player_data = get_or_create_player_data(player.index)
-    player_data.selected_resource = resource.name
-
-    local rmd_mining_drill = "rmd-" .. cursor.name
-
-    if prototypes.item[rmd_mining_drill] then
-        local count = player.get_item_count(rmd_mining_drill)
-        if count > 0 then
-            local stack_size = prototypes.item[rmd_mining_drill].stack_size
-            local place_count = math.min(count, stack_size)
-
-            local original_name = cursor.name
-            local original_count = cursor.count
-
-            cursor.clear()
-
-            player.insert {
-                name = original_name,
-                count = original_count
-            }
-
-            local removed = player.remove_item {
-                name = rmd_mining_drill,
-                count = place_count
-            }
-            cursor.set_stack {
-                name = rmd_mining_drill,
-                count = removed
-            }
-        end
-    end
-end
-]]
 
 script.on_event("rmd-toggle-resource-selector", function(event)
     local player = game.get_player(event.player_index)
