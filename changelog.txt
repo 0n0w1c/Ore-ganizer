@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.6
+Date: 12.07.2025
+  Bugfixes:
+    - Startup setting Trim Resource mining drill area also trims the vanilla/modded mining drills
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.8.5
 Date: 06.07.2025
   Bugfixes:

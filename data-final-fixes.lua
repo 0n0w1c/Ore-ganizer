@@ -404,3 +404,11 @@ if mods["OmegaDrill"] then
         end
     end
 end
+
+if settings.startup["rmd-trim-mining-area"].value == true then
+    for _, mining_drill in pairs(mining_drills) do
+        if items["rmd-" .. mining_drill.name] then
+            mining_drill.resource_searching_radius = get_effective_mining_radius(mining_drill)
+        end
+    end
+end
