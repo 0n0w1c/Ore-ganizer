@@ -17,6 +17,8 @@ Deconstruction removes the resource.
 
 Construction is blocked for invalid combinations or if a required mining technology has not been researched.  
 
+When placing blueprints of Resource mining drills, they will appear blue and that is expected, just place as usual.  
+
 No on_tick code or entity tracking — very UPS-friendly.  
 
 *New: Map generator preset — “No resources”*  
