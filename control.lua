@@ -1012,8 +1012,15 @@ local function on_pre_build(event)
             local resource_name
             if entity.tags and entity.tags.selected_resource then
                 resource_name = entity.tags.selected_resource
-            else
+            elseif storage.players[player.index].selected_resource ~= DISABLED then
                 resource_name = storage.players[player.index].selected_resource
+            else
+                player.create_local_flying_text
+                {
+                    text = { "", { "rmd-message.rmd-error-no-resource" } },
+                    create_at_cursor = true
+                }
+                return
             end
 
             local entity_map_position = get_entity_map_position(event, entity, entities)

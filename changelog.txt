@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.1
+Date: 18.07.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Added flying text when attempting to place a blueprint without a selected resource
+---------------------------------------------------------------------------------------------------
 Version: 0.9.0
 Date: 18.07.2025
   Bugfixes:
