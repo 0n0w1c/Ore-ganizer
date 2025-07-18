@@ -1,16 +1,5 @@
 require("constants")
 
-local UPDATED = false
-local major, minor, patch = script.active_mods["base"]:match("^(%d+)%.(%d+)%.(%d+)$")
-
-major = tonumber(major)
-minor = tonumber(minor)
-patch = tonumber(patch)
-
-if patch >= 58 then
-    UPDATED = true
-end
-
 local BLUEPRINT_RESOURCES = settings.startup["rmd-blueprint-resources"].value == true
 
 local function find_excluded_tile_under_entity(entity)
@@ -35,8 +24,32 @@ local function find_excluded_tile_under_entity(entity)
     return nil
 end
 
+--[[
+local function get_mining_area_at_position(entity, map_position)
+    local prototype_name = entity.name:gsub("%-displayer$", "")
+    local prototype = prototypes.entity[prototype_name]
+
+    if not prototype or prototype.type ~= "mining-drill" then
+        return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
+    end
+
+    local radius = prototype.mining_drill_radius or 0.99
+
+    return {
+        left_top = {
+            x = map_position.x - radius,
+            y = map_position.y - radius
+        },
+        right_bottom = {
+            x = map_position.x + radius,
+            y = map_position.y + radius
+        }
+    }
+end
+]]
+
 local function get_mining_area(entity)
-    if not (entity and entity.valid) then return {} end
+    --if not (entity and entity.valid) then return {} end
 
     local position = entity.position
     local entity_name = entity.name
@@ -46,28 +59,16 @@ local function get_mining_area(entity)
         return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
     end
 
-    if prototypes.entity[prototype_name].type ~= "mining-drill" then return end
-
-    local radius
-    if UPDATED then
-        radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 1
-    else
-        local prototype = prototypes.get_entity_filtered({ { filter = "type", type = "mining-drill" } })
-        if prototype_name == "burner-mining-drill" then
-            radius = prototype.mining_drill_radius or prototype.resource_searching_radius or 1
-        else
-            radius = prototype[prototype_name].mining_drill_radius or 1
-        end
-    end
+    radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 0.99
 
     return {
         left_top = {
-            x = math.floor(position.x - radius),
-            y = math.floor(position.y - radius)
+            x = position.x - radius,
+            y = position.y - radius
         },
         right_bottom = {
-            x = math.ceil(position.x + radius),
-            y = math.ceil(position.y + radius)
+            x = position.x + radius,
+            y = position.y + radius
         }
     }
 end
@@ -87,8 +88,8 @@ local function place_resources(surface, area, resource_name, player_index)
     if not prototype or prototype.type ~= "resource" then return end
 
     local is_fluid = is_fluid_category_supported(prototype.resource_category)
-    for x = area.left_top.x, area.right_bottom.x - 1 do
-        for y = area.left_top.y, area.right_bottom.y - 1 do
+    for x = area.left_top.x, area.right_bottom.x do
+        for y = area.left_top.y, area.right_bottom.y do
             local position = { x = x, y = y }
 
             local tile = surface.get_tile(x, y)
@@ -119,9 +120,29 @@ local function place_resources(surface, area, resource_name, player_index)
     end
 end
 
+local function spot_resources(surface, position, resource_name, player_index)
+    local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
+    local prototype = resource_prototypes[resource_name]
+
+    if not prototype or prototype.type ~= "resource" then return end
+
+    local is_fluid = is_fluid_category_supported(prototype.resource_category)
+
+    local amount = storage.players[player_index].resource_amount or 5000
+    local multiplier = resource_name == "offshore-oil" and FLUID_MULTIPLIER * 4 or FLUID_MULTIPLIER
+    local resource_amount = is_fluid and (amount * multiplier) or amount
+
+    surface.create_entity
+    ({
+        name = resource_name,
+        amount = resource_amount,
+        position = position
+    })
+end
+
 local function remove_resources(surface, area)
-    for x = area.left_top.x, area.right_bottom.x - 1 do
-        for y = area.left_top.y, area.right_bottom.y - 1 do
+    for x = area.left_top.x, area.right_bottom.x do
+        for y = area.left_top.y, area.right_bottom.y do
             local resources = surface.find_entities_filtered({ area = { { x, y }, { x + 1, y + 1 } }, type = "resource" })
 
             for _, resource in pairs(resources) do
@@ -259,7 +280,7 @@ local function destroy_and_return(player, entity, item_name, quality, message)
     return_item_to_player(player, item_name, quality)
 end
 
-local function on_entity_built(event)
+local function on_built_entity(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
@@ -269,7 +290,7 @@ local function on_entity_built(event)
 
     local entity_name = entity.name
     local is_displayer = string.find(entity_name, "^rmd%-.+%-displayer$")
-    if not is_displayer then return end
+    if not (is_displayer or string.sub(entity_name, 1, 4) == "rmd-") then return end
 
     local surface = entity.surface
     local force = entity.force
@@ -322,97 +343,105 @@ local function on_entity_built(event)
         end
     end
 
-    local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
-    local resource_prototype = resource_prototypes[resource_name]
-    if not resource_prototype or resource_prototype.type ~= "resource" then
-        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
-    end
-
-    local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
-    local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
-    local water_miner_fluid = is_water_miner_fluid(resource_prototype.resource_category)
-    local oil_rig_fluid = is_oil_rig_fluid(resource_prototype.resource_category)
-    local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
-    local is_water_miner = entity_name == "rmd-bob-water-miner-displayer"
-    local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
-    local is_drill = is_displayer_drill(entity_name)
-
-    if is_pumpjack and not pumpjack_fluid then
-        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
-    end
-
-    if is_water_miner and not water_miner_fluid then
-        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
-    end
-
-    if is_oil_rig and not oil_rig_fluid then
-        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
-    end
-
-    if is_oil_rig and not on_water(entity) then
-        return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-not-on-land")
-    end
-
-    if is_drill then
-        local resource_category = resource_prototype.resource_category
-        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
-        local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
-        local is_researched = is_fluid_mining_researched(force)
-
-        if not is_minable then
+    if is_displayer then
+        local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
+        local resource_prototype = resource_prototypes[resource_name]
+        if not resource_prototype or resource_prototype.type ~= "resource" then
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if is_fluid_resource then
+        local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
+        local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
+        local water_miner_fluid = is_water_miner_fluid(resource_prototype.resource_category)
+        local oil_rig_fluid = is_oil_rig_fluid(resource_prototype.resource_category)
+        local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
+        local is_water_miner = entity_name == "rmd-bob-water-miner-displayer"
+        local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
+        local is_drill = is_displayer_drill(entity_name)
+
+        if is_pumpjack and not pumpjack_fluid then
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if entity_name == "rmd-burner-mining-drill-displayer" and is_required_fluid then
+        if is_water_miner and not water_miner_fluid then
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer")
-            and resource_category == "hard-solid" then
+        if is_oil_rig and not oil_rig_fluid then
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
         end
 
-        if (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore" then
-            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-research-required")
+        if is_oil_rig and not on_water(entity) then
+            return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-not-on-land")
         end
-    end
 
-    local excluded_tile = find_excluded_tile_under_entity(entity)
-    if not is_oil_rig and excluded_tile then
-        player.create_local_flying_text
-        {
-            text = { "", { "rmd-message.rmd-error-tiles-not-allowed" }, " ", excluded_tile },
-            create_at_cursor = true
-        }
-        entity.destroy()
-        return_item_to_player(player, item_name, quality)
-        return
+        if is_drill then
+            local resource_category = resource_prototype.resource_category
+            local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
+            local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
+            local is_researched = is_fluid_mining_researched(force)
+
+            if not is_minable then
+                return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
+            end
+
+            if is_fluid_resource then
+                return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
+            end
+
+            if entity_name == "rmd-burner-mining-drill-displayer" and is_required_fluid then
+                return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
+            end
+
+            if (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer")
+                and resource_category == "hard-solid" then
+                return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection")
+            end
+
+            if (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore" then
+                return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-error-research-required")
+            end
+        end
+
+        local excluded_tile = find_excluded_tile_under_entity(entity)
+        if not is_oil_rig and excluded_tile then
+            player.create_local_flying_text
+            {
+                text = { "", { "rmd-message.rmd-error-tiles-not-allowed" }, " ", excluded_tile },
+                create_at_cursor = true
+            }
+            entity.destroy()
+            return_item_to_player(player, item_name, quality)
+            return
+        end
     end
 
     local resource_area = get_mining_area(entity)
-    entity.destroy({ raise_destroy = true })
+
+    if is_displayer then
+        entity.destroy({ raise_destroy = true })
+    end
 
     if item_name == "rmd-oil_rig" then item_name = "oil_rig" end
 
     remove_resources(surface, resource_area)
     place_resources(surface, resource_area, resource_name, player.index)
-    surface.create_entity
-    ({
-        name = item_name,
-        force = force,
-        position = position,
-        direction = direction,
-        create_build_effect_smoke = true,
-        quality = quality,
-        raise_built = true,
-    })
+
+    if is_displayer then
+        surface.create_entity
+        ({
+            name = item_name,
+            force = force,
+            position = position,
+            direction = direction,
+            create_build_effect_smoke = true,
+            quality = quality,
+            raise_built = true,
+        })
+    end
 end
 
-local function on_entity_mined(event)
+local function on_mined_entity(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
@@ -680,6 +709,7 @@ local function on_player_changed_surface(event)
     player_data.selected_resource = DISABLED
 end
 
+--[[
 local function get_displayer_name(entity_name)
     if entity_name:match("^rmd%-.+%-drill$") then
         return entity_name .. "-displayer"
@@ -689,6 +719,7 @@ local function get_displayer_name(entity_name)
         return "rmd-oil_rig-displayer"
     end
 end
+]]
 
 local function tag_resource(entity, surface)
     local resource = surface.find_entities_filtered {
@@ -707,19 +738,14 @@ end
 
 local function swap_blueprint_entities(entities, copy_and_paste, surface)
     local modified = false
-
     for _, entity in pairs(entities) do
-        local name = get_displayer_name(entity.name)
-        if name then
-            entity.name = name
+        if string.sub(entity.name, 1, 4) == "rmd-" then
             modified = true
-
             if BLUEPRINT_RESOURCES or copy_and_paste then
                 tag_resource(entity, surface)
             end
         end
     end
-
     return modified
 end
 
@@ -840,7 +866,6 @@ local function on_player_cursor_stack_changed(event)
         player_data.selected_resource = selected.name
 
         local rmd_mining_drill = "rmd-" .. cursor.name
-
         if prototypes.item[rmd_mining_drill] then
             local count = player.get_item_count(rmd_mining_drill)
             if count > 0 then
@@ -901,6 +926,102 @@ script.on_event("rmd-toggle-cursor-drill", function(event)
     player.play_sound { path = "utility/inventory_move" }
 end)
 
+local function get_entity_map_position(event, blueprint_entity, blueprint_entities)
+    local direction = event.direction or defines.direction.north
+    local event_position =
+    {
+        x = math.floor(event.position.x) + 0.5, y = math.floor(event.position.y) + 0.5
+    }
+
+    local min_x, min_y = math.huge, math.huge
+    local max_x, max_y = -math.huge, -math.huge
+
+    for _, entity in pairs(blueprint_entities) do
+        local proto   = prototypes.entity[entity.name]
+        local sel_box = proto.selection_box
+
+        local cx, cy  = entity.position.x, entity.position.y
+        local left    = cx + sel_box.left_top.x
+        local top     = cy + sel_box.left_top.y
+        local right   = cx + sel_box.right_bottom.x
+        local bottom  = cy + sel_box.right_bottom.y
+
+        min_x         = math.min(min_x, left)
+        min_y         = math.min(min_y, top)
+        max_x         = math.max(max_x, right)
+        max_y         = math.max(max_y, bottom)
+    end
+
+    -- compute blueprint center in blueprint space
+    --local width            = max_x - min_x
+    --local height           = max_y - min_y
+
+    local blueprint_center = {
+        x = (min_x + max_x) / 2,
+        y = (min_y + max_y) / 2
+    }
+
+    local anchor_x         = event_position.x
+    local anchor_y         = event_position.y
+
+    --[[
+    -- adjust anchor if blueprint is even in any dimension
+    local function round(x) return math.floor(x + 0.5) end
+
+    if round(width) % 2 == 0 then
+        anchor_x = anchor_x - 0.5
+    end
+    if round(height) % 2 == 0 then
+        anchor_y = anchor_y - 0.5
+    end
+    ]]
+
+    local rel_x = blueprint_entity.position.x - blueprint_center.x
+    local rel_y = blueprint_entity.position.y - blueprint_center.y
+
+    local rotated_x, rotated_y = rel_x, rel_y
+    if direction == defines.direction.east then
+        rotated_x, rotated_y = -rel_y, rel_x
+    elseif direction == defines.direction.south then
+        rotated_x, rotated_y = -rel_x, -rel_y
+    elseif direction == defines.direction.west then
+        rotated_x, rotated_y = rel_y, -rel_x
+    end
+
+    return
+    {
+        x = anchor_x + rotated_x,
+        y = anchor_y + rotated_y
+    }
+end
+
+local function on_pre_build(event)
+    local player = game.players[event.player_index]
+    local surface = player.surface
+    local cursor = player.cursor_stack
+
+    if not (cursor and cursor.valid_for_read) then return end
+    if not cursor.is_blueprint then return end
+    if not cursor.is_blueprint_setup() then return end
+
+    local entities = cursor.get_blueprint_entities()
+    if not entities then return end
+
+    for _, entity in pairs(entities) do
+        if string.sub(entity.name, 1, 4) == "rmd-" then
+            local resource_name
+            if entity.tags and entity.tags.selected_resource then
+                resource_name = entity.tags.selected_resource
+            else
+                resource_name = storage.players[player.index].selected_resource
+            end
+
+            local entity_map_position = get_entity_map_position(event, entity, entities)
+            spot_resources(surface, entity_map_position, resource_name, event.player_index)
+        end
+    end
+end
+
 local function register_event_handlers()
     script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
     script.on_event(defines.events.on_surface_created, on_surface_created)
@@ -916,15 +1037,16 @@ local function register_event_handlers()
     script.on_event(defines.events.on_gui_closed, on_gui_closed)
     script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 
-    script.on_event(defines.events.on_built_entity, on_entity_built)
-    script.on_event(defines.events.on_robot_built_entity, on_entity_built)
-    script.on_event(defines.events.on_entity_cloned, on_entity_built)
-    script.on_event(defines.events.script_raised_revive, on_entity_built)
+    script.on_event(defines.events.on_pre_build, on_pre_build)
+    script.on_event(defines.events.on_built_entity, on_built_entity)
+    script.on_event(defines.events.on_robot_built_entity, on_built_entity)
+    script.on_event(defines.events.on_entity_cloned, on_built_entity)
+    script.on_event(defines.events.script_raised_revive, on_built_entity)
 
-    script.on_event(defines.events.on_player_mined_entity, on_entity_mined)
-    script.on_event(defines.events.on_robot_mined_entity, on_entity_mined)
-    script.on_event(defines.events.on_entity_died, on_entity_mined)
-    script.on_event(defines.events.script_raised_destroy, on_entity_mined)
+    script.on_event(defines.events.on_player_mined_entity, on_mined_entity)
+    script.on_event(defines.events.on_robot_mined_entity, on_mined_entity)
+    script.on_event(defines.events.on_entity_died, on_mined_entity)
+    script.on_event(defines.events.script_raised_destroy, on_mined_entity)
 
     script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 end
