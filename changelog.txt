@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.2
+Date: 19.07.2025
+  Bugfixes:
+    - Blueprinting of Resource mining drills required update_connections()
+    - Refactored pipette use on a resource, to an event handler
+    - Blueprints of Resource mining drills and pumpjacks could place invalid resource selections
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.9.1
 Date: 18.07.2025
   Bugfixes:
