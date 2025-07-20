@@ -95,6 +95,9 @@ local function place_resources(surface, area, resource_name, player_index)
 end
 
 local function spot_resources(surface, position, resource_name, player_index)
+    local player = game.get_player(player_index)
+    if not player then return end
+
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
     local prototype = resource_prototypes[resource_name]
 
@@ -680,9 +683,10 @@ end
 
 local function tag_resource(entity, surface)
     local resource = surface.find_entities_filtered {
-        area = {
-            { entity.position.x - 0.4, entity.position.y - 0.4 },
-            { entity.position.x + 0.4, entity.position.y + 0.4 }
+        area =
+        {
+            { entity.position.x - 0.49, entity.position.y - 0.49 },
+            { entity.position.x + 0.49, entity.position.y + 0.49 }
         },
         type = "resource"
     }
@@ -693,7 +697,7 @@ local function tag_resource(entity, surface)
     end
 end
 
-local function swap_blueprint_entities(entities, copy_and_paste, surface)
+local function tag_entities(entities, copy_and_paste, surface)
     local modified = false
     for _, entity in pairs(entities) do
         if string.sub(entity.name, 1, 4) == "rmd-" then
@@ -726,7 +730,7 @@ local function on_player_setup_blueprint(event)
     local entities = stack.get_blueprint_entities()
     if not entities then return end
 
-    if swap_blueprint_entities(entities, copy_and_paste, surface) then
+    if tag_entities(entities, copy_and_paste, surface) then
         stack.set_blueprint_entities(entities)
     end
 end
@@ -765,27 +769,29 @@ end
 local function on_cutscene_cancelled(event)
     local player = game.get_player(event.player_index)
     if not player or not player.valid or not player.character then return end
-
     player.character.insert { name = "rmd-burner-mining-drill", count = 1 }
 end
 
-local function remove_all_aquilo_island_resources(surface)
-    for _, entity in ipairs(surface.find_entities_filtered { name = "rmd-aquilo-islands", type = "resource" }) do
-        if entity.valid then entity.destroy() end
+local function remove_aquilo_island_resources(surface, area)
+    if prototypes.entity["rmd-aquilo-islands"] then
+        local resources = surface.find_entities_filtered { name = "rmd-aquilo-islands", type = "resource", area = area }
+        for _, resource in ipairs(resources) do
+            if resource.valid then resource.destroy() end
+        end
     end
 end
 
 local function on_surface_created(event)
     local surface = game.surfaces[event.surface_index]
     if surface.name == "aquilo" then
-        remove_all_aquilo_island_resources(surface)
+        remove_aquilo_island_resources(surface)
     end
 end
 
 local function on_chunk_generated(event)
     local surface = event.surface
     if surface.name == "aquilo" then
-        remove_all_aquilo_island_resources(surface)
+        remove_aquilo_island_resources(surface, event.area)
     end
 end
 
@@ -801,7 +807,7 @@ local function on_player_cursor_stack_changed(event)
             local entities = cursor.get_blueprint_entities()
             if not entities then return end
 
-            if swap_blueprint_entities(entities, false, player.surface) then
+            if tag_entities(entities, false, player.surface) then
                 cursor.set_blueprint_entities(entities)
             end
         elseif cursor.is_blueprint_setup then
@@ -809,7 +815,7 @@ local function on_player_cursor_stack_changed(event)
                 local entities = cursor.get_blueprint_entities()
                 if not entities then return end
 
-                if swap_blueprint_entities(entities, false, player.surface) then
+                if tag_entities(entities, false, player.surface) then
                     cursor.set_blueprint_entities(entities)
                 end
             end
@@ -817,11 +823,11 @@ local function on_player_cursor_stack_changed(event)
     end
 end
 
-script.on_event("rmd-toggle-resource-selector", function(event)
+local function on_toggle_resource_selector(event)
     local player = game.get_player(event.player_index)
     if not player then return end
     toggle_resource_selector_gui(player)
-end)
+end
 
 local function get_swapped_drill_name(name)
     if name:sub(1, 4) == "rmd-" then
@@ -831,7 +837,7 @@ local function get_swapped_drill_name(name)
     end
 end
 
-script.on_event("rmd-toggle-cursor-drill", function(event)
+local function on_toggle_cursor_drill(event)
     local player = game.get_player(event.player_index)
     if not player then return end
 
@@ -846,7 +852,7 @@ script.on_event("rmd-toggle-cursor-drill", function(event)
 
     cursor.set_stack({ name = swapped_name, count = cursor.count })
     player.play_sound { path = "utility/inventory_move" }
-end)
+end
 
 local function get_entity_map_position(event, blueprint_entity, blueprint_entities)
     local direction = event.direction or defines.direction.north
@@ -874,32 +880,16 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
         max_y         = math.max(max_y, bottom)
     end
 
-    -- compute blueprint center in blueprint space
-    --local width            = max_x - min_x
-    --local height           = max_y - min_y
-
-    local blueprint_center = {
+    local blueprint_center     = {
         x = (min_x + max_x) / 2,
         y = (min_y + max_y) / 2
     }
 
-    local anchor_x         = event_position.x
-    local anchor_y         = event_position.y
+    local anchor_x             = event_position.x
+    local anchor_y             = event_position.y
 
-    --[[
-    -- adjust anchor if blueprint is even in any dimension
-    local function round(x) return math.floor(x + 0.5) end
-
-    if round(width) % 2 == 0 then
-        anchor_x = anchor_x - 0.5
-    end
-    if round(height) % 2 == 0 then
-        anchor_y = anchor_y - 0.5
-    end
-    ]]
-
-    local rel_x = blueprint_entity.position.x - blueprint_center.x
-    local rel_y = blueprint_entity.position.y - blueprint_center.y
+    local rel_x                = blueprint_entity.position.x - blueprint_center.x
+    local rel_y                = blueprint_entity.position.y - blueprint_center.y
 
     local rotated_x, rotated_y = rel_x, rel_y
     if direction == defines.direction.east then
@@ -1038,9 +1028,51 @@ local function on_player_pipette(event)
     end
 end
 
---on_player_configured_blueprint
---on_resource_depleted
---on_undo_applied
+local function undo_spot_resources(surface, position, player_index)
+    local player = game.get_player(player_index)
+    if not player then return end
+
+    local area =
+    {
+        { position.x - 1, position.y - 1 },
+        { position.x + 1, position.y + 1 }
+    }
+
+    local resources = surface.find_entities_filtered { area = area, type = "resource" }
+
+    for _, resource in ipairs(resources) do
+        if resource.valid then
+            resource.destroy()
+        end
+    end
+end
+
+local function on_undo_applied(event)
+    local player_index = event.player_index
+    local player = game.get_player(player_index)
+    if not player then return end
+
+    local cursor = player.cursor_stack
+    if cursor and cursor.valid_for_read then
+        if cursor.is_blueprint then
+            local drills_found = false
+            local entities = cursor.get_blueprint_entities()
+            if entities then
+                for _, entity in pairs(entities) do
+                    if string.sub(entity.name, 1, 4) == "rmd-" then
+                        drills_found = true
+                        break
+                    end
+                end
+            end
+            if drills_found == true then
+                for _, action in pairs(event.actions) do
+                    undo_spot_resources(player.surface, action.target.position, event.player_index)
+                end
+            end
+        end
+    end
+end
 
 local function register_event_handlers()
     script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
@@ -1069,7 +1101,10 @@ local function register_event_handlers()
     script.on_event(defines.events.on_entity_died, on_mined_entity)
     script.on_event(defines.events.script_raised_destroy, on_mined_entity)
 
+    script.on_event(defines.events.on_undo_applied, on_undo_applied)
     script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
+    script.on_event("rmd-toggle-resource-selector", on_toggle_resource_selector)
+    script.on_event("rmd-toggle-cursor-drill", on_toggle_cursor_drill)
 end
 
 script.on_init(function()

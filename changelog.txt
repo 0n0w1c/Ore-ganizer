@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.3
+Date: 20.07.2025
+  Bugfixes:
+    - Undo when placing a blueprint with Resource mining drills would leave spot placed resources
+    - Crash when Everything on Nauvis is active and executing /cheat aquilo
+    - Basic refactoring, tuning and cleanup
+  Changes:
+    - Resource slow electric mining drill energy usage scale changed from 1/2 to 2/3 (45kW to 60kW)
+---------------------------------------------------------------------------------------------------
 Version: 0.9.2
 Date: 19.07.2025
   Bugfixes:

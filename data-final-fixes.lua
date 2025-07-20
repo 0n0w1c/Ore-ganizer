@@ -1,5 +1,8 @@
 require("constants")
 
+local recycling = {}
+if mods["quality"] then recycling = require("__quality__/prototypes/recycling") end
+
 local recipes = data.raw["recipe"]
 
 local function scale_ingredients(ingredients, factor)
@@ -34,12 +37,13 @@ if settings.startup["rmd-slow-miner"].value then
     local recipe = recipes["rmd-slow-electric-mining-drill"]
     if recipe then
         recipe.ingredients = scale_ingredients(recipe.ingredients, 2 / 3)
+        if mods["quality"] then recycling.generate_recycling_recipe(recipes["big-electric-pole"]) end
     end
 
     local electric_drill = data.raw["mining-drill"]["electric-mining-drill"]
     local mining_drill = data.raw["mining-drill"]["rmd-slow-electric-mining-drill"]
     if mining_drill then
-        mining_drill.energy_usage = scale_energy_usage(electric_drill.energy_usage, 1 / 2)
+        mining_drill.energy_usage = scale_energy_usage(electric_drill.energy_usage, 2 / 3)
     end
 end
 
