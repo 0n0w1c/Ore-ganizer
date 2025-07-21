@@ -265,6 +265,17 @@ local function validate_or_destroy(player, entity, item_name, quality, message_k
     return false
 end
 
+function drill_and_resource_compatible(mining_drill, resource_category)
+    if not resource_category or not mining_drill then return false end
+
+    local drill_name = mining_drill.name:gsub("%-displayer$", "")
+    local mining_drill_categories = prototypes.entity[drill_name].resource_categories
+
+    if mining_drill_categories and mining_drill_categories[resource_category] then return true end
+
+    return false
+end
+
 local function validate_resource_checks(player, entity, entity_name, resource_name, item_name, quality)
     local force = entity.force
 
@@ -280,20 +291,17 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
     local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
     local is_drill = is_displayer_drill(entity_name)
 
-    if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_pumpjack and not pumpjack_fluid) then return false end
-    if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_water_miner and not water_miner_fluid) then return false end
-    if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_oil_rig and not oil_rig_fluid) then return false end
-    if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-not-on-land", is_oil_rig and not on_water(entity)) then return false end
-
     if is_drill then
         local resource_category = resource_prototype.resource_category
         local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
         local is_researched = is_fluid_mining_researched(force)
 
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_required_fluid and not is_researched) then return false end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", not drill_and_resource_compatible(entity, resource_category)) then return false end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", not is_minable) then return false end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_fluid_resource) then return false end
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", entity_name == "rmd-burner-mining-drill-displayer" and is_required_fluid) then return false end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", (entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-slow-electric-mining-drill-displayer") and is_required_fluid) then return false end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection",
                 (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer") and resource_category == "hard-solid") then
             return false
@@ -302,6 +310,11 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
                 (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore") then
             return false
         end
+    else
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_pumpjack and not pumpjack_fluid) then return false end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_water_miner and not water_miner_fluid) then return false end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_oil_rig and not oil_rig_fluid) then return false end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-not-on-land", is_oil_rig and not on_water(entity)) then return false end
     end
 
     return true
@@ -924,22 +937,24 @@ local function blueprint_validate_resource_checks(player, entity, resource_name,
     local is_rmd_entity = RMD_ENTITY_NAMES[entity_name] == true
     local is_drill = is_rmd_entity and (string.find(entity_name, "drill") ~= nil)
 
-    if is_pumpjack and not pumpjack_fluid then return false end
-    if is_water_miner and not water_miner_fluid then return false end
-    if is_oil_rig and not oil_rig_fluid then return false end
-    if is_oil_rig and not on_water(entity) then return false end
-
     if is_drill then
         local resource_category = resource_prototype.resource_category
         local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
         local is_researched = is_fluid_mining_researched(force)
 
+        if is_required_fluid and not is_researched then return false end
+        if not drill_and_resource_compatible(entity, resource_category) then return false end
         if not is_minable then return false end
         if is_fluid_resource then return false end
-        if entity_name == "rmd-burner-mining-drill" and is_required_fluid then return false end
+        if (entity_name == "rmd-burner-mining-drill" or entity_name == "rmd-slow-electric-mining-drill") and is_required_fluid then return false end
         if (entity_name == "rmd-electric-mining-drill" or entity_name == "rmd-burner-mining-drill") and resource_category == "hard-solid" then return false end
         if (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore" then return false end
+    else
+        if is_pumpjack and not pumpjack_fluid then return false end
+        if is_water_miner and not water_miner_fluid then return false end
+        if is_oil_rig and not oil_rig_fluid then return false end
+        if is_oil_rig and not on_water(entity) then return false end
     end
 
     return true

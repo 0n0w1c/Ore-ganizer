@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.4
+Date: 21.07.2025
+  Bugfixes:
+    - Resource slow electric mining drills could be placed with a resource requiring fluid mining
+    - Resource slow electric mining drill entity was not defined with the correct icon
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.9.3
 Date: 20.07.2025
   Bugfixes:

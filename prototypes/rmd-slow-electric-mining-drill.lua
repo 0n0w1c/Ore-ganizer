@@ -346,9 +346,20 @@ rmd_mining_drill_entity.vector_to_place_result    = { -0.5, -1.3 }
 rmd_mining_drill_entity.resource_categories       = { "basic-solid" }
 rmd_mining_drill_entity.wet_mining_graphics_set   = nil
 rmd_mining_drill_entity.input_fluid_box           = nil
-
 rmd_mining_drill_entity.collision_box             = { { -0.7, -0.7 }, { 0.7, 0.7 } }
 rmd_mining_drill_entity.selection_box             = { { -1, -1 }, { 1, 1 } }
+rmd_mining_drill_entity.icons                     =
+{
+    {
+        icon = STONE_ICON
+    },
+    {
+        icon = MOD_PATH .. "/graphics/icons/" .. NAME .. ".png",
+        icon_size = 64,
+        shift = { -8, -8 }
+    }
+}
+
 
 local function rescale_drill_entity(entity, factor)
     local function rescale_layer(layer)
