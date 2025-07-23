@@ -1,4 +1,5 @@
 require("constants")
+require("utilities")
 
 if not settings.startup["rmd-slow-miner"].value then return end
 
@@ -339,7 +340,7 @@ rmd_mining_drill_entity.localised_name            = { "item-name.rmd-slow-electr
 rmd_mining_drill_entity.placeable_by              = { item = NAME, count = 1 }
 rmd_mining_drill_entity.minable.result            = "rmd-slow-electric-mining-drill"
 rmd_mining_drill_entity.mining_speed              = 0.25
-rmd_mining_drill_entity.energy_usage              = "60kW"
+rmd_mining_drill_entity.energy_usage              = scale_energy_usage(mining_drill.energy_usage, 2 / 3)
 rmd_mining_drill_entity.resource_searching_radius = 0.99
 rmd_mining_drill_entity.module_slots              = 2
 rmd_mining_drill_entity.vector_to_place_result    = { -0.5, -1.3 }
@@ -359,7 +360,6 @@ rmd_mining_drill_entity.icons                     =
         shift = { -8, -8 }
     }
 }
-
 
 local function rescale_drill_entity(entity, factor)
     local function rescale_layer(layer)

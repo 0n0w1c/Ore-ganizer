@@ -1,6 +1,7 @@
 if not mods["cargo-ships"] then return end
 
 require("constants")
+require("utilities")
 
 local BASE_GRAPHICS                    = "__base__/graphics/"
 local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
@@ -89,6 +90,8 @@ rmd_mining_drill_item.icons            =
 local rmd_mining_drill_recipe          = table.deepcopy(data.raw["recipe"][TO_COPY])
 rmd_mining_drill_recipe.name           = NAME
 rmd_mining_drill_recipe.results        = { { type = "item", name = NAME, amount = 1 } }
+
+replace_ingredient(rmd_mining_drill_recipe, "pumpjack", "rmd-pumpjack")
 
 if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }

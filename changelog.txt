@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.5
+Date: 22.07.2025
+  Bugfixes:
+    - AAI Industry and slow electric mining drill: Corrected the recipes for Resource slow electric
+      mining drill and electric mining drill
+    - Refactored some recycling recipes for modded drills
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.9.4
 Date: 21.07.2025
   Bugfixes:
