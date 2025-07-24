@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.6
+Date: 23.07.2025
+  Bugfixes:
+    - Added check for available drills when placing blueprints
+  Changes:
+    - When not enough Resource drills are in inventory + logistic to construct the blueprint,
+      the drill placement will be blocked to prevent the spawning resources without a mining drill
+---------------------------------------------------------------------------------------------------
 Version: 0.9.5
 Date: 22.07.2025
   Bugfixes:

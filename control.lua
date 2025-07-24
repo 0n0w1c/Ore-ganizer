@@ -960,6 +960,66 @@ local function blueprint_validate_resource_checks(player, entity, resource_name,
     return true
 end
 
+local function get_logistic_drill_count(player, drill_names)
+    if not (player and player.valid and player.character and player.character.valid) then return 0 end
+
+    local surface = player.surface
+    local position = player.character.position
+    local force = player.force
+
+    local network = surface.find_logistic_network_by_position(position, force)
+    if not network then
+        return 0
+    end
+
+    local total = 0
+    for _, name in pairs(drill_names) do
+        total = total + (network.get_item_count(name) or 0)
+    end
+
+    return total
+end
+
+local function player_has_sufficient_drills(player, blueprint_entities)
+    local needed_counts = {}
+
+    for _, entity in pairs(blueprint_entities) do
+        if string.sub(entity.name, 1, 4) == "rmd-" then
+            local item_name = entity.name
+            if string.sub(item_name, -10) == "-displayer" then
+                item_name = string.sub(item_name, 1, #item_name - 10)
+            end
+            needed_counts[item_name] = (needed_counts[item_name] or 0) + 1
+        end
+    end
+
+    if next(needed_counts) == nil then
+        return true
+    end
+
+    for item_name, needed in pairs(needed_counts) do
+        local inventory_count = player.get_item_count(item_name)
+        local logistic_count = get_logistic_drill_count(player, { item_name })
+        local total_available = inventory_count + logistic_count
+
+        if total_available < needed then
+            player.create_local_flying_text
+            {
+                text =
+                {
+                    "",
+                    { "rmd-message.rmd-error-not-enough-drills" },
+                    " (", total_available, "/", needed, ") [item=", item_name, "]"
+                },
+                create_at_cursor = true
+            }
+            return false
+        end
+    end
+
+    return true
+end
+
 local function on_pre_build(event)
     local player = game.players[event.player_index]
     local surface = player.surface
@@ -971,6 +1031,10 @@ local function on_pre_build(event)
 
     local entities = cursor.get_blueprint_entities()
     if not entities then return end
+
+    if not player_has_sufficient_drills(player, entities) then
+        return
+    end
 
     for _, entity in pairs(entities) do
         if string.sub(entity.name, 1, 4) == "rmd-" then
