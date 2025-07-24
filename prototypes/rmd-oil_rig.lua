@@ -91,7 +91,9 @@ local rmd_mining_drill_recipe          = table.deepcopy(data.raw["recipe"][TO_CO
 rmd_mining_drill_recipe.name           = NAME
 rmd_mining_drill_recipe.results        = { { type = "item", name = NAME, amount = 1 } }
 
-replace_ingredient(rmd_mining_drill_recipe, "pumpjack", "rmd-pumpjack")
+if data.raw["recipe"]["rmd-pumpjack"] then
+    replace_ingredient(rmd_mining_drill_recipe, "pumpjack", "rmd-pumpjack")
+end
 
 if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }
