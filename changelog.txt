@@ -2,7 +2,7 @@
 Version: 0.9.7
 Date: 24.07.2025
   Bugfixes:
-    - Load error due to oil_rig recipe when K2 is active, no Resoreuce pumpjacks
+    - Cargo ships: Load error with K2 or K2 Spaced Out, no Resource pumpjack for rmd-oil_rig recipe
   Changes:
     - None
 ---------------------------------------------------------------------------------------------------
