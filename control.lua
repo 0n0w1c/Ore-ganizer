@@ -478,7 +478,7 @@ local function show_resource_selector_gui(player)
 
         local player_settings = storage.players and storage.players[player.index]
 
-        if player_settings and player_settings.ignore_planetary_restrictions == true then
+        if player_settings and player_settings.ignore_planetary_restrictions == true and prototypes.autoplace_control[name] then
             allow = true
         elseif autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name] then
             allow = true

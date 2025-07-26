@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.8
+Date: 26.07.2025
+  Bugfixes:
+    - Bob's ores: Resource selector with ignore planetary restrictions included inactive ores
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.9.7
 Date: 24.07.2025
   Bugfixes:
