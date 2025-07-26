@@ -82,11 +82,14 @@ local function place_resources(surface, area, resource_name, player_index)
             local multiplier = resource_name == "offshore-oil" and FLUID_MULTIPLIER * 4 or FLUID_MULTIPLIER
             local resource_amount = is_fluid and (amount * multiplier) or amount
 
+            local player = game.get_player(player_index)
+
             surface.create_entity
             ({
                 name = resource_name,
                 amount = resource_amount,
-                position = position
+                position = position,
+                player = player
             })
 
             ::continue::
@@ -113,18 +116,20 @@ local function spot_resources(surface, position, resource_name, player_index)
     ({
         name = resource_name,
         amount = resource_amount,
-        position = position
+        position = position,
+        player = player
+
     })
 end
 
-local function remove_resources(surface, area)
+local function remove_resources(surface, area, player)
     for x = area.left_top.x, area.right_bottom.x do
         for y = area.left_top.y, area.right_bottom.y do
             local resources = surface.find_entities_filtered({ area = { { x, y }, { x + 1, y + 1 } }, type = "resource" })
 
             for _, resource in pairs(resources) do
                 if resource.valid then
-                    resource.destroy()
+                    resource.destroy({ player = player, raise_destroy = true })
                 end
             end
         end
@@ -371,6 +376,7 @@ local function on_built_entity(event)
                 direction = direction,
                 create_build_effect_smoke = true,
                 quality = quality,
+                player = player,
                 raise_built = true
             })
             return
@@ -401,10 +407,11 @@ local function on_built_entity(event)
     local resource_area = get_mining_area(entity)
 
     if is_displayer then
+        --entity.destroy({ player = player, raise_destroy = true })
         entity.destroy({ raise_destroy = true })
     end
 
-    remove_resources(surface, resource_area)
+    remove_resources(surface, resource_area, player)
     place_resources(surface, resource_area, resource_name, player.index)
 
     if item_name == "rmd-oil_rig" then item_name = "oil_rig" end
@@ -417,6 +424,7 @@ local function on_built_entity(event)
             direction = direction,
             create_build_effect_smoke = true,
             quality = quality,
+            player = player,
             raise_built = true
         })
     end
@@ -448,7 +456,13 @@ local function on_mined_entity(event)
 
     local surface = entity.surface
     local resource_area = get_mining_area(entity)
-    remove_resources(surface, resource_area)
+
+    if event.player_index then
+        local player = game.get_player(event.player_index)
+        remove_resources(surface, resource_area, player)
+    else
+        remove_resources(surface, resource_area)
+    end
 end
 
 local function show_resource_selector_gui(player)
@@ -893,7 +907,8 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
         max_y         = math.max(max_y, bottom)
     end
 
-    local blueprint_center     = {
+    local blueprint_center     =
+    {
         x = (min_x + max_x) / 2,
         y = (min_y + max_y) / 2
     }
@@ -960,66 +975,6 @@ local function blueprint_validate_resource_checks(player, entity, resource_name,
     return true
 end
 
-local function get_logistic_drill_count(player, drill_names)
-    if not (player and player.valid and player.character and player.character.valid) then return 0 end
-
-    local surface = player.surface
-    local position = player.character.position
-    local force = player.force
-
-    local network = surface.find_logistic_network_by_position(position, force)
-    if not network then
-        return 0
-    end
-
-    local total = 0
-    for _, name in pairs(drill_names) do
-        total = total + (network.get_item_count(name) or 0)
-    end
-
-    return total
-end
-
-local function player_has_sufficient_drills(player, blueprint_entities)
-    local needed_counts = {}
-
-    for _, entity in pairs(blueprint_entities) do
-        if string.sub(entity.name, 1, 4) == "rmd-" then
-            local item_name = entity.name
-            if string.sub(item_name, -10) == "-displayer" then
-                item_name = string.sub(item_name, 1, #item_name - 10)
-            end
-            needed_counts[item_name] = (needed_counts[item_name] or 0) + 1
-        end
-    end
-
-    if next(needed_counts) == nil then
-        return true
-    end
-
-    for item_name, needed in pairs(needed_counts) do
-        local inventory_count = player.get_item_count(item_name)
-        local logistic_count = get_logistic_drill_count(player, { item_name })
-        local total_available = inventory_count + logistic_count
-
-        if total_available < needed then
-            player.create_local_flying_text
-            {
-                text =
-                {
-                    "",
-                    { "rmd-message.rmd-error-not-enough-drills" },
-                    " (", total_available, "/", needed, ") [item=", item_name, "]"
-                },
-                create_at_cursor = true
-            }
-            return false
-        end
-    end
-
-    return true
-end
-
 local function on_pre_build(event)
     local player = game.players[event.player_index]
     local surface = player.surface
@@ -1031,10 +986,6 @@ local function on_pre_build(event)
 
     local entities = cursor.get_blueprint_entities()
     if not entities then return end
-
-    if not player_has_sufficient_drills(player, entities) then
-        return
-    end
 
     for _, entity in pairs(entities) do
         if string.sub(entity.name, 1, 4) == "rmd-" then
@@ -1121,7 +1072,7 @@ local function undo_spot_resources(surface, position, player_index)
 
     for _, resource in ipairs(resources) do
         if resource.valid then
-            resource.destroy()
+            resource.destroy({ player = player, raise_destroy = true })
         end
     end
 end
@@ -1131,24 +1082,21 @@ local function on_undo_applied(event)
     local player = game.get_player(player_index)
     if not player then return end
 
-    local cursor = player.cursor_stack
-    if cursor and cursor.valid_for_read then
-        if cursor.is_blueprint then
-            local drills_found = false
-            local entities = cursor.get_blueprint_entities()
-            if entities then
-                for _, entity in pairs(entities) do
-                    if string.sub(entity.name, 1, 4) == "rmd-" then
-                        drills_found = true
-                        break
-                    end
-                end
+    for _, action in pairs(event.actions) do
+        if action.target.name == "entity-ghost" then
+            local position = action.target.position
+            local area =
+            {
+                { position.x - 0.49, position.y - 0.49 },
+                { position.x + 0.49, position.y + 0.49 }
+            }
+
+            local resources = player.surface.find_entities_filtered { area = area, filter = "type", type = "resource" }
+            for _, resource in pairs(resources) do
+                resource.destroy({ player = player, raise_destroy = true })
             end
-            if drills_found == true then
-                for _, action in pairs(event.actions) do
-                    undo_spot_resources(player.surface, action.target.position, event.player_index)
-                end
-            end
+
+            undo_spot_resources(player.surface, action.target.position, event.player_index)
         end
     end
 end

@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.9
+Date: 26.07.2025
+  Bugfixes:
+    - None
+  Changes:
+    - Removed the check for available Resource mining drills when placing blueprints (added 0.9.6)
+    - Improved the support for Undo, Redo is not supported due to limitations
+---------------------------------------------------------------------------------------------------
 Version: 0.9.8
 Date: 26.07.2025
   Bugfixes:
