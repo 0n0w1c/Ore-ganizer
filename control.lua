@@ -1083,7 +1083,7 @@ local function on_undo_applied(event)
     if not player then return end
 
     for _, action in pairs(event.actions) do
-        if action.target.name == "entity-ghost" then
+        if action.target and action.target.position and action.target.name and action.target.name == "entity-ghost" then
             local position = action.target.position
             local area =
             {
