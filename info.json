@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.9.11",
+    "version": "0.9.12",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -23,6 +23,7 @@
         "? water-pumpjack",
         "! Cursed-FMD",
         "! pypostprocessing",
-        "! pyrawores"
+        "! pyrawores",
+        "! factorio-admin-command-center"
     ]
 }

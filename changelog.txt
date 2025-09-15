@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.12
+Date: 15.09.2025
+  Bugfixes:
+    - Resolved crash in check if research is required for mining with fluids
+  Changes:
+    - Factorio Admin Command Center is marked as incompatible
+---------------------------------------------------------------------------------------------------
 Version: 0.9.11
 Date: 26.07.2025
   Bugfixes:

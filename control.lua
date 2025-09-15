@@ -176,7 +176,10 @@ local function is_fluid_mining_researched(force)
         return true
     end
 
-    local researched = force.technologies[technology].researched
+    local researched = true
+    if force.technologies[technology] then
+        researched = force.technologies[technology].researched
+    end
 
     return researched
 end

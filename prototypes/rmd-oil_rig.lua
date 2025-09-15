@@ -1,4 +1,4 @@
-if not mods["cargo-ships"] then return end
+if not (mods["cargo-ships"] and settings.startup["offshore_oil_enabled"].value == true) then return end
 
 require("constants")
 require("utilities")
