@@ -36,6 +36,15 @@ function replace_result(recipe, from, to)
     end
 end
 
+function boxes_equal(a, b)
+    if not (a and b and a[1] and a[2] and b[1] and b[2]) then return false end
+
+    return a[1][1] == b[1][1]
+        and a[1][2] == b[1][2]
+        and a[2][1] == b[2][1]
+        and a[2][2] == b[2][2]
+end
+
 function resolve_upgrade_target(base_name)
     local base = data.raw["mining-drill"][base_name]
 
