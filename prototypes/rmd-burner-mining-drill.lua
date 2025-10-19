@@ -21,6 +21,7 @@ local rmd_mining_drill_displayer       =
     hidden_in_factoriopedia   = true,
     factoriopedia_alternative = NAME,
     picture                   = mining_drill.graphics_set.animation,
+
     icons                     =
     {
         {
@@ -75,6 +76,18 @@ rmd_mining_drill_recipe.results        = { { type = "item", name = NAME, amount 
 if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }
     rmd_mining_drill_entity.surface_conditions = { { min = 0.1, property = "gravity" } }
+end
+
+if mods["IR3_Assets_mining_drills"] then
+    rmd_mining_drill_displayer.lower_pictures    = mining_drill.graphics_set.working_visualisations[1].animation
+    rmd_mining_drill_displayer.integration_patch = nil
+    rmd_mining_drill_displayer.picture           =
+    {
+        north = { layers = mining_drill.graphics_set.working_visualisations[2].north_animation.layers },
+        east = { layers = mining_drill.graphics_set.working_visualisations[2].east_animation.layers },
+        south = { layers = mining_drill.graphics_set.working_visualisations[2].south_animation.layers },
+        west = { layers = mining_drill.graphics_set.working_visualisations[2].west_animation.layers },
+    }
 end
 
 data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })

@@ -41,14 +41,14 @@ local rmd_cursor_keybind =
 
 data.extend({ rmd_shortcut, rmd_selector_keybind, rmd_cursor_keybind })
 
-require("prototypes/rmd-burner-mining-drill")
-require("prototypes/rmd-electric-mining-drill")
+--require("prototypes/rmd-burner-mining-drill")
+--require("prototypes/rmd-electric-mining-drill")
 require("prototypes/rmd-slow-electric-mining-drill")
 require("prototypes/rmd-bob-area-mining-drills")
 require("prototypes/rmd-kr-electric-mining-drill-mk2")
 require("prototypes/rmd-kr-electric-mining-drill-mk3")
 require("prototypes/rmd-area-mining-drill")
-require("prototypes/rmd-big-mining-drill")
+--require("prototypes/rmd-big-mining-drill")
 require("prototypes/rmd-pumpjack")
 require("prototypes/rmd-bob-water-miner")
 require("prototypes/rmd-oil_rig")

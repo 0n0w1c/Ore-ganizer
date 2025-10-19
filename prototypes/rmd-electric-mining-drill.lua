@@ -100,6 +100,45 @@ local rmd_mining_drill_displayer                  =
     },
     picture                            =
     {
+        north =
+        {
+            layers =
+            {
+                {
+                    priority = "high",
+                    filename = DRILL_GRAPHICS .. "electric-mining-drill-N.png",
+                    width = 190,
+                    height = 208,
+                    shift = util.by_pixel(0, -4),
+                    scale = 0.5
+                },
+                {
+                    priority = "high",
+                    filename = DRILL_GRAPHICS .. "electric-mining-drill-N-output.png",
+                    width = 60,
+                    height = 66,
+                    shift = util.by_pixel(-3, -44),
+                    scale = 0.5
+                },
+                {
+                    priority = "high",
+                    filename = DRILL_GRAPHICS .. "electric-mining-drill.png",
+                    width = 162,
+                    height = 156,
+                    shift = util.by_pixel(1, -11),
+                    scale = 0.5
+                },
+                {
+                    priority = "high",
+                    filename = DRILL_GRAPHICS .. "electric-mining-drill-N-shadow.png",
+                    width = 212,
+                    height = 204,
+                    draw_as_shadow = true,
+                    shift = util.by_pixel(6, -3),
+                    scale = 0.5
+                }
+            }
+        },
         east =
         {
             layers =
@@ -151,45 +190,6 @@ local rmd_mining_drill_displayer                  =
                     height = 182,
                     draw_as_shadow = true,
                     shift = util.by_pixel(10, 2),
-                    scale = 0.5
-                }
-            }
-        },
-        north =
-        {
-            layers =
-            {
-                {
-                    priority = "high",
-                    filename = DRILL_GRAPHICS .. "electric-mining-drill-N.png",
-                    width = 190,
-                    height = 208,
-                    shift = util.by_pixel(0, -4),
-                    scale = 0.5
-                },
-                {
-                    priority = "high",
-                    filename = DRILL_GRAPHICS .. "electric-mining-drill-N-output.png",
-                    width = 60,
-                    height = 66,
-                    shift = util.by_pixel(-3, -44),
-                    scale = 0.5
-                },
-                {
-                    priority = "high",
-                    filename = DRILL_GRAPHICS .. "electric-mining-drill.png",
-                    width = 162,
-                    height = 156,
-                    shift = util.by_pixel(1, -11),
-                    scale = 0.5
-                },
-                {
-                    priority = "high",
-                    filename = DRILL_GRAPHICS .. "electric-mining-drill-N-shadow.png",
-                    width = 212,
-                    height = 204,
-                    draw_as_shadow = true,
-                    shift = util.by_pixel(6, -3),
                     scale = 0.5
                 }
             }
@@ -341,6 +341,18 @@ rmd_mining_drill_recipe.results                   = { { type = "item", name = NA
 if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }
     rmd_mining_drill_entity.surface_conditions = { { min = 0.1, property = "gravity" } }
+end
+
+if mods["IR3_Assets_mining_drills"] then
+    rmd_mining_drill_displayer.lower_pictures    = mining_drill.graphics_set.working_visualisations[1].animation
+    rmd_mining_drill_displayer.integration_patch = nil
+    rmd_mining_drill_displayer.picture           =
+    {
+        north = { layers = mining_drill.graphics_set.working_visualisations[2].north_animation.layers },
+        east = { layers = mining_drill.graphics_set.working_visualisations[2].east_animation.layers },
+        south = { layers = mining_drill.graphics_set.working_visualisations[2].south_animation.layers },
+        west = { layers = mining_drill.graphics_set.working_visualisations[2].west_animation.layers },
+    }
 end
 
 data.extend({ rmd_mining_drill_displayer, rmd_mining_drill_entity, rmd_mining_drill_item, rmd_mining_drill_recipe })

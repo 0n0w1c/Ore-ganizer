@@ -4,6 +4,10 @@ require("utilities")
 local recycling = {}
 if mods["quality"] then recycling = require("__quality__/prototypes/recycling") end
 
+require("prototypes/rmd-burner-mining-drill")
+require("prototypes/rmd-electric-mining-drill")
+require("prototypes/rmd-big-mining-drill")
+
 local recipes = data.raw["recipe"]
 
 if settings.startup["rmd-slow-miner"] and settings.startup["rmd-slow-miner"].value then
