@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.1
+Date: 19.10.2025
+  Bugfixes:
+    - Added the mining radius visualization to the Resource burner mining drill displayer
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.10.0
 Date: 19.10.2025
   Bugfixes:

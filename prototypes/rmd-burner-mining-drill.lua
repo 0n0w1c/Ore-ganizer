@@ -1,28 +1,43 @@
 require("constants")
 
+local BASE_GRAPHICS                    = "__base__/graphics/"
+local ENTITY_GRAPHICS                  = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS                   = ENTITY_GRAPHICS .. "electric-mining-drill/"
+
 local TO_COPY                          = "burner-mining-drill"
 local NAME                             = "rmd-" .. TO_COPY
 
 local mining_drill                     = data.raw["mining-drill"][TO_COPY]
+local radius                           = get_effective_mining_radius(mining_drill)
 
 local rmd_mining_drill_displayer       =
 {
-    type                      = "simple-entity-with-owner",
-    name                      = NAME .. "-displayer",
-    localised_name            = { "", { "item-name." .. NAME .. "-displayer" } },
-    localised_description     = mining_drill.localised_description,
-    placeable_by              = { item = NAME, count = 1 },
-    minable                   = { mining_time = 0.5, result = NAME },
-    flags                     = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
-    max_health                = mining_drill.max_health,
-    collision_box             = mining_drill.collision_box,
-    selection_box             = mining_drill.selection_box,
-    collision_mask            = COLLISION_MASK,
-    hidden_in_factoriopedia   = true,
-    factoriopedia_alternative = NAME,
-    picture                   = mining_drill.graphics_set.animation,
-
-    icons                     =
+    type                               = "simple-entity-with-owner",
+    name                               = NAME .. "-displayer",
+    localised_name                     = { "", { "item-name." .. NAME .. "-displayer" } },
+    localised_description              = mining_drill.localised_description,
+    placeable_by                       = { item = NAME, count = 1 },
+    minable                            = { mining_time = 0.5, result = NAME },
+    flags                              = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
+    max_health                         = mining_drill.max_health,
+    collision_box                      = mining_drill.collision_box,
+    selection_box                      = mining_drill.selection_box,
+    collision_mask                     = COLLISION_MASK,
+    hidden_in_factoriopedia            = true,
+    factoriopedia_alternative          = NAME,
+    picture                            = mining_drill.graphics_set.animation,
+    radius_visualisation_specification =
+    {
+        sprite =
+        {
+            filename = DRILL_GRAPHICS .. "electric-mining-drill-radius-visualization.png",
+            width = 12,
+            height = 12,
+            shift = { 0, 0 },
+        },
+        distance = radius
+    },
+    icons                              =
     {
         {
             icon = STONE_ICON
