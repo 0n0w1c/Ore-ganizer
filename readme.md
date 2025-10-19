@@ -61,6 +61,8 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 [Subsurface](https://mods.factorio.com/mod/Subsurface)  
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
 [Water Pumpjack](https://mods.factorio.com/mod/water-pumpjack)  
+[IR3 Assets: mining drills](https://mods.factorio.com/mod/IR3_Assets_mining_drills)  
+
 
 K2 and K2SO: crude oil, mineral water, and imersite are always map generated  
 
