@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.2
+Date: 20.10.2025
+  Bugfixes:
+    - Refactored vanilla Resource mining drill prototypes to be generated in data-final-fixes
+    - Added the recycling recipe for Resource big mining drill
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.10.1
 Date: 19.10.2025
   Bugfixes:

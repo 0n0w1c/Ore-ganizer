@@ -1,14 +1,33 @@
 require("constants")
 require("utilities")
 
-local recycling = {}
-if mods["quality"] then recycling = require("__quality__/prototypes/recycling") end
-
 require("prototypes/rmd-burner-mining-drill")
 require("prototypes/rmd-electric-mining-drill")
 require("prototypes/rmd-big-mining-drill")
 
+local recycling = {}
+if mods["quality"] then recycling = require("__quality__/prototypes/recycling") end
+
 local recipes = data.raw["recipe"]
+
+if mods["quality"] then
+    recycling.generate_recycling_recipe(recipes["rmd-burner-mining-drill"])
+    recycling.generate_recycling_recipe(recipes["rmd-electric-mining-drill"])
+end
+
+if mods["space-age"] then
+    recycling.generate_recycling_recipe(recipes["big-mining-drill"])
+
+    local recipe          = table.deepcopy(recipes["big-mining-drill-recycling"])
+
+    recipe.name           = "rmd-big-mining-drill-recycling"
+    recipe.localised_name = { "", { "recipe-name." .. recipe.name } }
+
+    replace_ingredient(recipe, "big-mining-drill", "rmd-big-mining-drill")
+    replace_result(recipe, "electric-mining-drill", "rmd-electric-mining-drill")
+
+    data:extend({ recipe })
+end
 
 if settings.startup["rmd-slow-miner"] and settings.startup["rmd-slow-miner"].value then
     local recipe = recipes["rmd-slow-electric-mining-drill"]
@@ -118,10 +137,11 @@ items["rmd-electric-mining-drill"].icons =
 if mods["space-age"] and recipes["rmd-big-mining-drill"] then
     replace_ingredient(recipes["rmd-big-mining-drill"], "electric-mining-drill", "rmd-electric-mining-drill")
     if mods["quality"] then recycling.generate_recycling_recipe(recipes["rmd-big-mining-drill"]) end
+    recycling.generate_recycling_recipe(recipes["rmd-big-mining-drill"])
 
-    if recipes["rmd-big-mining-drill-recycling"] then
-        recipes["rmd-big-mining-drill-recycling"].results = table.deepcopy(recipes["big-mining-drill-recycling"].results)
-    end
+    --    if recipes["rmd-big-mining-drill-recycling"] then
+    --        recipes["rmd-big-mining-drill-recycling"].results = table.deepcopy(recipes["big-mining-drill-recycling"].results)
+    --    end
 end
 
 if mods["bobmining"] then
