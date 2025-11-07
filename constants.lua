@@ -85,7 +85,8 @@ CATEGORIES =
     ["offshore-fluid"] = true,
     ["basic-solid"] = true,
     ["hard-solid"] = true,
-    ["water"] = true
+    ["water"] = true,
+    ["gas"] = true
 }
 
 FLUID_MINING_TECHONOLOGIES =

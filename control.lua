@@ -48,7 +48,7 @@ local function get_mining_area(entity)
 end
 
 local function is_fluid_category_supported(fluid_category)
-    if fluid_category == "basic-fluid" or fluid_category == "water" or fluid_category == "offshore-fluid" then
+    if fluid_category == "basic-fluid" or fluid_category == "water" or fluid_category == "offshore-fluid" or fluid_category == "gas" then
         return true
     end
 
@@ -207,6 +207,11 @@ local function is_oil_rig_fluid(category)
     return false
 end
 
+local function is_derrick_fluid(category)
+    if category == "gas" then return true end
+    return false
+end
+
 local function on_water(entity)
     if not (entity and entity.valid) then return false end
 
@@ -294,9 +299,11 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
     local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
     local water_miner_fluid = is_water_miner_fluid(resource_prototype.resource_category)
     local oil_rig_fluid = is_oil_rig_fluid(resource_prototype.resource_category)
+    local derrick_fluid = is_derrick_fluid(resource_prototype.resource_category)
     local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
     local is_water_miner = entity_name == "rmd-bob-water-miner-displayer"
     local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
+    local is_derrick = entity_name == "rmd-derrick-displayer"
     local is_drill = is_displayer_drill(entity_name)
 
     if is_drill then
@@ -322,6 +329,7 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_pumpjack and not pumpjack_fluid) then return false end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_water_miner and not water_miner_fluid) then return false end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_oil_rig and not oil_rig_fluid) then return false end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_derrick and not derrick_fluid) then return false end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-not-on-land", is_oil_rig and not on_water(entity)) then return false end
     end
 

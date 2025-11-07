@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.0
+Date: 20.10.2025
+  Bugfixes:
+    - None
+  Changes:
+    - IR3 Assets: resources added support for natural gas fissures
+    - IR3 Assets: mining drills added Resource gas derrick
+---------------------------------------------------------------------------------------------------
 Version: 0.10.2
 Date: 20.10.2025
   Bugfixes:

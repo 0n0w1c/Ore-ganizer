@@ -5,6 +5,10 @@ require("prototypes/rmd-burner-mining-drill")
 require("prototypes/rmd-electric-mining-drill")
 require("prototypes/rmd-big-mining-drill")
 
+if mods["IR3_Assets_mining_drills"] and data.raw["mining-drill"]["steel-derrick"] then
+    require("prototypes/rmd-steel-derrick")
+end
+
 local recycling = {}
 if mods["quality"] then recycling = require("__quality__/prototypes/recycling") end
 
