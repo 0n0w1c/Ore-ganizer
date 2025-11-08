@@ -303,7 +303,7 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
     local is_pumpjack = entity_name == "rmd-pumpjack-displayer"
     local is_water_miner = entity_name == "rmd-bob-water-miner-displayer"
     local is_oil_rig = entity_name == "rmd-oil_rig-displayer"
-    local is_derrick = entity_name == "rmd-derrick-displayer"
+    local is_derrick = entity_name == "rmd-steel-derrick-displayer"
     local is_drill = is_displayer_drill(entity_name)
 
     if is_drill then

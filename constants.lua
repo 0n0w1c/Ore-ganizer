@@ -56,27 +56,8 @@ RMD_ENTITY_NAMES =
     ["rmd-omega-drill"]                  = true,
     ["rmd-tomega-drill"]                 = true,
     ["rmd-pumpjack"]                     = true,
-    ["rmd-bob-water-miner"]              = true
-}
-
-RMD_TO_BASE_PROTOTYPE =
-{
-    ["rmd-burner-mining-drill"]          = "burner-mining-drill",
-    ["rmd-electric-mining-drill"]        = "electric-mining-drill",
-    ["rmd-slow-electric-mining-drill"]   = "rmd-slow-electric-mining-drill",
-    ["rmd-big-mining-drill"]             = "big-mining-drill",
-    ["rmd-bob-area-mining-drill-1"]      = "bob-area-mining-drill-1",
-    ["rmd-bob-area-mining-drill-2"]      = "bob-area-mining-drill-2",
-    ["rmd-bob-area-mining-drill-3"]      = "bob-area-mining-drill-3",
-    ["rmd-bob-area-mining-drill-4"]      = "bob-area-mining-drill-4",
-    ["rmd-area-mining-drill"]            = "area-mining-drill",
-    ["rmd-kr-electric-mining-drill-mk2"] = "kr-electric-mining-drill-mk2",
-    ["rmd-kr-electric-mining-drill-mk3"] = "kr-electric-mining-drill-mk3",
-    ["rmd-omega-drill"]                  = "omega-drill",
-    ["rmd-tomega-drill"]                 = "tomega-drill",
-    ["rmd-pumpjack"]                     = "pumpjack",
-    ["rmd-bob-water-miner"]              = "pumpjack",
-    ["rmd-oil_rig"]                      = "pumpjack"
+    ["rmd-bob-water-miner"]              = true,
+    ["rmd-steel-derrick"]                = true
 }
 
 CATEGORIES =
