@@ -17,6 +17,11 @@ local recipes = data.raw["recipe"]
 if mods["quality"] then
     recycling.generate_recycling_recipe(recipes["rmd-burner-mining-drill"])
     recycling.generate_recycling_recipe(recipes["rmd-electric-mining-drill"])
+
+    local recipe = recipes["rmd-steel-derrick"]
+    if recipe then
+        recycling.generate_recycling_recipe(recipe)
+    end
 end
 
 if mods["space-age"] then
