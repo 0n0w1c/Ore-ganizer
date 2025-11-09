@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.0
+Date: 09.11.2025
+  Bugfixes:
+    - None
+  Changes:
+    - pt-BR translation provided by odnols
+    - Updated non-english translations provided by chatGPT
+---------------------------------------------------------------------------------------------------
 Version: 0.11.2
 Date: 08.11.2025
   Bugfixes:

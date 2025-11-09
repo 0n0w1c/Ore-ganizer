@@ -69,4 +69,5 @@ K2 and K2SO: crude oil, mineral water, and imersite are always map generated
 ---
 
 #### Alternate locales:  
-`cs`, `de`, `es`, `fr`, `it`, `ja`, `ko`, `pl`, `pt-BR`, `ru`, `tr`, `uk`, `zh-CN`, `zh-TW`  
+`pt-BR` - odnols  
+`cs`, `de`, `es`, `fr`, `it`, `ja`, `ko`, `pl`, `ru`, `tr`, `uk`, `zh-CN`, `zh-TW` - chatGPT  
