@@ -3,6 +3,7 @@ require("constants")
 if not mods["aai-industry"] then return end
 if mods["space-age"] then return end
 if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then return end
+if not data.raw["mining-drill"]["area-mining-drill"] then return end
 
 local BASE_GRAPHICS                               = "__base__/graphics/"
 local ENTITY_GRAPHICS                             = BASE_GRAPHICS .. "entity/"
