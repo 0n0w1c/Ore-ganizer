@@ -224,6 +224,16 @@ if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
     if recipe then replace_result(recipe, "electric-mining-drill", "rmd-electric-mining-drill") end
 end
 
+if mods["upgrade_requires_previous_tier"] then
+    if settings.startup["rmd-slow-miner"].value then
+        replace_ingredient(recipes["rmd-slow-electric-mining-drill"], "burner-mining-drill", "rmd-burner-mining-drill")
+        if mods["quality"] then recycling.generate_recycling_recipe(recipes["rmd-slow-electric-mining-drill"]) end
+    end
+
+    replace_ingredient(recipes["rmd-electric-mining-drill"], "burner-mining-drill", "rmd-burner-mining-drill")
+    if mods["quality"] then recycling.generate_recycling_recipe(recipes["rmd-electric-mining-drill"]) end
+end
+
 if mods["aai-industry"] then
     local burner_drill = recipes["rmd-burner-mining-drill"]
     local technology   = data.raw["technology"]["burner-mechanics"]

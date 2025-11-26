@@ -61,6 +61,7 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 [Subsurface](https://mods.factorio.com/mod/Subsurface)  
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
 [Water Pumpjack](https://mods.factorio.com/mod/water-pumpjack)  
+[Upgrade Requires Previous Tier](https://mods.factorio.com/mod/upgrade_requires_previous_tier)  
 [IR3 Assets: mining drills](https://mods.factorio.com/mod/IR3_Assets_mining_drills)  
 
 
