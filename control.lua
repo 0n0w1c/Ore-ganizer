@@ -26,14 +26,30 @@ end
 
 local function get_mining_area(entity)
     local position = entity.position
-    local entity_name = entity.name
-
-    local prototype_name = entity_name:gsub("%-displayer$", "")
-    if prototype_name == "" or prototypes.entity[prototype_name].type ~= "mining-drill" then
+    if not position then
         return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
     end
 
-    radius = prototypes.entity[prototype_name].get_mining_drill_radius() or 0.99
+    local entity_name
+    if entity.type == "entity-ghost" then
+        entity_name = entity.ghost_name or ""
+    else
+        entity_name = entity.name or ""
+    end
+
+    local prototype_name = entity_name:gsub("%-displayer$", "")
+
+    local proto = prototype_name ~= "" and prototypes.entity[prototype_name] or nil
+    if not proto or proto.type ~= "mining-drill" then
+        return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
+    end
+
+    local radius = 0.99
+    if proto.get_mining_drill_radius then
+        radius = proto.get_mining_drill_radius() or 0.99
+    elseif proto.mining_drill_radius then
+        radius = proto.mining_drill_radius
+    end
 
     return {
         left_top = {
@@ -418,7 +434,6 @@ local function on_built_entity(event)
     local resource_area = get_mining_area(entity)
 
     if is_displayer then
-        --entity.destroy({ player = player, raise_destroy = true })
         entity.destroy({ raise_destroy = true })
     end
 
@@ -449,20 +464,15 @@ local function on_mined_entity(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
-    if not RMD_ENTITY_NAMES[entity.name] then return end
-    if entity.to_be_upgraded() then return end
+    local is_ghost = (entity.type == "entity-ghost")
+    local drill_name = is_ghost and entity.ghost_name or entity.name
 
-    if event.player_index then
-        local player = game.get_player(event.player_index)
-        if player and player.valid then
-            local cursor = player.cursor_stack
-            if cursor and cursor.valid_for_read then
-                local place_result = cursor.prototype and cursor.prototype.place_result
-                if place_result and place_result.type == "mining-drill" then
-                    return
-                end
-            end
-        end
+    if not drill_name or not RMD_ENTITY_NAMES[drill_name] then
+        return
+    end
+
+    if not is_ghost and entity.to_be_upgraded() then
+        return
     end
 
     local surface = entity.surface

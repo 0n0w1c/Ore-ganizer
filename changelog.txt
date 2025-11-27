@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.3
+Date: 27.11.2025
+  Bugfixes:
+    - When Resource mining drill ghosts are deleted, placed resources were not removed
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.12.2
 Date: 25.11.2025
   Bugfixes:
