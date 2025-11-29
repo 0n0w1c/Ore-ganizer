@@ -996,16 +996,7 @@ local function blueprint_validate_resource_checks(player, entity, resource_name,
     return true
 end
 
-local function on_pre_build(event)
-    local player = game.players[event.player_index]
-    local surface = player.surface
-    local cursor = player.cursor_stack
-
-    if not (cursor and cursor.valid_for_read) then return end
-    if not cursor.is_blueprint then return end
-    if not cursor.is_blueprint_setup() then return end
-
-    local entities = cursor.get_blueprint_entities()
+local function process_blueprint_entities_on_pre_build(player, surface, entities, event)
     if not entities then return end
 
     for _, entity in pairs(entities) do
@@ -1016,8 +1007,7 @@ local function on_pre_build(event)
             elseif storage.players[player.index].selected_resource ~= DISABLED then
                 resource_name = storage.players[player.index].selected_resource
             else
-                player.create_local_flying_text
-                {
+                player.create_local_flying_text {
                     text = { "", { "rmd-message.rmd-error-no-resource" } },
                     create_at_cursor = true
                 }
@@ -1028,11 +1018,63 @@ local function on_pre_build(event)
                 local entity_map_position = get_entity_map_position(event, entity, entities)
                 spot_resources(surface, entity_map_position, resource_name, event.player_index)
             else
-                player.create_local_flying_text
-                {
+                player.create_local_flying_text {
                     text = { "", { "rmd-message.rmd-error-invalid-selection" } },
                     create_at_cursor = true
                 }
+            end
+        end
+    end
+end
+
+local function on_pre_build(event)
+    local player = game.get_player(event.player_index)
+    if not (player and player.valid) then return end
+
+    local surface = player.surface
+
+    local cursor = player.cursor_stack
+    if cursor and cursor.valid_for_read then
+        if cursor.is_blueprint and cursor.is_blueprint_setup() then
+            local entities = cursor.get_blueprint_entities()
+            process_blueprint_entities_on_pre_build(player, surface, entities, event)
+            return
+        end
+
+        if cursor.is_blueprint_book then
+            local inventory = cursor.get_inventory(defines.inventory.item_main)
+            local index = cursor.active_index
+            if inventory and inventory.valid and index and index >= 1 and index <= #inventory then
+                local bp = inventory[index]
+                if bp and bp.valid_for_read and bp.is_blueprint and bp.is_blueprint_setup() then
+                    local entities = bp.get_blueprint_entities()
+                    process_blueprint_entities_on_pre_build(player, surface, entities, event)
+                    return
+                end
+            end
+        end
+    end
+
+    local record = player.cursor_record
+    if not record then return end
+
+    if record.type == "blueprint" then
+        if record.is_blueprint_setup and record.is_blueprint_setup() then
+            local entities = record.get_blueprint_entities()
+            process_blueprint_entities_on_pre_build(player, surface, entities, event)
+        end
+        return
+    end
+
+    if record.type == "blueprint-book" then
+        if record.get_selected_record then
+            local selected = record.get_selected_record(player)
+            if selected
+                and selected.type == "blueprint"
+                and selected.is_blueprint_setup
+                and selected.is_blueprint_setup() then
+                local entities = selected.get_blueprint_entities()
+                process_blueprint_entities_on_pre_build(player, surface, entities, event)
             end
         end
     end
