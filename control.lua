@@ -138,14 +138,14 @@ local function spot_resources(surface, position, resource_name, player_index)
     })
 end
 
-local function remove_resources(surface, area, player)
+local function remove_resources(surface, area)
     for x = area.left_top.x, area.right_bottom.x do
         for y = area.left_top.y, area.right_bottom.y do
             local resources = surface.find_entities_filtered({ area = { { x, y }, { x + 1, y + 1 } }, type = "resource" })
 
             for _, resource in pairs(resources) do
                 if resource.valid then
-                    resource.destroy({ player = player, raise_destroy = true })
+                    resource.destroy({ raise_destroy = true })
                 end
             end
         end
@@ -437,7 +437,7 @@ local function on_built_entity(event)
         entity.destroy({ raise_destroy = true })
     end
 
-    remove_resources(surface, resource_area, player)
+    remove_resources(surface, resource_area)
     place_resources(surface, resource_area, resource_name, player.index)
 
     if item_name == "rmd-oil_rig" then item_name = "oil_rig" end
@@ -480,10 +480,23 @@ local function on_mined_entity(event)
 
     if event.player_index then
         local player = game.get_player(event.player_index)
-        remove_resources(surface, resource_area, player)
-    else
-        remove_resources(surface, resource_area)
+
+        if player and not is_ghost then
+            local cursor = player.cursor_stack
+            if cursor and cursor.valid_for_read then
+                local next_proto = entity.prototype and entity.prototype.next_upgrade
+                if next_proto then
+                    local item_proto = prototypes.item[cursor.name]
+                    local place_result = item_proto and item_proto.place_result
+                    if place_result and place_result.name == next_proto.name then
+                        return
+                    end
+                end
+            end
+        end
     end
+
+    remove_resources(surface, resource_area)
 end
 
 local function show_resource_selector_gui(player)
