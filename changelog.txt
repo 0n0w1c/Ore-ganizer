@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.0
+Date: 03.12.2025
+  Bugfixes:
+    - Refactored some of the resource/mining drill validation checks
+  Changes:
+    - Added support for IR3 Assets: steamworks
+---------------------------------------------------------------------------------------------------
 Version: 0.12.5
 Date: 01.12.2025
   Bugfixes:

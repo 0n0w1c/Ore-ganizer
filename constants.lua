@@ -37,7 +37,8 @@ DISPLAYER_DRILL_NAMES = {
     ["rmd-kr-electric-mining-drill-mk2-displayer"] = true,
     ["rmd-kr-electric-mining-drill-mk3-displayer"] = true,
     ["rmd-omega-drill-displayer"]                  = true,
-    ["rmd-tomega-drill-displayer"]                 = true
+    ["rmd-tomega-drill-displayer"]                 = true,
+    ["rmd-steam-mining-drill-displayer"]           = true,
 }
 
 RMD_ENTITY_NAMES =
@@ -57,7 +58,8 @@ RMD_ENTITY_NAMES =
     ["rmd-tomega-drill"]                 = true,
     ["rmd-pumpjack"]                     = true,
     ["rmd-bob-water-miner"]              = true,
-    ["rmd-steel-derrick"]                = true
+    ["rmd-steel-derrick"]                = true,
+    ["rmd-steam-mining-drill"]           = true,
 }
 
 CATEGORIES =
@@ -68,6 +70,15 @@ CATEGORIES =
     ["hard-solid"] = true,
     ["water"] = true,
     ["gas"] = true
+}
+
+-- Technology required to mine a resource that needs fluid
+-- Extend this table when adding new modded ores.
+FLUID_MINING_TECH_BY_RESOURCE = {
+    ["uranium-ore"] = "uranium-mining", -- vanilla
+    ["titanium-ore"] = "fluid-mining",  -- bztitanium
+    -- Add more here:
+    -- ["thorium-ore"] = "thorium-fluid-mining",
 }
 
 FLUID_MINING_TECHONOLOGIES =

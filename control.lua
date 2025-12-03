@@ -183,21 +183,46 @@ local function return_item_to_player(player, item_name, quality)
     player.insert({ name = item_name, count = 1, quality = quality })
 end
 
-local function is_fluid_mining_researched(force)
-    local technology = FLUID_MINING_TECHONOLOGIES["base"]
+local function resource_uses_fluid(resource)
+    local proto
 
-    if script.active_mods["bztitanium"] then
-        technology = FLUID_MINING_TECHONOLOGIES["bztitanium"]
-    elseif script.active_mods["Spaghetorio"] then
+    if type(resource) == "string" then
+        proto = prototypes.entity[resource] or prototypes.resource[resource]
+    else
+        proto = resource.prototype
+    end
+
+    if not proto or not proto.mineable_properties then
+        return false
+    end
+
+    return proto.mineable_properties.required_fluid ~= nil
+end
+
+local function is_fluid_mining_researched(force, resource)
+    local resource_name = type(resource) == "string" and resource or resource.name
+
+    if script.active_mods["Spaghetorio"] then
         return true
     end
 
-    local researched = true
-    if force.technologies[technology] then
-        researched = force.technologies[technology].researched
+    if not resource_uses_fluid(resource) then
+        return true
     end
 
-    return researched
+    local tech_name = FLUID_MINING_TECH_BY_RESOURCE and FLUID_MINING_TECH_BY_RESOURCE[resource_name]
+
+    if not tech_name then
+        return true
+    end
+
+    local tech = force.technologies[tech_name]
+
+    if not tech then
+        return true
+    end
+
+    return tech.researched
 end
 
 local function is_displayer_drill(entity_name)
@@ -245,16 +270,19 @@ local function on_water(entity)
 end
 
 local function destroy_offshore_oil(entity)
-    if not entity and entity.valid then return end
+    if not (entity and entity.valid) then return end
 
     local area = entity.selection_box
     local found = false
 
-    surface = entity.surface
+    local surface = entity.surface
 
     for x = area.left_top.x, area.right_bottom.x - 1 do
         for y = area.left_top.y, area.right_bottom.y - 1 do
-            local resources = surface.find_entities_filtered({ area = { { x, y }, { x + 1, y + 1 } }, type = "resource" })
+            local resources = surface.find_entities_filtered({
+                area = { { x, y }, { x + 1, y + 1 } },
+                type = "resource"
+            })
 
             for _, resource in pairs(resources) do
                 if resource.valid and resource.name == "offshore-oil" then
@@ -326,17 +354,27 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
         local resource_category = resource_prototype.resource_category
         local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
-        local is_researched = is_fluid_mining_researched(force)
 
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_required_fluid and not is_researched) then return false end
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", not drill_and_resource_compatible(entity, resource_category)) then return false end
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", not is_minable) then return false end
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_fluid_resource) then return false end
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", (entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-slow-electric-mining-drill-displayer") and is_required_fluid) then return false end
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection",
-                (entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer") and resource_category == "hard-solid") then
+        local is_researched = is_fluid_mining_researched(force, resource_name)
+
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", not drill_and_resource_compatible(entity, resource_category)) then
             return false
         end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", not is_minable) then
+            return false
+        end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection", is_fluid_resource) then
+            return false
+        end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection",
+                (entity_name == "rmd-steam-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-slow-electric-mining-drill-displayer") and is_required_fluid) then
+            return false
+        end
+        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection",
+                (entity_name == "rmd-steam-mining-drill-displayer" or entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-slow-electric-mining-drill-displayer") and resource_category == "hard-solid") then
+            return false
+        end
+
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-research-required",
                 (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore") then
             return false
@@ -389,7 +427,6 @@ local function on_built_entity(event)
     if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-no-resource", resource_name == DISABLED) then return end
 
     if entity.surface.planet then
-        if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-no-resource", resource_name == DISABLED) then return end
         if resource_name == "offshore-oil" and destroy_offshore_oil(entity) then
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-offshore-oil-removed")
         end
@@ -771,7 +808,6 @@ local function tag_entities(entities, copy_and_paste, surface)
     return modified
 end
 
-
 local function on_player_setup_blueprint(event)
     local player = game.get_player(event.player_index)
     if not (player and player.valid) then return end
@@ -970,39 +1006,60 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
 end
 
 local function blueprint_validate_resource_checks(player, entity, resource_name, item_name, quality)
-    local force = player.force
-    local entity_name = entity.name
+    local force               = player.force
+    local entity_name         = entity.name
 
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
-    local resource_prototype = resource_prototypes[resource_name]
+    local resource_prototype  = resource_prototypes[resource_name]
 
-    local is_fluid_resource = is_fluid_category_supported(resource_prototype.resource_category)
-    local pumpjack_fluid = is_pumpjack_fluid(resource_prototype.resource_category)
-    local water_miner_fluid = is_water_miner_fluid(resource_prototype.resource_category)
-    local oil_rig_fluid = is_oil_rig_fluid(resource_prototype.resource_category)
-    local is_pumpjack = entity_name == "rmd-pumpjack"
-    local is_water_miner = entity_name == "rmd-bob-water-miner"
-    local is_oil_rig = entity_name == "rmd-oil-rig"
-    local is_rmd_entity = RMD_ENTITY_NAMES[entity_name] == true
-    local is_drill = is_rmd_entity and (string.find(entity_name, "drill") ~= nil)
+    local is_fluid_resource   = is_fluid_category_supported(resource_prototype.resource_category)
+    local pumpjack_fluid      = is_pumpjack_fluid(resource_prototype.resource_category)
+    local water_miner_fluid   = is_water_miner_fluid(resource_prototype.resource_category)
+    local oil_rig_fluid       = is_oil_rig_fluid(resource_prototype.resource_category)
+    local derrick_fluid       = is_derrick_fluid(resource_prototype.resource_category)
+
+    local is_pumpjack         = entity_name == "rmd-pumpjack"
+    local is_water_miner      = entity_name == "rmd-bob-water-miner"
+    local is_oil_rig          = entity_name == "rmd-oil-rig"
+    local is_derrick          = entity_name == "rmd-steel-derrick"
+
+    local is_rmd_entity       = RMD_ENTITY_NAMES[entity_name] == true
+    local is_drill            = is_rmd_entity and (string.find(entity_name, "drill") ~= nil)
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
+        local is_minable        = resource_category == "basic-solid" or resource_category == "hard-solid"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
-        local is_researched = is_fluid_mining_researched(force)
 
-        if is_required_fluid and not is_researched then return false end
+        local is_researched     = is_fluid_mining_researched(force, resource_name)
+
         if not drill_and_resource_compatible(entity, resource_category) then return false end
         if not is_minable then return false end
         if is_fluid_resource then return false end
-        if (entity_name == "rmd-burner-mining-drill" or entity_name == "rmd-slow-electric-mining-drill") and is_required_fluid then return false end
-        if (entity_name == "rmd-electric-mining-drill" or entity_name == "rmd-burner-mining-drill") and resource_category == "hard-solid" then return false end
-        if (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore" then return false end
+
+        if (entity_name == "rmd-steam-mining-drill"
+                or entity_name == "rmd-burner-mining-drill"
+                or entity_name == "rmd-slow-electric-mining-drill")
+            and is_required_fluid then
+            return false
+        end
+
+        if (entity_name == "rmd-steam-mining-drill"
+                or entity_name == "rmd-electric-mining-drill"
+                or entity_name == "rmd-burner-mining-drill"
+                or entity_name == "rmd-slow-electric-mining-drill")
+            and resource_category == "hard-solid" then
+            return false
+        end
+
+        if (is_required_fluid and not is_researched) and resource_name ~= "kr-rare-metal-ore" then
+            return false
+        end
     else
         if is_pumpjack and not pumpjack_fluid then return false end
         if is_water_miner and not water_miner_fluid then return false end
         if is_oil_rig and not oil_rig_fluid then return false end
+        if is_derrick and not derrick_fluid then return false end
         if is_oil_rig and not on_water(entity) then return false end
     end
 
@@ -1190,7 +1247,6 @@ local function register_event_handlers()
     script.on_event(defines.events.on_gui_checked_state_changed, on_gui_check_state_changed)
     script.on_event(defines.events.on_gui_text_changed, on_gui_text_changed)
     script.on_event(defines.events.on_gui_closed, on_gui_closed)
-    script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
     script.on_event(defines.events.on_player_pipette, on_player_pipette)
 
     script.on_event(defines.events.on_pre_build, on_pre_build)

@@ -63,6 +63,8 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 [Water Pumpjack](https://mods.factorio.com/mod/water-pumpjack)  
 [Upgrade Requires Previous Tier](https://mods.factorio.com/mod/upgrade_requires_previous_tier)  
 [IR3 Assets: mining drills](https://mods.factorio.com/mod/IR3_Assets_mining_drills)  
+[IR3 Assets: resources](https://mods.factorio.com/mod/IR3_Assets_resources)  
+[IR3 Assets: steamworks](https://mods.factorio.com/mod/IR3_Assets_steamworks)  
 
 
 K2 and K2SO: crude oil, mineral water, and imersite are always map generated  
