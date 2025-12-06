@@ -1,3 +1,5 @@
+if not mods["IR3_Assets_steamworks"] then return end
+
 require("constants")
 
 local BASE_GRAPHICS                    = "__base__/graphics/"
@@ -8,7 +10,6 @@ local TO_COPY                          = "steam-mining-drill"
 local NAME                             = "rmd-" .. TO_COPY
 
 local mining_drill                     = data.raw["mining-drill"][TO_COPY]
-local radius                           = get_effective_mining_radius(mining_drill)
 
 local rmd_mining_drill_displayer       =
 {
@@ -35,7 +36,7 @@ local rmd_mining_drill_displayer       =
             height = 12,
             shift = { 0, 0 },
         },
-        distance = radius
+        distance = mining_drill.resource_searching_radius
     },
     icons                              = {
         {
