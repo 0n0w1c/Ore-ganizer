@@ -345,6 +345,22 @@ if next then
     end
 end
 
+if mods["IR3_Assets_mining_drills"] and mining_drills["steel-derrick"] then
+    next = resolve_upgrade_target("steel-derrick")
+
+    if next then
+        local upgrade = mining_drills[next]
+        local rmd     = mining_drills["rmd-steel-derrick"]
+
+        if upgrade and not upgrade.hidden and rmd then
+            if boxes_equal(rmd.collision_box, upgrade.collision_box) then
+                rmd.next_upgrade = next
+                rmd.fast_replaceable_group = upgrade.fast_replaceable_group
+            end
+        end
+    end
+end
+
 if mods["space-age"] then
     next = resolve_upgrade_target("big-mining-drill")
 

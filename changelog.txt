@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.2
+Date: 07.12.2025
+  Bugfixes:
+    - Added pipe covers to the Resource steel derrick displayer
+    - Fast replace for Resource steel derrick removed the resource
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.13.1
 Date: 06.12.2025
   Bugfixes:

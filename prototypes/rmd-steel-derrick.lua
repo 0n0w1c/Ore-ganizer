@@ -2,14 +2,68 @@ if not (mods["IR3_Assets_mining_drills"] and data.raw["mining-drill"]["steel-der
 
 require("constants")
 
-local BASE_GRAPHICS   = "__base__/graphics/"
-local ENTITY_GRAPHICS = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS  = ENTITY_GRAPHICS .. "pumpjack/"
+local BASE_GRAPHICS     = "__base__/graphics/"
+local ENTITY_GRAPHICS   = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS    = ENTITY_GRAPHICS .. "pumpjack/"
 
-local TO_COPY         = "steel-derrick"
-local NAME            = "rmd-" .. TO_COPY
+local TO_COPY           = "steel-derrick"
+local NAME              = "rmd-" .. TO_COPY
 
-local mining_drill    = data.raw["mining-drill"][TO_COPY]
+local mining_drill      = data.raw["mining-drill"][TO_COPY]
+
+local pipe_covers       = {
+    north = {
+        layers = {
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-iron-cn.png",   height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { 0, -1 } },
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-shadow-cn.png", height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { 0, -1 }, draw_as_shadow = true }
+        }
+    },
+
+    east = {
+        layers = {
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-iron-ce.png",   height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { 1, 0 } },
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-shadow-ce.png", height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { 1, 0 }, draw_as_shadow = true }
+        }
+    },
+
+    south = {
+        layers = {
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-iron-cs.png",   height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { 0, 1 } },
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-shadow-cs.png", height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { 0, 1 }, draw_as_shadow = true }
+        }
+    },
+
+    west = {
+        layers = {
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-iron-cw.png",   height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { -1, 0 } },
+            { filename = "__IndustrialRevolution3Assets2__/graphics/entities/pipes/pipe-shadow-cw.png", height = 120, priority = "extra-high", scale = 0.5, width = 180, shift = { -1, 0 }, draw_as_shadow = true }
+        }
+    }
+}
+
+local display_animation = table.deepcopy(mining_drill.graphics_set.animation)
+
+if display_animation then
+    local function add_layer(dir, layer, index)
+        local dir_anim = display_animation[dir]
+        if not dir_anim then return end
+
+        if not dir_anim.layers then
+            dir_anim.layers = { dir_anim }
+        end
+
+        if index then
+            table.insert(dir_anim.layers, index, layer)
+        else
+            table.insert(dir_anim.layers, layer)
+        end
+    end
+
+    add_layer("east", pipe_covers.east)
+    add_layer("north", pipe_covers.north)
+    add_layer("south", pipe_covers.south)
+    add_layer("west", pipe_covers.west)
+end
 
 local rmd_mining_drill_displayer                       =
 {
@@ -49,7 +103,7 @@ local rmd_mining_drill_displayer                       =
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
     drawing_box_vertical_extension     = 1,
-    picture                            = mining_drill.graphics_set.animation
+    picture                            = display_animation
 }
 
 local rmd_mining_drill_entity                          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
