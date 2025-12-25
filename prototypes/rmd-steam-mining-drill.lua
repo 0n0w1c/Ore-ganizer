@@ -1,4 +1,4 @@
-if not mods["IR3_Assets_steamworks"] then return end
+if not (mods["IR3_Assets_steamworks"] and data.raw["mining-drill"]["steam-mining-drill"]) then return end
 
 require("constants")
 

@@ -93,7 +93,7 @@ if mods["space-age"] then
     rmd_mining_drill_entity.surface_conditions = { { min = 0.1, property = "gravity" } }
 end
 
-if mods["IR3_Assets_mining_drills"] then
+if mods["IR3_Assets_mining_drills"] and mining_drill.graphics_set.working_visualisations then
     rmd_mining_drill_displayer.lower_pictures    = mining_drill.graphics_set.working_visualisations[1].animation
     rmd_mining_drill_displayer.integration_patch = nil
     rmd_mining_drill_displayer.picture           =

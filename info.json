@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.13.2",
+    "version": "0.13.3",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -28,6 +28,7 @@
         "! Cursed-FMD",
         "! pypostprocessing",
         "! pyrawores",
-        "! factorio-admin-command-center"
+        "! factorio-admin-command-center",
+        "! IndustrialRevolution3"
     ]
 }

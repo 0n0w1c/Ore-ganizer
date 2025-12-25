@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.3
+Date: 24.12.2025
+  Bugfixes:
+    - Additional checks for burner, electric, and big mining drill visualizations
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.13.2
 Date: 07.12.2025
   Bugfixes:
