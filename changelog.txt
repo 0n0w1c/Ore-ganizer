@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.4
+Date: 29.12.2025
+  Bugfixes:
+    - Refresh nearby mining drill connections when placing or removing a Resource mining drill
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.13.3
 Date: 24.12.2025
   Bugfixes:

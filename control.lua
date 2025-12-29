@@ -390,6 +390,42 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
     return true
 end
 
+local function areas_overlap(a, b)
+    return not (
+        a.right_bottom.x <= b.left_top.x or
+        a.left_top.x >= b.right_bottom.x or
+        a.right_bottom.y <= b.left_top.y or
+        a.left_top.y >= b.right_bottom.y
+    )
+end
+
+local function refresh_drills_for_resource_area(surface, resource_area)
+    local search_area = {
+        left_top = {
+            x = resource_area.left_top.x,
+            y = resource_area.left_top.y
+        },
+        right_bottom = {
+            x = resource_area.right_bottom.x,
+            y = resource_area.right_bottom.y
+        }
+    }
+
+    local drills = surface.find_entities_filtered {
+        area = search_area,
+        type = "mining-drill"
+    }
+
+    for _, drill in ipairs(drills) do
+        if drill.valid then
+            local drill_area = get_mining_area(drill)
+            if areas_overlap(drill_area, resource_area) then
+                drill.update_connections()
+            end
+        end
+    end
+end
+
 local function on_built_entity(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
@@ -477,6 +513,8 @@ local function on_built_entity(event)
     remove_resources(surface, resource_area)
     place_resources(surface, resource_area, resource_name, player.index)
 
+    refresh_drills_for_resource_area(surface, resource_area)
+
     if item_name == "rmd-oil_rig" then item_name = "oil_rig" end
 
     if is_displayer then
@@ -534,6 +572,7 @@ local function on_mined_entity(event)
     end
 
     remove_resources(surface, resource_area)
+    refresh_drills_for_resource_area(surface, resource_area)
 end
 
 local function show_resource_selector_gui(player)
@@ -965,11 +1004,12 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
         local proto   = prototypes.entity[entity.name]
         local sel_box = proto.selection_box
 
-        local cx, cy  = entity.position.x, entity.position.y
-        local left    = cx + sel_box.left_top.x
-        local top     = cy + sel_box.left_top.y
-        local right   = cx + sel_box.right_bottom.x
-        local bottom  = cy + sel_box.right_bottom.y
+        local x       = entity.position.x
+        local y       = entity.position.y
+        local left    = x + sel_box.left_top.x
+        local top     = y + sel_box.left_top.y
+        local right   = x + sel_box.right_bottom.x
+        local bottom  = y + sel_box.right_bottom.y
 
         min_x         = math.min(min_x, left)
         min_y         = math.min(min_y, top)
@@ -998,11 +1038,7 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
         rotated_x, rotated_y = rel_y, -rel_x
     end
 
-    return
-    {
-        x = anchor_x + rotated_x,
-        y = anchor_y + rotated_y
-    }
+    return { x = anchor_x + rotated_x, y = anchor_y + rotated_y }
 end
 
 local function blueprint_validate_resource_checks(player, entity, resource_name, item_name, quality)
