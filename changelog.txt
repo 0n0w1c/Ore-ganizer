@@ -4,8 +4,8 @@ Date: 29.12.2025
   Bugfixes:
     - None
   Changes:
-    - Behavioral change: When removing a Resource mining drill, resources are not removed if within
-      the mining area of another drill
+    - When removing a Resource mining drill, resources are not removed if within the mining area of
+      another drill
 ---------------------------------------------------------------------------------------------------
 Version: 0.13.4
 Date: 29.12.2025
