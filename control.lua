@@ -80,7 +80,7 @@ local function place_resources(surface, area, resource_name, player_index)
     local is_fluid = is_fluid_category_supported(prototype.resource_category)
     for x = area.left_top.x, area.right_bottom.x do
         for y = area.left_top.y, area.right_bottom.y do
-            local position = { x = x, y = y }
+            local position = { x = x + 0.5, y = y + 0.5 }
 
             local tile = surface.get_tile(x, y)
             if TILES_TO_EXCLUDE[tile.name] and resource_name ~= "offshore-oil" then goto continue end
@@ -98,14 +98,11 @@ local function place_resources(surface, area, resource_name, player_index)
             local multiplier = resource_name == "offshore-oil" and FLUID_MULTIPLIER * 4 or FLUID_MULTIPLIER
             local resource_amount = is_fluid and (amount * multiplier) or amount
 
-            local player = game.get_player(player_index)
-
             surface.create_entity
             ({
                 name = resource_name,
                 amount = resource_amount,
-                position = position,
-                player = player
+                position = position
             })
 
             ::continue::
@@ -114,9 +111,6 @@ local function place_resources(surface, area, resource_name, player_index)
 end
 
 local function spot_resources(surface, position, resource_name, player_index)
-    local player = game.get_player(player_index)
-    if not player then return end
-
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
     local prototype = resource_prototypes[resource_name]
 
@@ -128,25 +122,67 @@ local function spot_resources(surface, position, resource_name, player_index)
     local multiplier = resource_name == "offshore-oil" and FLUID_MULTIPLIER * 4 or FLUID_MULTIPLIER
     local resource_amount = is_fluid and (amount * multiplier) or amount
 
-    surface.create_entity
-    ({
+    local tile_x = math.floor(position.x)
+    local tile_y = math.floor(position.y)
+
+    surface.create_entity {
         name = resource_name,
         amount = resource_amount,
-        position = position,
-        player = player
-
-    })
+        position = { x = tile_x + 0.5, y = tile_y + 0.5 }
+    }
 end
 
-local function remove_resources(surface, area)
-    for x = area.left_top.x, area.right_bottom.x do
-        for y = area.left_top.y, area.right_bottom.y do
-            local resources = surface.find_entities_filtered({ area = { { x, y }, { x + 1, y + 1 } }, type = "resource" })
+local function is_resource_covered_by_other_drill(surface, resource, ignore_entity)
+    if not (resource and resource.valid) then return false end
 
-            for _, resource in pairs(resources) do
-                if resource.valid then
-                    resource.destroy({ raise_destroy = true })
-                end
+    local pos = resource.position
+    if not pos then return false end
+
+    if not (ignore_entity and ignore_entity.valid) then
+        ignore_entity = nil
+    end
+
+    local search_radius = 5
+    if ignore_entity then
+        local ignore_area = get_mining_area(ignore_entity)
+        search_radius =
+            math.max(
+                ignore_area.right_bottom.x - ignore_entity.position.x,
+                ignore_area.right_bottom.y - ignore_entity.position.y
+            ) * 2 + 1
+    end
+
+    local drills = surface.find_entities_filtered {
+        position = pos,
+        radius = search_radius,
+        type = "mining-drill"
+    }
+
+    for _, drill in pairs(drills) do
+        if drill.valid and drill ~= ignore_entity then
+            local area = get_mining_area(drill)
+            if pos.x >= area.left_top.x and pos.x <= area.right_bottom.x
+                and pos.y >= area.left_top.y and pos.y <= area.right_bottom.y then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+local function remove_resources(surface, area, ignore_entity)
+    local resources = surface.find_entities_filtered {
+        area = area,
+        type = "resource"
+    }
+
+    for _, resource in pairs(resources) do
+        if resource.valid then
+            if not ignore_entity then
+                resource.destroy({ raise_destroy = true })
+            elseif not is_resource_covered_by_other_drill(surface, resource, ignore_entity) then
+                resource.destroy({ raise_destroy = true })
             end
         end
     end
@@ -571,7 +607,7 @@ local function on_mined_entity(event)
         end
     end
 
-    remove_resources(surface, resource_area)
+    remove_resources(surface, resource_area, entity)
     refresh_drills_for_resource_area(surface, resource_area)
 end
 
