@@ -57,6 +57,10 @@ function resolve_upgrade_target(base_name)
         end
     end
 
+    if settings.startup["rmd-hide-recipes"] and settings.startup["rmd-hide-recipes"].value then
+        return nil
+    end
+
     return base.name
 end
 

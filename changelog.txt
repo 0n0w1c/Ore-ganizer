@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.14.1
+Date: 18.02.2026
+  Bugfixes:
+    - Do not set next_upgrade if the "Only Resource mining drill recipes" setting is enabled
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.14.0
 Date: 29.12.2025
   Bugfixes:
