@@ -89,7 +89,7 @@ local function place_resources(surface, area, resource_name, player_index)
 
             local cliffs = surface.find_entities_filtered
                 {
-                    area = { { x, y }, { x + 1, y + 1 } },
+                    area = { { x - 1, y - 1 }, { x + 1, y + 1 } },
                     type = "cliff"
                 }
             if #cliffs > 0 then goto continue end
