@@ -27,15 +27,16 @@ end
 if mods["space-age"] then
     recycling.generate_recycling_recipe(recipes["big-mining-drill"])
 
-    local recipe          = table.deepcopy(recipes["big-mining-drill-recycling"])
+    local recipe = table.deepcopy(recipes["big-mining-drill-recycling"])
+    if recipe then
+        recipe.name           = "rmd-big-mining-drill-recycling"
+        recipe.localised_name = { "", { "recipe-name." .. recipe.name } }
 
-    recipe.name           = "rmd-big-mining-drill-recycling"
-    recipe.localised_name = { "", { "recipe-name." .. recipe.name } }
+        replace_ingredient(recipe, "big-mining-drill", "rmd-big-mining-drill")
+        replace_result(recipe, "electric-mining-drill", "rmd-electric-mining-drill")
 
-    replace_ingredient(recipe, "big-mining-drill", "rmd-big-mining-drill")
-    replace_result(recipe, "electric-mining-drill", "rmd-electric-mining-drill")
-
-    data:extend({ recipe })
+        data:extend({ recipe })
+    end
 end
 
 if settings.startup["rmd-slow-miner"] and settings.startup["rmd-slow-miner"].value then
@@ -110,12 +111,7 @@ local disabled_controls = {}
 for name, control in pairs(data.raw["autoplace-control"]) do
     if control.category == "resource" then
         if not EXCLUDED_CONTROLS[name] then
-            disabled_controls[name] =
-            {
-                frequency = 0,
-                size = 0,
-                richness = 0
-            }
+            disabled_controls[name] = { size = 0 }
         end
     end
 end
@@ -130,18 +126,22 @@ data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
 }
 
 local items = data.raw["item"]
-items["rmd-electric-mining-drill"].icons =
-{
+if items["rmd-electric-mining-drill"] then
+    items["rmd-electric-mining-drill"].icon = BROKEN_ICON
+    items["rmd-electric-mining-drill"].icon_size = 64
+    items["rmd-electric-mining-drill"].icons =
     {
-        icon = STONE_ICON,
-        icon_size = 64
-    },
-    {
-        icon = items["electric-mining-drill"].icon,
-        icon_size = items["electric-mining-drill"].icon_size,
-        shift = { -8, -8 }
+        {
+            icon = STONE_ICON,
+            icon_size = 64
+        },
+        {
+            icon = items["electric-mining-drill"].icon,
+            icon_size = items["electric-mining-drill"].icon_size,
+            shift = { -8, -8 }
+        }
     }
-}
+end
 
 if mods["space-age"] and recipes["rmd-big-mining-drill"] then
     replace_ingredient(recipes["rmd-big-mining-drill"], "electric-mining-drill", "rmd-electric-mining-drill")
@@ -267,6 +267,8 @@ end
 
 if mods["bobmining"] then
     if items["bob-water-miner-1"] then
+        items["rmd-bob-water-miner"].icon = BROKEN_ICON
+        items["rmd-bob-water-miner"].icon_size = 64
         items["rmd-bob-water-miner"].icons =
         {
             {
@@ -281,30 +283,38 @@ if mods["bobmining"] then
     end
 
     local mining_drill = data.raw["mining-drill"]["rmd-electric-mining-drill"]
-    mining_drill.icons =
-    {
+    if mining_drill then
+        mining_drill.icon = BROKEN_ICON
+        mining_drill.icon_size = 64
+        mining_drill.icons =
         {
-            icon = STONE_ICON
-        },
-        {
-            icon = items["electric-mining-drill"].icon,
-            icon_size = items["electric-mining-drill"].icon_size,
-            shift = { -8, -8 }
+            {
+                icon = STONE_ICON
+            },
+            {
+                icon = items["electric-mining-drill"].icon,
+                icon_size = items["electric-mining-drill"].icon_size,
+                shift = { -8, -8 }
+            }
         }
-    }
+    end
 
     local simple_entity = data.raw["simple-entity-with-owner"]["rmd-electric-mining-drill-displayer"]
-    simple_entity.icons =
-    {
+    if simple_entity then
+        simple_entity.icon = BROKEN_ICON
+        simple_entity.icon_size = 64
+        simple_entity.icons =
         {
-            icon = STONE_ICON
-        },
-        {
-            icon = items["electric-mining-drill"].icon,
-            icon_size = items["electric-mining-drill"].icon_size,
-            shift = { -8, -8 }
+            {
+                icon = STONE_ICON
+            },
+            {
+                icon = items["electric-mining-drill"].icon,
+                icon_size = items["electric-mining-drill"].icon_size,
+                shift = { -8, -8 }
+            }
         }
-    }
+    end
 end
 
 local mining_drills = data.raw["mining-drill"]

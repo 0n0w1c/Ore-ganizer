@@ -1,7 +1,8 @@
 MOD_NAME = "ore-ganizer"
 MOD_PATH = "__" .. MOD_NAME .. "__"
 
-STONE_ICON = "__base__/graphics/icons/stone.png"
+STONE_ICON = MOD_PATH .. "/graphics/icons/stone.png"
+BROKEN_ICON = MOD_PATH .. "/graphics/icons/cancel.png"
 
 DISABLED = "disabled"
 FLUID_MULTIPLIER = 200

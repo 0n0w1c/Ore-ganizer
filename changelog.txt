@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.14.4
+Date: 12.03.2026
+  Bugfixes:
+    - Added copies of the Factorio stone and cancel icons
+    - Added an icon and icon_size to all Resource mining drill entity, item, and displayer
+    - Added more nil checks in the Resource mining drill prototype definitions
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.14.3
 Date: 24.02.2026
   Bugfixes:

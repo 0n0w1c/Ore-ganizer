@@ -2,14 +2,15 @@ if not (mods["IR3_Assets_mining_drills"] and data.raw["mining-drill"]["steel-der
 
 require("constants")
 
-local BASE_GRAPHICS     = "__base__/graphics/"
-local ENTITY_GRAPHICS   = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS    = ENTITY_GRAPHICS .. "pumpjack/"
+local BASE_GRAPHICS   = "__base__/graphics/"
+local ENTITY_GRAPHICS = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS  = ENTITY_GRAPHICS .. "pumpjack/"
 
-local TO_COPY           = "steel-derrick"
-local NAME              = "rmd-" .. TO_COPY
+local TO_COPY         = "steel-derrick"
+local NAME            = "rmd-" .. TO_COPY
 
-local mining_drill      = data.raw["mining-drill"][TO_COPY]
+local mining_drill    = data.raw["mining-drill"][TO_COPY]
+if not mining_drill then return end
 
 local pipe_covers       = {
     north = {
@@ -73,6 +74,8 @@ local rmd_mining_drill_displayer                       =
     localised_description              = mining_drill.localised_description,
     placeable_by                       = { item = NAME, count = 1 },
     minable                            = { mining_time = 0.5, result = NAME },
+    icon                               = BROKEN_ICON,
+    icon_size                          = 64,
     icons                              =
     {
         {
@@ -112,6 +115,8 @@ rmd_mining_drill_entity.placeable_by                   = { item = NAME, count = 
 rmd_mining_drill_entity.minable                        = { mining_time = 0.5, result = NAME }
 rmd_mining_drill_entity.localised_name                 = { "", { "item-name." .. NAME } }
 rmd_mining_drill_entity.drawing_box_vertical_extension = 1
+rmd_mining_drill_entity.icon                           = BROKEN_ICON
+rmd_mining_drill_entity.icon_size                      = 64
 rmd_mining_drill_entity.icons                          =
 {
     {
@@ -125,12 +130,16 @@ rmd_mining_drill_entity.icons                          =
 }
 
 local rmd_mining_drill_item                            = table.deepcopy(data.raw["item"][TO_COPY])
-rmd_mining_drill_item.name                             = NAME
-rmd_mining_drill_item.place_result                     = NAME .. "-displayer"
-rmd_mining_drill_item.flags                            = { "primary-place-result" }
-rmd_mining_drill_item.localised_name                   = { "", { "item-name." .. NAME } }
-rmd_mining_drill_item.order                            = rmd_mining_drill_item.order .. "z"
-rmd_mining_drill_item.icons                            =
+if not rmd_mining_drill_item or rmd_mining_drill_item.hidden then return end
+
+rmd_mining_drill_item.name           = NAME
+rmd_mining_drill_item.place_result   = NAME .. "-displayer"
+rmd_mining_drill_item.flags          = { "primary-place-result" }
+rmd_mining_drill_item.localised_name = { "", { "item-name." .. NAME } }
+rmd_mining_drill_item.order          = rmd_mining_drill_item.order .. "z"
+rmd_mining_drill_item.icon           = BROKEN_ICON
+rmd_mining_drill_item.icon_size      = 64
+rmd_mining_drill_item.icons          =
 {
     {
         icon = STONE_ICON
@@ -142,9 +151,11 @@ rmd_mining_drill_item.icons                            =
     }
 }
 
-local rmd_mining_drill_recipe                          = table.deepcopy(data.raw["recipe"][TO_COPY])
-rmd_mining_drill_recipe.name                           = NAME
-rmd_mining_drill_recipe.results                        = { { type = "item", name = NAME, amount = 1 } }
+local rmd_mining_drill_recipe        = table.deepcopy(data.raw["recipe"][TO_COPY])
+if not rmd_mining_drill_recipe or rmd_mining_drill_recipe.hidden then return end
+
+rmd_mining_drill_recipe.name    = NAME
+rmd_mining_drill_recipe.results = { { type = "item", name = NAME, amount = 1 } }
 
 if mods["space-age"] then
     rmd_mining_drill_displayer.surface_conditions = { { min = 0.1, property = "gravity" } }
