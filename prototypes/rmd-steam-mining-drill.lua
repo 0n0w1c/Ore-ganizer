@@ -12,6 +12,23 @@ local NAME            = "rmd-" .. TO_COPY
 local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
+local icons                            = {
+    {
+        icon = STONE_ICON
+    },
+    {
+        icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/burner-mining-drill.png",
+        shift = { -8, -8 },
+        icon_size = 64
+    },
+    {
+        icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/steam.png",
+        icon_size = 64,
+        scale = 0.25,
+        shift = { -16, 8.5 }
+    }
+}
+
 local rmd_mining_drill_displayer       =
 {
     type                               = "simple-entity-with-owner",
@@ -41,22 +58,7 @@ local rmd_mining_drill_displayer       =
     },
     icon                               = BROKEN_ICON,
     icon_size                          = 64,
-    icons                              = {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/burner-mining-drill.png",
-            shift = { -8, -8 },
-            icon_size = 64
-        },
-        {
-            icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/steam.png",
-            icon_size = 64,
-            scale = 0.25,
-            shift = { -16, 8.5 }
-        }
-    }
+    icons                              = icons,
 }
 
 local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
@@ -68,22 +70,7 @@ rmd_mining_drill_entity.icon           = data.raw["item"]["stone"].icon
 rmd_mining_drill_entity.next_upgrade   = TO_COPY
 rmd_mining_drill_entity.icon           = BROKEN_ICON
 rmd_mining_drill_entity.icon_size      = 64
-rmd_mining_drill_entity.icons          = {
-    {
-        icon = STONE_ICON
-    },
-    {
-        icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/burner-mining-drill.png",
-        shift = { -8, -8 },
-        icon_size = 64
-    },
-    {
-        icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/steam.png",
-        icon_size = 64,
-        scale = 0.25,
-        shift = { -16, 8.5 }
-    }
-}
+rmd_mining_drill_entity.icons          = icons
 
 local rmd_mining_drill_item            = table.deepcopy(data.raw["item"][TO_COPY])
 if not rmd_mining_drill_item or rmd_mining_drill_item.hidden then return end
@@ -95,22 +82,7 @@ rmd_mining_drill_item.localised_name = { "", { "item-name." .. NAME } }
 rmd_mining_drill_item.order          = rmd_mining_drill_item.order .. "z"
 rmd_mining_drill_item.icon           = BROKEN_ICON
 rmd_mining_drill_item.icon_size      = 64
-rmd_mining_drill_item.icons          = {
-    {
-        icon = STONE_ICON
-    },
-    {
-        icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/burner-mining-drill.png",
-        shift = { -8, -8 },
-        icon_size = 64
-    },
-    {
-        icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/steam.png",
-        icon_size = 64,
-        scale = 0.25,
-        shift = { -16, 8.5 }
-    }
-}
+rmd_mining_drill_item.icons          = icons
 
 local rmd_mining_drill_recipe        = table.deepcopy(data.raw["recipe"][TO_COPY])
 if not rmd_mining_drill_recipe or rmd_mining_drill_recipe.hidden then return end

@@ -14,6 +14,21 @@ for i = 1, 4 do
     local mining_drill     = data.raw["mining-drill"][TO_COPY]
     if not mining_drill then return end
 
+    local icons = nil
+    if mining_drill.icon then
+        icons =
+        {
+            {
+                icon = STONE_ICON
+            },
+            {
+                icon = mining_drill.icon,
+                icon_size = mining_drill.icon_size,
+                shift = { -8, -8 }
+            }
+        }
+    end
+
     local radius                                      = get_effective_mining_radius(mining_drill)
 
     local rmd_mining_drill_displayer                  =
@@ -26,17 +41,7 @@ for i = 1, 4 do
         minable                            = { mining_time = 0.5, result = NAME },
         icon                               = BROKEN_ICON,
         icon_size                          = 64,
-        icons                              =
-        {
-            {
-                icon = STONE_ICON
-            },
-            {
-                icon = mining_drill.icon,
-                icon_size = mining_drill.icon_size,
-                shift = { -8, -8 }
-            }
-        },
+        icons                              = icons,
         radius_visualisation_specification =
         {
             sprite =
@@ -316,17 +321,7 @@ for i = 1, 4 do
     rmd_mining_drill_entity.localised_name            = { "", { "item-name." .. NAME } }
     rmd_mining_drill_entity.icon                      = BROKEN_ICON
     rmd_mining_drill_entity.icon_size                 = 64
-    rmd_mining_drill_entity.icons                     =
-    {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = mining_drill.icon,
-            icon_size = mining_drill.icon_size,
-            shift = { -8, -8 }
-        }
-    }
+    rmd_mining_drill_entity.icons                     = icons
 
     local rmd_mining_drill_item                       = table.deepcopy(data.raw["item"][TO_COPY])
     if not rmd_mining_drill_item or rmd_mining_drill_item.hidden then return end
@@ -337,17 +332,7 @@ for i = 1, 4 do
     rmd_mining_drill_item.localised_name = { "", { "item-name." .. NAME } }
     rmd_mining_drill_item.icon           = BROKEN_ICON
     rmd_mining_drill_item.icon_size      = 64
-    rmd_mining_drill_item.icons          =
-    {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = mining_drill.icon,
-            icon_size = mining_drill.icon_size,
-            shift = { -8, -8 }
-        }
-    }
+    rmd_mining_drill_item.icons          = icons
 
     local rmd_mining_drill_recipe        = table.deepcopy(data.raw["recipe"][TO_COPY])
     if not rmd_mining_drill_recipe or rmd_mining_drill_recipe.hidden then return end

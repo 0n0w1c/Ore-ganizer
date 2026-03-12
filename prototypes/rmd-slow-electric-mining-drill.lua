@@ -13,6 +13,21 @@ local NAME            = "rmd-slow-electric-mining-drill"
 local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
+local icons = nil
+if mining_drill.icon then
+    icons =
+    {
+        {
+            icon = STONE_ICON
+        },
+        {
+            icon = mining_drill.icon,
+            icon_size = mining_drill.icon_size,
+            shift = { -8, -8 }
+        }
+    }
+end
+
 local rmd_mining_drill_displayer =
 {
     type                               = "simple-entity-with-owner",
@@ -23,17 +38,7 @@ local rmd_mining_drill_displayer =
     minable                            = { mining_time = 0.5, result = NAME },
     icon                               = BROKEN_ICON,
     icon_size                          = 64,
-    icons                              =
-    {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = mining_drill.icon,
-            icon_size = mining_drill.icon_size,
-            shift = { -8, -8 }
-        }
-    },
+    icons                              = icons,
     radius_visualisation_specification =
     {
         sprite =
@@ -354,17 +359,7 @@ rmd_mining_drill_entity.collision_box             = { { -0.7, -0.7 }, { 0.7, 0.7
 rmd_mining_drill_entity.selection_box             = { { -1, -1 }, { 1, 1 } }
 rmd_mining_drill_entity.icon                      = BROKEN_ICON
 rmd_mining_drill_entity.icon_size                 = 64
-rmd_mining_drill_entity.icons                     =
-{
-    {
-        icon = STONE_ICON
-    },
-    {
-        icon = MOD_PATH .. "/graphics/icons/" .. NAME .. ".png",
-        icon_size = 64,
-        shift = { -8, -8 }
-    }
-}
+rmd_mining_drill_entity.icons                     = icons
 
 local function rescale_drill_entity(entity, factor)
     local function rescale_layer(layer)
@@ -490,17 +485,7 @@ rmd_mining_drill_item.localised_name = { "", { "item-name." .. NAME } }
 rmd_mining_drill_item.order          = "a[items]-a[slow-electric-mining-drill]"
 rmd_mining_drill_item.icon           = BROKEN_ICON
 rmd_mining_drill_item.icon_size      = 64
-rmd_mining_drill_item.icons          =
-{
-    {
-        icon = STONE_ICON
-    },
-    {
-        icon = MOD_PATH .. "/graphics/icons/" .. NAME .. ".png",
-        icon_size = 64,
-        shift = { -8, -8 }
-    }
-}
+rmd_mining_drill_item.icons          = icons
 
 local rmd_mining_drill_recipe        = table.deepcopy(data.raw["recipe"][TO_COPY])
 if not rmd_mining_drill_recipe or rmd_mining_drill_recipe.hidden then return end
