@@ -94,6 +94,11 @@ if mods["EverythingOnNauvis"] then
     EXCLUDED_CONTROLS["vulcanus_volcanism"] = true
 end
 
+if mods["EON-FulgoraDiscovered"] then
+    EXCLUDED_CONTROLS["ammonia_ocean"] = true
+    EXCLUDED_CONTROLS["vulcanus_volcanism"] = true
+end
+
 if mods["Spaghetorio"] then
     EXCLUDED_CONTROLS["sp-core-rift"] = true
     EXCLUDED_CONTROLS["sp-blunagium"] = true
