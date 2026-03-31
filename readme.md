@@ -53,6 +53,7 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 [Bob's Mining](https://mods.factorio.com/mod/bobmining)  
 [Bob's Ores](https://mods.factorio.com/mod/bobores)  
 [Everything On Nauvis](https://mods.factorio.com/mod/EverythingOnNauvis)  
+[Everything On Nauvis - Fuulgora Discovered!](https://mods.factorio.com/mod/EON-FulgoraDiscovered)  
 [Factorissimo 3](https://mods.factorio.com/mod/factorissimo-2-notnotmelon)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)  
