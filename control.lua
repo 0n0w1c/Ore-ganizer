@@ -1307,8 +1307,12 @@ local function on_undo_applied(event)
 end
 
 local function register_event_handlers()
-    script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
-    script.on_event(defines.events.on_surface_created, on_surface_created)
+    local removes_aquilo = script.active_mods["EverythingOnNauvis"] or script.active_mods["EON-FulgoraDiscovered"]
+
+    if not removes_aquilo then
+        script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
+        script.on_event(defines.events.on_surface_created, on_surface_created)
+    end
 
     script.on_event(defines.events.on_cutscene_cancelled, on_cutscene_cancelled)
     script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)

@@ -19,6 +19,9 @@ data.extend({
     }
 })
 
+local hidden = false
+if mods["EverythingOnNauvis"] or mods["EON-FulgoraDiscovered"] then hidden = true end
+
 data.extend({
     {
         type = "autoplace-control",
@@ -26,7 +29,8 @@ data.extend({
         localised_name = { "autoplace-control-name.rmd_aquilo_islands" },
         localised_description = { "autoplace-control-description.rmd_aquilo_islands" },
         category = "resource",
-        order = "z[rmd-aquilo-islands]"
+        order = "z[rmd-aquilo-islands]",
+        hidden = hidden
     }
 })
 

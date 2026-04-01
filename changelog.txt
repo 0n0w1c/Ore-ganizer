@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.15.1
+Date: 30.03.2026
+  Bugfixes:
+    - None
+  Changes:
+    - Ice Islands autoplace control is hidden if EverythingOnNauvis or EON - Fulgora Discovered! is active
+---------------------------------------------------------------------------------------------------
 Version: 0.15.0
 Date: 30.03.2026
   Bugfixes:
