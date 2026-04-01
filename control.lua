@@ -223,7 +223,7 @@ local function resource_uses_fluid(resource)
     local proto
 
     if type(resource) == "string" then
-        proto = prototypes.entity[resource] or prototypes.resource[resource]
+        proto = prototypes.entity[resource]
     else
         proto = resource.prototype
     end
