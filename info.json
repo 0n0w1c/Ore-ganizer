@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.15.1",
+    "version": "0.15.2",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -26,6 +26,7 @@
         "? IR3_Assets_mining_drills",
         "? IR3_Assets_steamworks",
         "? upgrade_requires_previous_tier",
+        "! Engineersvsenvironmentalist-redux",
         "! Cursed-FMD",
         "! pypostprocessing",
         "! pyrawores",
