@@ -57,29 +57,8 @@ local pipe_covers       = {
     }
 }
 
-local display_animation = table.deepcopy(mining_drill.graphics_set.animation)
-
-if display_animation then
-    local function add_layer(dir, layer, index)
-        local dir_anim = display_animation[dir]
-        if not dir_anim then return end
-
-        if not dir_anim.layers then
-            dir_anim.layers = { dir_anim }
-        end
-
-        if index then
-            table.insert(dir_anim.layers, index, layer)
-        else
-            table.insert(dir_anim.layers, layer)
-        end
-    end
-
-    add_layer("east", pipe_covers.east)
-    add_layer("north", pipe_covers.north)
-    add_layer("south", pipe_covers.south)
-    add_layer("west", pipe_covers.west)
-end
+local display_animation = copy_displayer_picture_from_animation(mining_drill)
+add_layers_to_directional_picture(display_animation, pipe_covers)
 
 local rmd_mining_drill_displayer                       =
 {

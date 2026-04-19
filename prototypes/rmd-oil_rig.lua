@@ -56,7 +56,7 @@ local rmd_mining_drill_displayer       =
     collision_mask                     = { layers = { meltable = true, object = true, train = true } },
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = TO_COPY,
-    picture                            = mining_drill.base_picture
+    picture                            = copy_displayer_picture_from_base_picture(mining_drill)
 }
 local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
 rmd_mining_drill_entity.name           = NAME

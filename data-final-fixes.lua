@@ -152,10 +152,6 @@ if mods["space-age"] and recipes["rmd-big-mining-drill"] then
     replace_ingredient(recipes["rmd-big-mining-drill"], "electric-mining-drill", "rmd-electric-mining-drill")
     if mods["quality"] then recycling.generate_recycling_recipe(recipes["rmd-big-mining-drill"]) end
     recycling.generate_recycling_recipe(recipes["rmd-big-mining-drill"])
-
-    --    if recipes["rmd-big-mining-drill-recycling"] then
-    --        recipes["rmd-big-mining-drill-recycling"].results = table.deepcopy(recipes["big-mining-drill-recycling"].results)
-    --    end
 end
 
 if mods["bobmining"] then
@@ -324,6 +320,15 @@ end
 
 local mining_drills = data.raw["mining-drill"]
 
+for _, mining_drill in pairs(mining_drills) do
+    local next_upgrade_name = mining_drill.next_upgrade
+    local next_upgrade = next_upgrade_name and mining_drills[next_upgrade_name]
+
+    if next_upgrade and not boxes_equal(mining_drill.collision_box, next_upgrade.collision_box) then
+        mining_drill.next_upgrade = nil
+    end
+end
+
 if not mods["Krastorio2"] and not mods["Krastorio2-spaced-out"] then
     if mining_drills["pumpjack"] and not mining_drills["pumpjack"].hidden then
         mining_drills["rmd-pumpjack"].next_upgrade = resolve_upgrade_target("pumpjack")
@@ -356,6 +361,22 @@ if next then
         if boxes_equal(rmd.collision_box, upgrade.collision_box) then
             rmd.next_upgrade = next
             rmd.fast_replaceable_group = upgrade.fast_replaceable_group
+        end
+    end
+end
+
+if mods["IR3_Assets_steamworks"] and mining_drills["steam-mining-drill"] then
+    next = resolve_upgrade_target("steam-mining-drill")
+
+    if next then
+        local upgrade = mining_drills[next]
+        local rmd     = mining_drills["rmd-steam-mining-drill"]
+
+        if upgrade and not upgrade.hidden and rmd then
+            if boxes_equal(rmd.collision_box, upgrade.collision_box) then
+                rmd.next_upgrade = next
+                rmd.fast_replaceable_group = upgrade.fast_replaceable_group
+            end
         end
     end
 end
@@ -393,9 +414,19 @@ if mods["space-age"] then
 end
 
 if mods["bobmining"] and mining_drills["bob-water-miner-1"] and not mining_drills["bob-water-miner-1"].hidden then
-    mining_drills["rmd-bob-water-miner"].next_upgrade = resolve_upgrade_target("bob-water-miner-1")
-    mining_drills["rmd-bob-water-miner"].fast_replaceable_group =
-        mining_drills["bob-water-miner-1"].fast_replaceable_group
+    next = resolve_upgrade_target("bob-water-miner-1")
+
+    if next then
+        local upgrade = mining_drills[next]
+        local rmd     = mining_drills["rmd-bob-water-miner"]
+
+        if upgrade and not upgrade.hidden and rmd then
+            if boxes_equal(rmd.collision_box, upgrade.collision_box) then
+                rmd.next_upgrade = next
+                rmd.fast_replaceable_group = upgrade.fast_replaceable_group
+            end
+        end
+    end
 end
 
 if mods["OmegaDrill"] then

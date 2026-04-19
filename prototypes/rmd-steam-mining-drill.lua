@@ -37,14 +37,15 @@ local rmd_mining_drill_displayer       =
     localised_description              = mining_drill.localised_description,
     placeable_by                       = { item = NAME, count = 1 },
     minable                            = { mining_time = 0.5, result = NAME },
-    flags                              = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
+    --flags                              = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
+    flags                              = { "placeable-neutral", "placeable-player", "player-creation" },
     max_health                         = mining_drill.max_health,
     collision_box                      = mining_drill.collision_box,
     selection_box                      = mining_drill.selection_box,
     collision_mask                     = COLLISION_MASK,
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
-    picture                            = mining_drill.graphics_set.animation,
+    picture                            = copy_displayer_picture_from_animation(mining_drill),
     radius_visualisation_specification =
     {
         sprite =
@@ -67,7 +68,6 @@ rmd_mining_drill_entity.placeable_by   = { item = NAME, count = 1 }
 rmd_mining_drill_entity.minable        = { mining_time = 0.5, result = NAME }
 rmd_mining_drill_entity.localised_name = { "", { "item-name." .. NAME } }
 rmd_mining_drill_entity.icon           = data.raw["item"]["stone"].icon
-rmd_mining_drill_entity.next_upgrade   = TO_COPY
 rmd_mining_drill_entity.icon           = BROKEN_ICON
 rmd_mining_drill_entity.icon_size      = 64
 rmd_mining_drill_entity.icons          = icons

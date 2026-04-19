@@ -27,7 +27,7 @@ if mining_drill.icon then
     }
 end
 
-local radius = get_effective_mining_radius(mining_drill)
+local radius                                      = get_effective_mining_radius(mining_drill)
 
 local rmd_mining_drill_displayer                  =
 {
@@ -44,7 +44,7 @@ local rmd_mining_drill_displayer                  =
     collision_mask                     = COLLISION_MASK,
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
-    picture                            = mining_drill.graphics_set.animation,
+    picture                            = copy_displayer_picture_from_animation(mining_drill),
     icon                               = BROKEN_ICON,
     icon_size                          = 64,
     icons                              = icons,

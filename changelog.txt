@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.0
+Date: 19.04.2026
+  Bugfixes:
+    - Refactored Resource mining drill displayers to derive their graphics procedurally
+    - Steamworks: Fixed fast-replace/next_upgrade issue for the Resource steam mining drill
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.15.2
 Date: 07.04.2026
   Bugfixes:

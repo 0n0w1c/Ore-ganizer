@@ -1,4 +1,5 @@
 require("constants")
+require("utilities")
 
 function get_effective_mining_radius(prototype)
     if settings.startup["rmd-trim-mining-area"].value == true then

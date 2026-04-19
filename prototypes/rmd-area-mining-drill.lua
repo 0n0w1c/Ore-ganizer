@@ -5,18 +5,16 @@ if mods["space-age"] then return end
 if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then return end
 if not data.raw["mining-drill"]["area-mining-drill"] then return end
 
-local BASE_GRAPHICS       = "__base__/graphics/"
-local ENTITY_GRAPHICS     = BASE_GRAPHICS .. "entity/"
-local DRILL_GRAPHICS      = ENTITY_GRAPHICS .. "electric-mining-drill/"
-local AAI_INDUSTRY_ASSETS = "__aai-industry__/graphics/entity/area-mining-drill/"
+local BASE_GRAPHICS   = "__base__/graphics/"
+local ENTITY_GRAPHICS = BASE_GRAPHICS .. "entity/"
+local DRILL_GRAPHICS  = ENTITY_GRAPHICS .. "electric-mining-drill/"
+local TO_COPY         = "area-mining-drill"
+local NAME            = "rmd-" .. TO_COPY
 
-local TO_COPY             = "area-mining-drill"
-local NAME                = "rmd-" .. TO_COPY
-
-local mining_drill        = data.raw["mining-drill"][TO_COPY]
+local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
-local icons  = nil
+local icons = nil
 if mining_drill.icon then
     icons =
     {
@@ -62,181 +60,8 @@ local rmd_mining_drill_displayer                  =
     collision_mask                     = COLLISION_MASK,
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
-    integration_patch                  = data.raw["mining-drill"]["area-mining-drill"].integration_patch,
-    picture                            = {
-        north = {
-            layers = {
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-N.png",
-                    width = 194,
-                    height = 242,
-                    shift = util.by_pixel(0, -12),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-N-output.png",
-                    width = 72,
-                    height = 66,
-                    shift = util.by_pixel(-1, -44),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-N-shadow.png",
-                    width = 274,
-                    height = 206,
-                    draw_as_shadow = true,
-                    shift = util.by_pixel(19, -3),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill.png",
-                    width = 194,
-                    height = 154,
-                    shift = util.by_pixel(0, -12),
-                    scale = 0.75,
-                },
-            },
-        },
-        east = {
-            layers = {
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-E.png",
-                    width = 194,
-                    height = 94,
-                    shift = util.by_pixel(0, -33),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-E-output.png",
-                    width = 50,
-                    height = 56,
-                    shift = util.by_pixel(30, -11),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-E-shadow.png",
-                    width = 276,
-                    height = 170,
-                    draw_as_shadow = true,
-                    shift = util.by_pixel(20, 6),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-horizontal.png",
-                    width = 154,
-                    height = 194,
-                    shift = util.by_pixel(0, -12),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-E-front.png",
-                    width = 208,
-                    height = 186,
-                    shift = util.by_pixel(3, 2),
-                    scale = 0.75,
-                },
-            },
-        },
-        south = {
-            layers = {
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-S.png",
-                    width = 194,
-                    height = 240,
-                    shift = util.by_pixel(0, -7),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-S-shadow.png",
-                    width = 274,
-                    height = 204,
-                    draw_as_shadow = true,
-                    shift = util.by_pixel(19, 2),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-S-output.png",
-                    width = 82,
-                    height = 56,
-                    shift = util.by_pixel(-1, 34),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill.png",
-                    width = 194,
-                    height = 154,
-                    shift = util.by_pixel(0, -12),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-S-front.png",
-                    width = 172,
-                    height = 42,
-                    shift = util.by_pixel(0, 13),
-                    scale = 0.75,
-                },
-            },
-        },
-        west = {
-            layers = {
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-W.png",
-                    width = 194,
-                    height = 94,
-                    shift = util.by_pixel(0, -33),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-W-output.png",
-                    width = 50,
-                    height = 56,
-                    shift = util.by_pixel(-31, -12),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-W-shadow.png",
-                    width = 282,
-                    height = 170,
-                    draw_as_shadow = true,
-                    shift = util.by_pixel(15, 6),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-horizontal.png",
-                    width = 154,
-                    height = 194,
-                    shift = util.by_pixel(0, -12),
-                    scale = 0.75,
-                },
-                {
-                    priority = "high",
-                    filename = AAI_INDUSTRY_ASSETS .. "area-mining-drill-W-front.png",
-                    width = 210,
-                    height = 190,
-                    shift = util.by_pixel(-4, 1),
-                    scale = 0.75,
-                },
-            },
-        },
-    },
+    integration_patch                  = copy_displayer_integration_patch(mining_drill),
+    picture                            = make_animated_mining_drill_displayer_picture(mining_drill),
 }
 
 local rmd_mining_drill_entity                     = table.deepcopy(data.raw["mining-drill"][TO_COPY])

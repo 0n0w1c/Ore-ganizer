@@ -15,6 +15,25 @@ if not data.raw["mining-drill"][TO_COPY] then return end
 local mining_drill = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
+local display_picture = copy_displayer_picture_from_picture_field(mining_drill)
+
+local function replace_base_layer(direction, filename, shift)
+    local directional_picture = display_picture and display_picture[direction]
+    local layers = directional_picture and directional_picture.layers
+    local base_layer = layers and layers[1]
+    if not base_layer then return end
+
+    base_layer.filename = filename
+    if shift then
+        base_layer.shift = shift
+    end
+end
+
+replace_base_layer("east", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-E.png")
+replace_base_layer("north", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-N.png")
+replace_base_layer("south", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-S.png", { 0.1203125, -0.1884375 })
+replace_base_layer("west", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-W.png")
+
 local icons = nil
 if mining_drill.icon then
     icons =
@@ -59,189 +78,7 @@ local rmd_mining_drill_displayer       =
     collision_mask                     = COLLISION_MASK,
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
-    picture                            =
-    {
-        east =
-        {
-            layers =
-            {
-                {
-                    filename = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-E.png",
-                    height = 273,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = { -0.0703125, -0.1484375 },
-                    width = 261
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-base-shadow.png",
-                    height = 220,
-                    scale = 0.5,
-                    shift = { 0.1875, 0.015625 },
-                    width = 220,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead.png",
-                    height = 202,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { -0.125, -0.75 },
-                    width = 206
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead-shadow.png",
-                    height = 82,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { 0.5546875, 0.453125 },
-                    width = 309,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pipe-covers/pipe-cover-east.png",
-                    height = 128,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = util.by_pixel(63.5, -33.5),
-                    width = 128
-                },
-            }
-        },
-        north =
-        {
-            layers =
-            {
-                {
-                    filename = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-N.png",
-                    height = 273,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = { -0.0703125, -0.1484375 },
-                    width = 261
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-base-shadow.png",
-                    height = 220,
-                    scale = 0.5,
-                    shift = { 0.1875, 0.015625 },
-                    width = 220,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead.png",
-                    height = 202,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { -0.125, -0.75 },
-                    width = 206
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead-shadow.png",
-                    height = 82,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { 0.5546875, 0.453125 },
-                    width = 309,
-                    draw_as_shadow = true
-                },
-            }
-        },
-        south =
-        {
-            layers =
-            {
-                {
-                    filename = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-S.png",
-                    height = 273,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = { 0.1203125, -0.1884375 },
-                    width = 261
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-base-shadow.png",
-                    height = 220,
-                    scale = 0.5,
-                    shift = { 0.1875, 0.015825 },
-                    width = 220,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead.png",
-                    height = 202,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { -0.125, -0.75 },
-                    width = 206
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead-shadow.png",
-                    height = 82,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { 0.5546875, 0.453125 },
-                    width = 309,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pipe-covers/pipe-cover-south.png",
-                    height = 128,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = util.by_pixel(-30, 63),
-                    width = 128
-                },
-            }
-        },
-        west =
-        {
-            layers =
-            {
-                {
-                    filename = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-W.png",
-                    height = 273,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = { -0.0703125, -0.1484375 },
-                    width = 261
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-base-shadow.png",
-                    height = 220,
-                    scale = 0.5,
-                    shift = { 0.1875, 0.015625 },
-                    width = 220,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead.png",
-                    height = 202,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { -0.125, -0.75 },
-                    width = 206
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pumpjack/pumpjack-horsehead-shadow.png",
-                    height = 82,
-                    priority = "high",
-                    scale = 0.5,
-                    shift = { 0.5546875, 0.453125 },
-                    width = 309,
-                    draw_as_shadow = true
-                },
-                {
-                    filename = ENTITY_GRAPHICS .. "pipe-covers/pipe-cover-west.png",
-                    height = 128,
-                    priority = "extra-high",
-                    scale = 0.5,
-                    shift = util.by_pixel(-63, 32.5),
-                    width = 128
-                },
-            }
-        }
-    }
+    picture                            = display_picture
 }
 
 local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
