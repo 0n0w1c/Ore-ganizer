@@ -27,6 +27,7 @@ Includes the *Ice islands* map generator resource setting (see [FAQ](https://git
 ---
 
 #### Startup settings:
+* Resource amount display time (disable = 0, max = 60, default = 5)
 * Trim Resource mining drill area (default: disabled)  
 * Resource slow electric mining drill (default: disabled)  
 * Blueprint resources (default: disabled)  
