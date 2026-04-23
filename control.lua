@@ -1,6 +1,7 @@
 require("constants")
 
 local BLUEPRINT_RESOURCES = settings.startup["rmd-blueprint-resources"].value == true
+local RESOURCE_AMOUNT_TTL = settings.startup["rmd-resource-amount-ttl"].value * 60
 
 local function find_excluded_tile_under_entity(entity)
     if not (entity and entity.valid) then return nil end
@@ -44,12 +45,7 @@ local function get_mining_area(entity)
         return { left_top = { x = -1, y = -1 }, right_bottom = { x = 1, y = 1 } }
     end
 
-    local radius = 0.99
-    if proto.get_mining_drill_radius then
-        radius = proto.get_mining_drill_radius() or 0.99
-    elseif proto.mining_drill_radius then
-        radius = proto.mining_drill_radius
-    end
+    local radius = proto.mining_drill_radius or 0.99
 
     return {
         left_top = {
@@ -342,6 +338,60 @@ local function get_or_create_player_data(player_index)
 
     storage.players[player_index] = player_data
     return player_data
+end
+
+local function format_compact(n)
+    local function fmt(value, suffix)
+        local s = string.format("%.1f", value)
+        s = s:gsub("%.0$", "")
+        return s .. suffix
+    end
+
+    if n >= 1000000 then
+        return fmt(n / 1000000, "M")
+    elseif n >= 1000 then
+        return fmt(n / 1000, "K")
+    else
+        return tostring(math.floor(n))
+    end
+end
+
+local function sum_resource_amount_in_drill_area(drill)
+    local area = get_mining_area(drill)
+    local resources = drill.surface.find_entities_filtered {
+        area = area,
+        type = "resource"
+    }
+
+    local total = 0
+    for _, resource in ipairs(resources) do
+        if resource.valid then
+            total = total + (resource.amount or 0)
+        end
+    end
+
+    return total
+end
+
+local function on_selected_entity_changed(event)
+    local player = game.get_player(event.player_index)
+    if not player then return end
+
+    local selected = player.selected
+    if not (selected and selected.valid and selected.type == "mining-drill") then return end
+
+    local total_amount = sum_resource_amount_in_drill_area(selected)
+
+    rendering.draw_text {
+        text = format_compact(total_amount),
+        surface = selected.surface,
+        target = { entity = selected },
+        color = { r = 1, g = 1, b = 1 },
+        players = { player.index },
+        time_to_live = RESOURCE_AMOUNT_TTL,
+        scale = 2,
+        scale_with_zoom = true
+    }
 end
 
 local function destroy_and_return(player, entity, item_name, quality, message)
@@ -752,8 +802,9 @@ local function show_resource_selector_gui(player)
             name = "resource_scroll_pane",
             horizontal_scroll_policy = "never",
             vertical_scroll_policy = "auto",
+            style = "scroll_pane"
         }
-    scroll_pane.style = "scroll_pane"
+
     scroll_pane.style.maximal_height = 300
     scroll_pane.style.minimal_width = 400
     scroll_pane.style.padding = 4
@@ -924,18 +975,16 @@ local function on_gui_text_changed(event)
     local element = event.element
     local player = game.get_player(event.player_index)
     if not (player and element and element.valid) then return end
+    if element.name ~= "rmd_resource_amount_field" then return end
 
-    if element.name == "rmd_resource_amount_field" then
-        local num = tonumber(element.text)
+    local num = tonumber(element.text)
+    local valid = num and math.floor(num) == num and num > 0 and num <= 100000
 
-        if num and math.floor(num) == num and num > 0 and num <= 100000 then
-            storage.players[player.index].resource_amount = num
-            element.style.font_color = nil
-            element.style = "short_number_textfield"
-        else
-            element.style.font_color = { r = 0.8, g = 0, b = 0, a = 0.5 }
-        end
+    if valid then
+        storage.players[player.index].resource_amount = num
     end
+
+    element.style = valid and "rmd_valid_textfield" or "rmd_invalid_textfield"
 end
 
 local function on_cutscene_cancelled(event)
@@ -1077,7 +1126,7 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
     return { x = anchor_x + rotated_x, y = anchor_y + rotated_y }
 end
 
-local function blueprint_validate_resource_checks(player, entity, resource_name, item_name, quality)
+local function blueprint_validate_resource_checks(player, entity, resource_name)
     local force               = player.force
     local entity_name         = entity.name
 
@@ -1156,7 +1205,7 @@ local function process_blueprint_entities_on_pre_build(player, surface, entities
                 return
             end
 
-            if blueprint_validate_resource_checks(player, entity, resource_name, entity.name, entity.quality) then
+            if blueprint_validate_resource_checks(player, entity, resource_name) then
                 local entity_map_position = get_entity_map_position(event, entity, entities)
                 spot_resources(surface, entity_map_position, resource_name, event.player_index)
             else
@@ -1318,6 +1367,9 @@ local function register_event_handlers()
     script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
     script.on_event(defines.events.on_player_setup_blueprint, on_player_setup_blueprint)
     script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_stack_changed)
+    if RESOURCE_AMOUNT_TTL > 0 then
+        script.on_event(defines.events.on_selected_entity_changed, on_selected_entity_changed)
+    end
 
     script.on_event(defines.events.on_gui_click, on_gui_click)
     script.on_event(defines.events.on_gui_checked_state_changed, on_gui_check_state_changed)

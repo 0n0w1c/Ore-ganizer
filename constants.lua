@@ -73,13 +73,9 @@ CATEGORIES =
     ["gas"] = true
 }
 
--- Technology required to mine a resource that needs fluid
--- Extend this table when adding new modded ores.
 FLUID_MINING_TECH_BY_RESOURCE = {
-    ["uranium-ore"] = "uranium-mining", -- vanilla
+    ["uranium-ore"] = "uranium-mining", -- base
     ["titanium-ore"] = "fluid-mining",  -- bztitanium
-    -- Add more here:
-    -- ["thorium-ore"] = "thorium-fluid-mining",
 }
 
 FLUID_MINING_TECHONOLOGIES =

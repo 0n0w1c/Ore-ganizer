@@ -42,6 +42,18 @@ local rmd_cursor_keybind =
 
 data.extend({ rmd_shortcut, rmd_selector_keybind, rmd_cursor_keybind })
 
+data.raw["gui-style"].default["rmd_valid_textfield"] = {
+    type = "textbox_style",
+    parent = "short_number_textfield",
+    right_margin = 4
+}
+
+data.raw["gui-style"].default["rmd_invalid_textfield"] = {
+    type = "textbox_style",
+    parent = "invalid_value_short_number_textfield",
+    right_margin = 4
+}
+
 require("prototypes/rmd-slow-electric-mining-drill")
 require("prototypes/rmd-steam-mining-drill")
 require("prototypes/rmd-bob-area-mining-drills")

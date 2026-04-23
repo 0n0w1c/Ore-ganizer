@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.1
+Date: 23.04.2026
+  Bugfixes:
+    - None
+  Changes:
+    - Added an overlay for the resource amount, within the mining drill's search area
+    - Added startup setting: Resource amount display time (disable = 0, max = 60, default = 5)
+---------------------------------------------------------------------------------------------------
 Version: 0.16.0
 Date: 19.04.2026
   Bugfixes:
