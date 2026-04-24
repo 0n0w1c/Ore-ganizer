@@ -68,6 +68,12 @@ local function is_fluid_category_supported(fluid_category)
     return false
 end
 
+local function set_initial_amount_for_infinite_resource(resource, prototype, resource_amount)
+    if resource and resource.valid and prototype and prototype.infinite_resource then
+        resource.initial_amount = resource_amount
+    end
+end
+
 local function place_resources(surface, area, resource_name, player_index)
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "name", name = resource_name } })
     local prototype = resource_prototypes[resource_name]
@@ -95,12 +101,14 @@ local function place_resources(surface, area, resource_name, player_index)
             local multiplier = resource_name == "offshore-oil" and FLUID_MULTIPLIER * 4 or FLUID_MULTIPLIER
             local resource_amount = is_fluid and (amount * multiplier) or amount
 
-            surface.create_entity
+            local resource = surface.create_entity
             ({
                 name = resource_name,
                 amount = resource_amount,
                 position = position
             })
+
+            set_initial_amount_for_infinite_resource(resource, prototype, resource_amount)
 
             ::continue::
         end
@@ -122,11 +130,13 @@ local function spot_resources(surface, position, resource_name, player_index)
     local tile_x = math.floor(position.x)
     local tile_y = math.floor(position.y)
 
-    surface.create_entity {
+    local resource = surface.create_entity {
         name = resource_name,
         amount = resource_amount,
         position = { x = tile_x + 0.5, y = tile_y + 0.5 }
     }
+
+    set_initial_amount_for_infinite_resource(resource, prototype, resource_amount)
 end
 
 local function is_resource_covered_by_other_drill(surface, resource, ignore_entity)

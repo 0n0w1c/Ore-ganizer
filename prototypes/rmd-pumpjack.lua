@@ -12,24 +12,18 @@ local NAME            = "rmd-" .. TO_COPY
 local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
-local display_picture = copy_displayer_picture_from_picture_field(mining_drill)
-
-local function replace_base_layer(direction, filename, shift)
-    local directional_picture = display_picture and display_picture[direction]
-    local layers = directional_picture and directional_picture.layers
-    local base_layer = layers and layers[1]
-    if not base_layer then return end
-
-    base_layer.filename = filename
-    if shift then
-        base_layer.shift = shift
-    end
-end
-
-replace_base_layer("east", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-E.png")
-replace_base_layer("north", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-N.png")
-replace_base_layer("south", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-S.png", { 0.1203125, -0.1884375 })
-replace_base_layer("west", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-W.png")
+local display_picture = make_pumpjack_displayer_picture(
+    mining_drill,
+    {
+        east = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-E.png",
+        north = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-N.png",
+        south = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-S.png",
+        west = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-W.png"
+    },
+    {
+        south = { 0.1203125, -0.1884375 }
+    }
+)
 
 local icons = nil
 if mining_drill.icon then

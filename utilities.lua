@@ -152,6 +152,10 @@ local function normalize_sprite_layers(sprite)
         return table.deepcopy(sprite.layers)
     end
 
+    if sprite.sheets then
+        return table.deepcopy(sprite.sheets)
+    end
+
     return { table.deepcopy(sprite) }
 end
 
@@ -212,6 +216,62 @@ local function append_filtered_static_layers(target_layers, source, opts)
             table.insert(target_layers, make_static_picture_layer(layer))
         end
     end
+end
+
+local PUMPJACK_PIPE_COVER_SHIFT = {
+    east = util.by_pixel(63.5, -33.5),
+    south = util.by_pixel(-30, 63),
+    west = util.by_pixel(-63, 32.5)
+}
+
+local function append_pumpjack_pipe_cover_layers(target_layers, pipe_covers, direction)
+    local shift = PUMPJACK_PIPE_COVER_SHIFT[direction]
+    if not (target_layers and pipe_covers and pipe_covers[direction] and shift) then return end
+
+    for _, layer in ipairs(normalize_sprite_layers(pipe_covers[direction])) do
+        local copied_layer = make_static_picture_layer(layer)
+        copied_layer.shift = shift
+        table.insert(target_layers, copied_layer)
+    end
+end
+
+
+function make_pumpjack_displayer_picture(mining_drill, custom_base_by_direction, custom_shift_by_direction)
+    if not (mining_drill and mining_drill.base_picture) then return nil end
+
+    custom_base_by_direction = custom_base_by_direction or {}
+    custom_shift_by_direction = custom_shift_by_direction or {}
+
+    local picture = {}
+    local base_layers = normalize_sprite_layers(mining_drill.base_picture)
+    local horsehead_animation = mining_drill.graphics_set
+        and mining_drill.graphics_set.animation
+        and mining_drill.graphics_set.animation.north
+    local output_fluid_box = mining_drill.output_fluid_box
+    local pipe_covers = output_fluid_box and output_fluid_box.pipe_covers
+    local directions = { "north", "east", "south", "west" }
+
+    for index, direction in ipairs(directions) do
+        local direction_layers = {}
+
+        for index, base_layer in ipairs(base_layers) do
+            local copied_base_layer = make_static_picture_layer(base_layer)
+            if index == 1 and custom_base_by_direction[direction] then
+                copied_base_layer.filename = custom_base_by_direction[direction]
+                if custom_shift_by_direction[direction] then
+                    copied_base_layer.shift = custom_shift_by_direction[direction]
+                end
+            end
+            table.insert(direction_layers, copied_base_layer)
+        end
+
+        append_filtered_static_layers(direction_layers, horsehead_animation)
+        append_pumpjack_pipe_cover_layers(direction_layers, pipe_covers, direction)
+
+        picture[direction] = { layers = direction_layers }
+    end
+
+    return picture
 end
 
 function make_bob_area_mining_drill_displayer_picture(mining_drill)
@@ -398,7 +458,7 @@ function make_displayer_picture_from_working_visualisations(working_visualisatio
 
         local copied_animation = table.deepcopy(animation)
         picture[direction] = copied_animation.layers and { layers = copied_animation.layers } or
-        { layers = { copied_animation } }
+            { layers = { copied_animation } }
     end
 
     return picture
