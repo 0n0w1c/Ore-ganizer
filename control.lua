@@ -4,41 +4,6 @@ local BLUEPRINT_RESOURCES = settings.startup["rmd-blueprint-resources"].value ==
 local RESOURCE_AMOUNT_TTL = settings.startup["rmd-resource-amount-ttl"].value * 60
 local DISABLE_AUTO_RECONSTRUCT = settings.startup["rmd-disable-auto-reconstruct"].value == true
 
-local rmd_pending_displayer_ghosts = {}
-
-local function on_tick()
-    local pending = rmd_pending_displayer_ghosts
-
-    if not pending or table_size(pending) == 0 then
-        script.on_event(defines.events.on_tick, nil)
-        return
-    end
-
-    for i = #pending, 1, -1 do
-        local ghost = pending[i]
-        local surface = game.surfaces[ghost.surface_index]
-
-        if surface and prototypes.entity[ghost.name] then
-            local player = game.get_player(ghost.player_index) or game.players[1]
-
-            surface.create_entity {
-                name = "entity-ghost",
-                inner_name = ghost.name,
-                force = ghost.force_name,
-                position = ghost.position,
-                direction = ghost.direction,
-                quality = ghost.quality,
-                player = player,
-                tags = { selected_resource = ghost.selected_resource }
-            }
-        end
-
-        table.remove(pending, i)
-    end
-
-    script.on_event(defines.events.on_tick, nil)
-end
-
 local function find_excluded_tile_under_entity(entity)
     if not (entity and entity.valid) then return nil end
 
@@ -391,24 +356,41 @@ local function position_in_area(position, area)
         and position.y <= area.right_bottom.y
 end
 
-local function queue_displayer_ghost(entity, selected_resource)
-    local player_index = 1
-    if entity.last_user and entity.last_user.valid and entity.last_user.is_player() then
-        player_index = entity.last_user.index
+local function get_drill_player_index(drill)
+    if drill and drill.valid and drill.last_user and drill.last_user.valid and drill.last_user.is_player() then
+        return drill.last_user.index
     end
 
-    table.insert(rmd_pending_displayer_ghosts, {
-        surface_index = entity.surface.index,
-        force_name = entity.force.name,
-        name = entity.name .. "-displayer",
+    return 1
+end
+
+local function remember_auto_reconstruct(drill, selected_resource)
+    if not (drill and drill.valid) then return end
+
+    storage.rmd_auto_reconstruct = storage.rmd_auto_reconstruct or {}
+    storage.rmd_auto_reconstruct[drill.unit_number] = {
+        selected_resource = selected_resource,
+        player_index = get_drill_player_index(drill)
+    }
+end
+
+local function spawn_displayer_ghost(entity, selected_resource, player_index)
+    if not (entity and entity.valid) then return end
+
+    local player = (player_index and game.get_player(player_index)) or game.players[1]
+
+    entity.surface.create_entity {
+        name = "entity-ghost",
+        inner_name = entity.name .. "-displayer",
+        force = entity.force,
         position = entity.position,
         direction = entity.direction,
-        quality = entity.quality and entity.quality.name or nil,
-        selected_resource = selected_resource,
-        player_index = player_index
-    })
-
-    script.on_event(defines.events.on_tick, on_tick)
+        quality = entity.quality,
+        player = player,
+        tags = {
+            selected_resource = selected_resource
+        }
+    }
 end
 
 local function format_compact(n)
@@ -480,7 +462,7 @@ local function on_resource_depleted(event)
         if is_real_rmd_mining_drill(drill)
             and position_in_area(resource_position, get_mining_area(drill))
             and not drill.to_be_deconstructed() then
-            queue_displayer_ghost(drill, resource.name)
+            remember_auto_reconstruct(drill, resource.name)
             drill.order_deconstruction(drill.force)
         end
     end
@@ -717,6 +699,9 @@ local function on_mined_entity(event)
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
+    local reconstruct = entity.unit_number and storage.rmd_auto_reconstruct and
+        storage.rmd_auto_reconstruct[entity.unit_number]
+
     local is_ghost = (entity.type == "entity-ghost")
     local drill_name = is_ghost and entity.ghost_name or entity.name
 
@@ -751,6 +736,11 @@ local function on_mined_entity(event)
 
     remove_resources(surface, resource_area, entity)
     refresh_drills_for_resource_area(surface, resource_area)
+
+    if reconstruct and is_real_rmd_mining_drill(entity) then
+        spawn_displayer_ghost(entity, reconstruct.selected_resource, reconstruct.player_index)
+        storage.rmd_auto_reconstruct[entity.unit_number] = nil
+    end
 end
 
 local function show_resource_selector_gui(player)
@@ -1447,6 +1437,27 @@ local function on_undo_applied(event)
     end
 end
 
+local function clean_auto_reconstruct_storage()
+    if not storage.rmd_auto_reconstruct then return end
+
+    for unit_number, _ in pairs(storage.rmd_auto_reconstruct) do
+        local entity = game.get_entity_by_unit_number(unit_number)
+
+        if not (entity and entity.valid and is_real_rmd_mining_drill(entity) and entity.to_be_deconstructed()) then
+            storage.rmd_auto_reconstruct[unit_number] = nil
+        end
+    end
+end
+
+local function on_cancelled_deconstruction(event)
+    local entity = event.entity
+    if not (entity and entity.valid and entity.unit_number) then return end
+
+    if storage.rmd_auto_reconstruct then
+        storage.rmd_auto_reconstruct[entity.unit_number] = nil
+    end
+end
+
 local function register_event_handlers()
     local removes_aquilo = script.active_mods["EverythingOnNauvis"] or script.active_mods["EON-FulgoraDiscovered"]
 
@@ -1468,6 +1479,7 @@ local function register_event_handlers()
     end
 
     script.on_event(defines.events.on_cutscene_cancelled, on_cutscene_cancelled)
+    script.on_event(defines.events.on_cancelled_deconstruction, on_cancelled_deconstruction)
     script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
     script.on_event(defines.events.on_player_setup_blueprint, on_player_setup_blueprint)
     script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_stack_changed)
@@ -1497,6 +1509,7 @@ end
 
 script.on_init(function()
     storage.players = {}
+    storage.rmd_auto_reconstruct = {}
     register_event_handlers()
 end)
 
@@ -1505,6 +1518,9 @@ script.on_load(function()
 end)
 
 script.on_configuration_changed(function()
+    storage.rmd_auto_reconstruct = storage.rmd_auto_reconstruct or {}
+    clean_auto_reconstruct_storage()
+
     for _, player in pairs(game.players) do
         get_or_create_player_data(player.index)
     end

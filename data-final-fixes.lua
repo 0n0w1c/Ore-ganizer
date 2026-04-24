@@ -451,3 +451,19 @@ if settings.startup["rmd-trim-mining-area"].value == true then
         end
     end
 end
+
+local function add_flag_once(prototype, flag)
+    prototype.flags = prototype.flags or {}
+
+    for _, existing_flag in pairs(prototype.flags) do
+        if existing_flag == flag then return end
+    end
+
+    table.insert(prototype.flags, flag)
+end
+
+for _, mining_drill in pairs(mining_drills) do
+    if mining_drill.name:sub(1, 4) == "rmd-" and not mining_drill.name:match("%-displayer$") then
+        add_flag_once(mining_drill, "get-by-unit-number")
+    end
+end
