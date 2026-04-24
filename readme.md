@@ -13,20 +13,21 @@ To convert mining drills, press *Control + X* with a stack of mining drills on t
 
 Pipette (Q) on a resource node to auto-select the resource and place a Resource mining drill on the cursor.  
 
-Deconstruction removes the resource.
+Deconstruction removes the resource.  
+
+Auto-reconstruction replaces Resource mining drills, spawning new resources via construction robots.  
 
 Construction is blocked for invalid combinations or if a required mining technology has not been researched.  
 
 When placing blueprints of Resource mining drills, they will appear blue and that is expected, just place as usual.  
 
-No on_tick code or entity tracking — very UPS-friendly.  
-
 *New: Map generator preset — “No resources”*  
-Includes the *Ice islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
+Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
 
 ---
 
 #### Startup settings:
+* Disable auto-reconstruction (auto-reconstruction is enabled by default)
 * Resource amount display time (disable = 0, max = 60, default = 5)
 * Trim Resource mining drill area (default: disabled)  
 * Resource slow electric mining drill (default: disabled)  

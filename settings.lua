@@ -3,13 +3,23 @@ if mods["bobmining"] then hidden = true end
 
 data:extend({
     {
+        type = "bool-setting",
+        name = "rmd-disable-auto-reconstruct",
+        setting_type = "startup",
+        default_value = false,
+        order = "a"
+    }
+})
+
+data:extend({
+    {
         type = "int-setting",
         name = "rmd-resource-amount-ttl",
         setting_type = "startup",
         default_value = 5,
         minimum_value = 0,
         maximum_value = 60,
-        order = "a"
+        order = "b"
     }
 })
 
@@ -19,7 +29,7 @@ data:extend({
         name = "rmd-slow-miner",
         setting_type = "startup",
         default_value = false,
-        order = "b"
+        order = "c"
     }
 })
 
@@ -29,7 +39,7 @@ data:extend({
         name = "rmd-blueprint-resources",
         setting_type = "startup",
         default_value = false,
-        order = "c"
+        order = "d"
     }
 })
 
@@ -39,7 +49,7 @@ data:extend({
         name = "rmd-trim-mining-area",
         setting_type = "startup",
         default_value = false,
-        order = "d"
+        order = "e"
     }
 })
 
@@ -49,7 +59,7 @@ data:extend({
         name = "rmd-hide-recipes",
         setting_type = "startup",
         default_value = false,
-        order = "e",
+        order = "f",
         hidden = hidden
     }
 })

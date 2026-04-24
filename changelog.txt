@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.0
+Date: 24.04.2026
+  Bugfixes:
+    - None
+  Changes:
+    - Added auto-reconstruction for Resource mining drills when resource is depleted
+    - Added startup setting: Disable auto-reconstruction
+---------------------------------------------------------------------------------------------------
 Version: 0.16.1
 Date: 23.04.2026
   Bugfixes:

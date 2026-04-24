@@ -1,4 +1,4 @@
-#### Why was the "Ice island" map generator resource added?
+#### Why was the "Aquilo islands" map generator resource added?
 
 Aquilo map generation works a little differently: islands are placed wherever resources are generated.  
 So if the *No resources* preset is selected, no small islands will be created on Aquilo.  

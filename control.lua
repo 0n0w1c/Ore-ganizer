@@ -2,6 +2,42 @@ require("constants")
 
 local BLUEPRINT_RESOURCES = settings.startup["rmd-blueprint-resources"].value == true
 local RESOURCE_AMOUNT_TTL = settings.startup["rmd-resource-amount-ttl"].value * 60
+local DISABLE_AUTO_RECONSTRUCT = settings.startup["rmd-disable-auto-reconstruct"].value == true
+
+local rmd_pending_displayer_ghosts = {}
+
+local function on_tick()
+    local pending = rmd_pending_displayer_ghosts
+
+    if not pending or table_size(pending) == 0 then
+        script.on_event(defines.events.on_tick, nil)
+        return
+    end
+
+    for i = #pending, 1, -1 do
+        local ghost = pending[i]
+        local surface = game.surfaces[ghost.surface_index]
+
+        if surface and prototypes.entity[ghost.name] then
+            local player = game.get_player(ghost.player_index) or game.players[1]
+
+            surface.create_entity {
+                name = "entity-ghost",
+                inner_name = ghost.name,
+                force = ghost.force_name,
+                position = ghost.position,
+                direction = ghost.direction,
+                quality = ghost.quality,
+                player = player,
+                tags = { selected_resource = ghost.selected_resource }
+            }
+        end
+
+        table.remove(pending, i)
+    end
+
+    script.on_event(defines.events.on_tick, nil)
+end
 
 local function find_excluded_tile_under_entity(entity)
     if not (entity and entity.valid) then return nil end
@@ -340,6 +376,41 @@ local function get_or_create_player_data(player_index)
     return player_data
 end
 
+local function is_real_rmd_mining_drill(entity)
+    return entity
+        and entity.valid
+        and entity.type == "mining-drill"
+        and entity.name:sub(1, 4) == "rmd-"
+        and not entity.name:match("%-displayer$")
+end
+
+local function position_in_area(position, area)
+    return position.x >= area.left_top.x
+        and position.x <= area.right_bottom.x
+        and position.y >= area.left_top.y
+        and position.y <= area.right_bottom.y
+end
+
+local function queue_displayer_ghost(entity, selected_resource)
+    local player_index = 1
+    if entity.last_user and entity.last_user.valid and entity.last_user.is_player() then
+        player_index = entity.last_user.index
+    end
+
+    table.insert(rmd_pending_displayer_ghosts, {
+        surface_index = entity.surface.index,
+        force_name = entity.force.name,
+        name = entity.name .. "-displayer",
+        position = entity.position,
+        direction = entity.direction,
+        quality = entity.quality and entity.quality.name or nil,
+        selected_resource = selected_resource,
+        player_index = player_index
+    })
+
+    script.on_event(defines.events.on_tick, on_tick)
+end
+
 local function format_compact(n)
     local function fmt(value, suffix)
         local s = string.format("%.1f", value)
@@ -392,6 +463,27 @@ local function on_selected_entity_changed(event)
         scale = 2,
         scale_with_zoom = true
     }
+end
+
+local function on_resource_depleted(event)
+    local resource = event.entity
+    if not (resource and resource.valid) then return end
+
+    local resource_position = resource.position
+    local drills = resource.surface.find_entities_filtered {
+        position = resource_position,
+        radius = 5,
+        type = "mining-drill"
+    }
+
+    for _, drill in ipairs(drills) do
+        if is_real_rmd_mining_drill(drill)
+            and position_in_area(resource_position, get_mining_area(drill))
+            and not drill.to_be_deconstructed() then
+            queue_displayer_ghost(drill, resource.name)
+            drill.order_deconstruction(drill.force)
+        end
+    end
 end
 
 local function destroy_and_return(player, entity, item_name, quality, message)
@@ -578,7 +670,7 @@ local function on_built_entity(event)
 
     if not validate_resource_checks(player, entity, entity_name, resource_name, item_name, quality) then return end
 
-    local is_oil_rig = string.find(entity_name, "rmd%-oil%-rig") ~= nil
+    local is_oil_rig = string.find(entity_name, "rmd%-oil_rig") ~= nil
     local excluded_tile = find_excluded_tile_under_entity(entity)
     if excluded_tile and not is_oil_rig then
         player.create_local_flying_text({
@@ -1141,7 +1233,7 @@ local function blueprint_validate_resource_checks(player, entity, resource_name)
 
     local is_pumpjack         = entity_name == "rmd-pumpjack"
     local is_water_miner      = entity_name == "rmd-bob-water-miner"
-    local is_oil_rig          = entity_name == "rmd-oil-rig"
+    local is_oil_rig          = entity_name == "rmd-oil_rig"
     local is_derrick          = entity_name == "rmd-steel-derrick"
 
     local is_rmd_entity       = RMD_ENTITY_NAMES[entity_name] == true
@@ -1345,7 +1437,7 @@ local function on_undo_applied(event)
                 { position.x + 0.49, position.y + 0.49 }
             }
 
-            local resources = player.surface.find_entities_filtered { area = area, filter = "type", type = "resource" }
+            local resources = player.surface.find_entities_filtered { area = area, type = "resource" }
             for _, resource in pairs(resources) do
                 resource.destroy({ player = player, raise_destroy = true })
             end
@@ -1363,19 +1455,30 @@ local function register_event_handlers()
         script.on_event(defines.events.on_surface_created, on_surface_created)
     end
 
+    if RESOURCE_AMOUNT_TTL > 0 then
+        script.on_event(defines.events.on_selected_entity_changed, on_selected_entity_changed)
+    else
+        script.on_event(defines.events.on_selected_entity_changed, nil)
+    end
+
+    if DISABLE_AUTO_RECONSTRUCT then
+        script.on_event(defines.events.on_resource_depleted, nil)
+    else
+        script.on_event(defines.events.on_resource_depleted, on_resource_depleted)
+    end
+
     script.on_event(defines.events.on_cutscene_cancelled, on_cutscene_cancelled)
     script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
     script.on_event(defines.events.on_player_setup_blueprint, on_player_setup_blueprint)
     script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_stack_changed)
-    if RESOURCE_AMOUNT_TTL > 0 then
-        script.on_event(defines.events.on_selected_entity_changed, on_selected_entity_changed)
-    end
+    script.on_event(defines.events.on_undo_applied, on_undo_applied)
+    script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
+    script.on_event(defines.events.on_player_pipette, on_player_pipette)
 
     script.on_event(defines.events.on_gui_click, on_gui_click)
     script.on_event(defines.events.on_gui_checked_state_changed, on_gui_check_state_changed)
     script.on_event(defines.events.on_gui_text_changed, on_gui_text_changed)
     script.on_event(defines.events.on_gui_closed, on_gui_closed)
-    script.on_event(defines.events.on_player_pipette, on_player_pipette)
 
     script.on_event(defines.events.on_pre_build, on_pre_build)
     script.on_event(defines.events.on_built_entity, on_built_entity)
@@ -1388,8 +1491,6 @@ local function register_event_handlers()
     script.on_event(defines.events.on_entity_died, on_mined_entity)
     script.on_event(defines.events.script_raised_destroy, on_mined_entity)
 
-    script.on_event(defines.events.on_undo_applied, on_undo_applied)
-    script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
     script.on_event("rmd-toggle-resource-selector", on_toggle_resource_selector)
     script.on_event("rmd-toggle-cursor-drill", on_toggle_cursor_drill)
 end
