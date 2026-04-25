@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.3
+Date: 24.04.2026
+  Bugfixes:
+    - Cargo ships: corrected Resource oil rig icon
+    - Cargo ships: added missing pipe covers to the Resource oil rig displayer
+    - Cargo ships: Resource oil rig spawned excess offshore oil resource nodes
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.17.2
 Date: 24.04.2026
   Bugfixes:

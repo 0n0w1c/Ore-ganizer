@@ -274,6 +274,52 @@ function make_pumpjack_displayer_picture(mining_drill, custom_base_by_direction,
     return picture
 end
 
+local OIL_RIG_PIPE_COVER_SHIFT = {
+    north = util.by_pixel(0, -128),
+    east = util.by_pixel(128, 0),
+    south = util.by_pixel(0, 128),
+    west = util.by_pixel(-128, 0)
+}
+
+local function append_oil_rig_pipe_cover_layers(target_layers, pipe_covers)
+    if not (target_layers and pipe_covers) then return end
+
+    for _, direction in ipairs({ "north", "east", "south", "west" }) do
+        local shift = OIL_RIG_PIPE_COVER_SHIFT[direction]
+        local cover = pipe_covers[direction]
+
+        if cover and shift then
+            for _, layer in ipairs(normalize_sprite_layers(cover)) do
+                local copied_layer = make_static_picture_layer(layer)
+                copied_layer.shift = shift
+                copied_layer.frames = 1
+                table.insert(target_layers, copied_layer)
+            end
+        end
+    end
+end
+
+function make_oil_rig_displayer_picture(mining_drill)
+    if not mining_drill then return nil end
+
+    local picture = copy_displayer_picture_from_picture_field(mining_drill)
+        or copy_displayer_picture_from_base_picture(mining_drill)
+
+    if not picture then return nil end
+
+    local oil_rig_tank = data.raw["storage-tank"] and data.raw["storage-tank"]["or_tank"]
+    local fluid_box = oil_rig_tank and oil_rig_tank.fluid_box
+    local pipe_covers = fluid_box and fluid_box.pipe_covers
+
+    if picture.sheets then
+        append_oil_rig_pipe_cover_layers(picture.sheets, pipe_covers)
+    elseif picture.layers then
+        append_oil_rig_pipe_cover_layers(picture.layers, pipe_covers)
+    end
+
+    return picture
+end
+
 function make_bob_area_mining_drill_displayer_picture(mining_drill)
     if not (
             mining_drill

@@ -14,14 +14,14 @@ local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
 local icons = nil
-if mining_drill.icon then
+if mining_drill.icons[1].icon then
     icons =
     {
         {
             icon = STONE_ICON
         },
         {
-            icon = mining_drill.icon,
+            icon = mining_drill.icons[1].icon,
             icon_size = mining_drill.icon_size,
             shift = { -8, -8 }
         }
@@ -56,7 +56,7 @@ local rmd_mining_drill_displayer       =
     collision_mask                     = { layers = { meltable = true, object = true, train = true } },
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = TO_COPY,
-    picture                            = copy_displayer_picture_from_base_picture(mining_drill)
+    picture                            = make_oil_rig_displayer_picture(mining_drill)
 }
 local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])
 rmd_mining_drill_entity.name           = NAME

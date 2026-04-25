@@ -681,7 +681,11 @@ local function on_built_entity(event)
     end
 
     remove_resources(surface, resource_area)
-    place_resources(surface, resource_area, resource_name, player.index)
+    if resource_name == "offshore-oil" then
+        spot_resources(surface, position, resource_name, player.index)
+    else
+        place_resources(surface, resource_area, resource_name, player.index)
+    end
 
     refresh_drills_for_resource_area(surface, resource_area)
 
