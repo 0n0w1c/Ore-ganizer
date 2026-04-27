@@ -21,7 +21,9 @@ Construction is blocked for invalid combinations or if a required mining technol
 
 When placing blueprints of Resource mining drills, they will appear blue and that is expected, just place as usual.  
 
-*New: Map generator preset — “No resources”*  
+No on_tick code or entity tracking — very UPS-friendly. 
+
+Map generator preset — “No resources”*  
 Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
 
 ---
