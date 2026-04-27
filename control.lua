@@ -102,11 +102,11 @@ local function place_resources(surface, area, resource_name, player_index)
             local resource_amount = is_fluid and (amount * multiplier) or amount
 
             local resource = surface.create_entity
-            ({
-                name = resource_name,
-                amount = resource_amount,
-                position = position
-            })
+                ({
+                    name = resource_name,
+                    amount = resource_amount,
+                    position = position
+                })
 
             set_initial_amount_for_infinite_resource(resource, prototype, resource_amount)
 

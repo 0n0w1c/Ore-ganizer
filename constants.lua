@@ -74,15 +74,16 @@ CATEGORIES =
 }
 
 FLUID_MINING_TECH_BY_RESOURCE = {
-    ["uranium-ore"] = "uranium-mining", -- base
-    ["titanium-ore"] = "fluid-mining",  -- bztitanium
+    ["uranium-ore"] = "uranium-mining"
 }
 
-FLUID_MINING_TECHONOLOGIES =
-{
-    ["bztitanium"] = "fluid-mining",
-    ["base"] = "uranium-mining"
-}
+local active_mods = (script and script.active_mods) or mods
+if active_mods and active_mods["bztitanium"] then
+    FLUID_MINING_TECH_BY_RESOURCE["titanium-ore"] = "fluid-mining"
+end
+if active_mods and active_mods["tungsten_mining_require_lube"] then
+    FLUID_MINING_TECH_BY_RESOURCE["tungsten-ore"] = "big-mining-drill"
+end
 
 WATER_TILES =
 {
@@ -125,16 +126,3 @@ TILES_TO_EXCLUDE =
     ["wetland-yumako"] = true,
     ["space-platform-foundation"] = true
 }
-
---[[
-FOUNDATION_TILES = {
-    ["landfill"] = true,
-    ["space-platform-foundation"] = true,
-    ["foundation"] = true,
-    ["artificial-yumako-soil"] = true,
-    ["overgrowth-yumako-soil"] = true,
-    ["artificial-jellynut-soil"] = true,
-    ["overgrowth-jellynut-soil"] = true,
-    ["ice-platform"] = true
-}
-]]

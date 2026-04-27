@@ -69,9 +69,9 @@ Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://
 [IR3 Assets: mining drills](https://mods.factorio.com/mod/IR3_Assets_mining_drills)  
 [IR3 Assets: resources](https://mods.factorio.com/mod/IR3_Assets_resources)  
 [IR3 Assets: steamworks](https://mods.factorio.com/mod/IR3_Assets_steamworks)  
+[Tungsten Mining Require Lube](https://mods.factorio.com/mod/tungsten_mining_require_lube)
 
-
-K2 and K2SO: crude oil, mineral water, and imersite are always map generated  
+*K2 and K2SO: crude oil, mineral water, and imersite are always map generated*  
 
 ---
 
