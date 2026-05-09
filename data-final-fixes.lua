@@ -132,20 +132,7 @@ data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
 
 local items = data.raw["item"]
 if items["rmd-electric-mining-drill"] then
-    items["rmd-electric-mining-drill"].icon = BROKEN_ICON
-    items["rmd-electric-mining-drill"].icon_size = 64
-    items["rmd-electric-mining-drill"].icons =
-    {
-        {
-            icon = STONE_ICON,
-            icon_size = 64
-        },
-        {
-            icon = items["electric-mining-drill"].icon,
-            icon_size = items["electric-mining-drill"].icon_size,
-            shift = { -8, -8 }
-        }
-    }
+    apply_rmd_icons(items["rmd-electric-mining-drill"], items["electric-mining-drill"], { -8, -8 })
 end
 
 if mods["space-age"] and recipes["rmd-big-mining-drill"] then
@@ -268,53 +255,17 @@ end
 
 if mods["bobmining"] then
     if items["bob-water-miner-1"] then
-        items["rmd-bob-water-miner"].icon = BROKEN_ICON
-        items["rmd-bob-water-miner"].icon_size = 64
-        items["rmd-bob-water-miner"].icons =
-        {
-            {
-                icon = STONE_ICON
-            },
-            {
-                icon = items["bob-water-miner-1"].icon,
-                icon_size = items["bob-water-miner-1"].icon_size,
-                shift = { -8, -8 }
-            }
-        }
+        apply_rmd_icons(items["rmd-bob-water-miner"], items["bob-water-miner-1"], { -8, -8 })
     end
 
     local mining_drill = data.raw["mining-drill"]["rmd-electric-mining-drill"]
     if mining_drill then
-        mining_drill.icon = BROKEN_ICON
-        mining_drill.icon_size = 64
-        mining_drill.icons =
-        {
-            {
-                icon = STONE_ICON
-            },
-            {
-                icon = items["electric-mining-drill"].icon,
-                icon_size = items["electric-mining-drill"].icon_size,
-                shift = { -8, -8 }
-            }
-        }
+        apply_rmd_icons(mining_drill, items["electric-mining-drill"], { -8, -8 })
     end
 
     local simple_entity = data.raw["simple-entity-with-owner"]["rmd-electric-mining-drill-displayer"]
     if simple_entity then
-        simple_entity.icon = BROKEN_ICON
-        simple_entity.icon_size = 64
-        simple_entity.icons =
-        {
-            {
-                icon = STONE_ICON
-            },
-            {
-                icon = items["electric-mining-drill"].icon,
-                icon_size = items["electric-mining-drill"].icon_size,
-                shift = { -8, -8 }
-            }
-        }
+        apply_rmd_icons(simple_entity, items["electric-mining-drill"], { -8, -8 })
     end
 end
 
@@ -465,5 +416,23 @@ end
 for _, mining_drill in pairs(mining_drills) do
     if mining_drill.name:sub(1, 4) == "rmd-" and not mining_drill.name:match("%-displayer$") then
         add_flag_once(mining_drill, "get-by-unit-number")
+    end
+end
+
+-- Factorio 2.0 expects energy_source.emissions_per_minute to be a dictionary
+-- such as { pollution = value }. Some older/compatibility prototypes still
+-- provide it as a plain number; copied RMD mining drills must normalize it.
+local function normalize_emissions_per_minute(energy_source)
+    if not energy_source then return end
+
+    local emissions = energy_source.emissions_per_minute
+    if type(emissions) == "number" then
+        energy_source.emissions_per_minute = { pollution = emissions }
+    end
+end
+
+for _, mining_drill in pairs(mining_drills) do
+    if mining_drill.name and mining_drill.name:sub(1, 4) == "rmd-" then
+        normalize_emissions_per_minute(mining_drill.energy_source)
     end
 end

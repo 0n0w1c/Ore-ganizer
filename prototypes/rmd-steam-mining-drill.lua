@@ -1,4 +1,4 @@
-if not (mods["IR3_Assets_steamworks"] and data.raw["mining-drill"]["steam-mining-drill"]) then return end
+if not ((mods["IR3_Assets_steamworks"] or mods["IndistrialRevolution3"]) and data.raw["mining-drill"]["steam-mining-drill"]) then return end
 
 require("constants")
 
@@ -14,7 +14,8 @@ if not mining_drill then return end
 
 local icons                            = {
     {
-        icon = STONE_ICON
+        icon = STONE_ICON,
+        icon_size = 64
     },
     {
         icon = "__IndustrialRevolution3Assets1__/graphics/icons/64/burner-mining-drill.png",

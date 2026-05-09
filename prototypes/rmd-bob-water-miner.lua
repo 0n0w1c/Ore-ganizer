@@ -34,20 +34,7 @@ replace_base_layer("north", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-
 replace_base_layer("south", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-S.png", { 0.1203125, -0.1884375 })
 replace_base_layer("west", MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-W.png")
 
-local icons = nil
-if mining_drill.icon then
-    icons =
-    {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = mining_drill.icon,
-            icon_size = mining_drill.icon_size,
-            shift = { -8, -8 }
-        }
-    }
-end
+local icons = make_rmd_icons(mining_drill, { -8, -8 })
 
 local rmd_mining_drill_displayer       =
 {

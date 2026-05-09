@@ -550,3 +550,52 @@ function add_layers_to_directional_picture(picture, layers_by_direction, index)
         end
     end
 end
+
+function copy_icon_layer(prototype, shift)
+    if not prototype then return nil end
+
+    if prototype.icon then
+        return {
+            icon = prototype.icon,
+            icon_size = prototype.icon_size or 64,
+            shift = shift
+        }
+    end
+
+    if prototype.icons then
+        for _, source_layer in ipairs(prototype.icons) do
+            if source_layer.icon then
+                local layer = table.deepcopy(source_layer)
+                layer.icon_size = layer.icon_size or prototype.icon_size or 64
+                if shift then layer.shift = shift end
+                return layer
+            end
+        end
+    end
+
+    return nil
+end
+
+function make_rmd_icons(prototype, shift)
+    local overlay = copy_icon_layer(prototype, shift or { -8, -8 })
+
+    if not overlay then
+        return nil
+    end
+
+    return {
+        {
+            icon = STONE_ICON,
+            icon_size = 64
+        },
+        overlay
+    }
+end
+
+function apply_rmd_icons(target, source, shift)
+    if not target then return end
+
+    target.icon = BROKEN_ICON
+    target.icon_size = 64
+    target.icons = make_rmd_icons(source or target, shift or { -8, -8 })
+end

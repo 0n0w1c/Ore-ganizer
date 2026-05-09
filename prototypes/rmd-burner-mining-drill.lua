@@ -12,20 +12,7 @@ if not mining_drill then return end
 
 local radius = get_effective_mining_radius(mining_drill)
 
-local icons  = nil
-if mining_drill.icon then
-    icons =
-    {
-        {
-            icon = STONE_ICON
-        },
-        {
-            icon = mining_drill.icon,
-            icon_size = mining_drill.icon_size,
-            shift = { -8, -8 }
-        }
-    }
-end
+local icons  = make_rmd_icons(mining_drill, { -8, -8 })
 
 local rmd_mining_drill_displayer       =
 {
