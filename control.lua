@@ -4,6 +4,18 @@ local BLUEPRINT_RESOURCES = settings.startup["rmd-blueprint-resources"].value ==
 local RESOURCE_AMOUNT_TTL = settings.startup["rmd-resource-amount-ttl"].value * 60
 local DISABLE_AUTO_RECONSTRUCT = settings.startup["rmd-disable-auto-reconstruct"].value == true
 
+local function is_space_exploration_loaded()
+    return script.active_mods["space-exploration"] ~= nil
+        or script.active_mods["space-exploration-postprocess"] ~= nil
+end
+
+local function is_space_exploration_resource_surface(surface)
+    return is_space_exploration_loaded()
+        and surface
+        and surface.name
+        and string.lower(surface.name) ~= "nauvis"
+end
+
 local function find_excluded_tile_under_entity(entity)
     if not (entity and entity.valid) then return nil end
 
@@ -16,8 +28,8 @@ local function find_excluded_tile_under_entity(entity)
 
     for x = left_top.x, right_bottom.x - 1 do
         for y = left_top.y, right_bottom.y - 1 do
-            local tile = surface.get_tile(x, y)
-            if TILES_TO_EXCLUDE[tile.name] then
+            local tile = surface.get_tile({ x = x, y = y })
+            if TILES_TO_EXCLUDE[tile.name] and not is_space_exploration_resource_surface(surface) then
                 return tile.name
             end
         end
@@ -85,10 +97,14 @@ local function place_resources(surface, area, resource_name, player_index)
         for y = area.left_top.y, area.right_bottom.y do
             local position = { x = x + 0.5, y = y + 0.5 }
 
-            local tile = surface.get_tile(x, y)
-            if TILES_TO_EXCLUDE[tile.name] and resource_name ~= "offshore-oil" then goto continue end
-
+            local tile = surface.get_tile({ x = x, y = y })
             if resource_name == "offshore-oil" and not WATER_TILES[tile.name] then goto continue end
+
+            if TILES_TO_EXCLUDE[tile.name]
+                and resource_name ~= "offshore-oil"
+                and not is_space_exploration_resource_surface(surface) then
+                goto continue
+            end
 
             local cliffs = surface.find_entities_filtered
                 {
@@ -522,7 +538,7 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid"
+        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid" or resource_category == "hard-resource"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
 
         local is_researched = is_fluid_mining_researched(force, resource_name)
@@ -541,7 +557,7 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
             return false
         end
         if validate_or_destroy(player, entity, item_name, quality, "rmd-message.rmd-error-invalid-selection",
-                (entity_name == "rmd-steam-mining-drill-displayer" or entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-slow-electric-mining-drill-displayer") and resource_category == "hard-solid") then
+                (entity_name == "rmd-steam-mining-drill-displayer" or entity_name == "rmd-electric-mining-drill-displayer" or entity_name == "rmd-burner-mining-drill-displayer" or entity_name == "rmd-slow-electric-mining-drill-displayer") and (resource_category == "hard-solid" or resource_category == "hard-resource")) then
             return false
         end
 
@@ -637,7 +653,8 @@ local function on_built_entity(event)
             return destroy_and_return(player, entity, item_name, quality, "rmd-message.rmd-offshore-oil-removed")
         end
     else
-        if not (script.active_mods["Subsurface"] and string.find(surface.name, "_subsurface_")) then
+        if not ((script.active_mods["Subsurface"] and string.find(surface.name, "_subsurface_"))
+            or is_space_exploration_resource_surface(surface)) then
             entity.destroy({ raise_destroy = true })
             surface.create_entity({
                 name = item_name,
@@ -736,11 +753,18 @@ local function on_mined_entity(event)
         if player and not is_ghost then
             local cursor = player.cursor_stack
             if cursor and cursor.valid_for_read then
+                local item_proto = prototypes.item[cursor.name]
+                local place_result = item_proto and item_proto.place_result
+
                 local next_proto = entity.prototype and entity.prototype.next_upgrade
-                if next_proto then
-                    local item_proto = prototypes.item[cursor.name]
-                    local place_result = item_proto and item_proto.place_result
-                    if place_result and place_result.name == next_proto.name then
+                if next_proto and place_result and place_result.name == next_proto.name then
+                    return
+                end
+
+                if place_result and place_result.type == "mining-drill" then
+                    local old_group = entity.prototype and entity.prototype.fast_replaceable_group
+                    local new_group = place_result.fast_replaceable_group
+                    if old_group and new_group and old_group == new_group then
                         return
                     end
                 end
@@ -757,6 +781,62 @@ local function on_mined_entity(event)
     end
 end
 
+local function get_resource_autoplace_control_name(resource_name, resource_prototype)
+    if resource_prototype and resource_prototype.autoplace_specification and resource_prototype.autoplace_specification.control then
+        return resource_prototype.autoplace_specification.control
+    end
+
+    if prototypes.autoplace_control[resource_name] then
+        return resource_name
+    end
+
+    return nil
+end
+
+local function is_autoplace_control_enabled(setting)
+    if not setting then return false end
+
+    local frequency = setting.frequency
+    local size = setting.size
+    local richness = setting.richness
+
+    if frequency == "none" or size == "none" or richness == "none" then
+        return false
+    end
+
+    if frequency == 0 or size == 0 or richness == 0 then
+        return false
+    end
+
+    return true
+end
+
+local function surface_has_resource_autoplace(surface, resource_name, resource_prototype)
+    local map_gen_settings = surface and surface.map_gen_settings
+    if not map_gen_settings then return false end
+
+    local control_name = get_resource_autoplace_control_name(resource_name, resource_prototype)
+    local autoplace_controls = map_gen_settings.autoplace_controls
+
+    if control_name and autoplace_controls and is_autoplace_control_enabled(autoplace_controls[control_name]) then
+        return true
+    end
+
+    if autoplace_controls and is_autoplace_control_enabled(autoplace_controls[resource_name]) then
+        return true
+    end
+
+    local autoplace_settings = map_gen_settings.autoplace_settings
+    local entity_settings = autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings
+    local entity_setting = entity_settings and entity_settings[resource_name]
+
+    if entity_setting and (not control_name or not autoplace_controls or not autoplace_controls[control_name]) then
+        return true
+    end
+
+    return false
+end
+
 local function show_resource_selector_gui(player)
     if player.gui.screen.resource_selector_frame then
         player.gui.screen.resource_selector_frame.destroy()
@@ -765,28 +845,23 @@ local function show_resource_selector_gui(player)
     get_or_create_player_data(player.index)
 
     local surface = player.surface
-    local map_gen_settings = surface.map_gen_settings
 
     local items = { DISABLED }
 
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })
 
     for name, prototype in pairs(resource_prototypes) do
-        local autoplace_settings = map_gen_settings and map_gen_settings.autoplace_settings
-
         local allow = false
 
-        if not surface.planet then
-            allow = true
-        elseif surface.planet.name == "nauvis-factory-floor" then
+        if surface.planet and surface.planet.name == "nauvis-factory-floor" then
             allow = true
         end
 
         local player_settings = storage.players and storage.players[player.index]
 
-        if player_settings and player_settings.ignore_planetary_restrictions == true and prototypes.autoplace_control[name] then
+        if player_settings and player_settings.ignore_planetary_restrictions == true then
             allow = true
-        elseif autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings and autoplace_settings.entity.settings[name] then
+        elseif surface_has_resource_autoplace(surface, name, prototype) then
             allow = true
         end
 
@@ -1245,7 +1320,7 @@ local function blueprint_validate_resource_checks(player, entity, resource_name)
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local is_minable        = resource_category == "basic-solid" or resource_category == "hard-solid"
+        local is_minable        = resource_category == "basic-solid" or resource_category == "hard-solid" or resource_category == "hard-resource"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
 
         local is_researched     = is_fluid_mining_researched(force, resource_name)
@@ -1265,7 +1340,7 @@ local function blueprint_validate_resource_checks(player, entity, resource_name)
                 or entity_name == "rmd-electric-mining-drill"
                 or entity_name == "rmd-burner-mining-drill"
                 or entity_name == "rmd-slow-electric-mining-drill")
-            and resource_category == "hard-solid" then
+            and (resource_category == "hard-solid" or resource_category == "hard-resource") then
             return false
         end
 

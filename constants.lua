@@ -69,6 +69,7 @@ CATEGORIES =
     ["offshore-fluid"] = true,
     ["basic-solid"] = true,
     ["hard-solid"] = true,
+    ["hard-resource"] = true,
     ["water"] = true,
     ["gas"] = true
 }

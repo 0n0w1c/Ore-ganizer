@@ -66,6 +66,7 @@ Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://
 [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)  
 [Krastorio 2 Spaced Out](https://mods.factorio.com/mod/Krastorio2-spaced-out)  
 [Omega Drill](https://mods.factorio.com/mod/OmegaDrill)  
+[Space Exploration](https://mods.factorio.com/mod/space-exploration)  
 [Spaghetorio](https://mods.factorio.com/mod/Spaghetorio)  
 [Subsurface](https://mods.factorio.com/mod/Subsurface)  
 [Titanium](https://mods.factorio.com/mod/bztitanium)  
@@ -74,7 +75,7 @@ Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://
 [Water Pumpjack](https://mods.factorio.com/mod/water-pumpjack)  
 
 *K2 and K2SO: crude oil, mineral water, and imersite are always map generated*  
-
+*Space Exploration: Deep core mining drills and core seam resources are not supported* 
 ---
 
 #### Alternate locales:  

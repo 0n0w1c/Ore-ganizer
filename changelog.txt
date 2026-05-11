@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.0
+Date: 11.05.2026
+  Bugfixes:
+    - Fast-replace for Resource area mining drills would remove the resource
+  Changes:
+    - Added support for Space Exploration
+---------------------------------------------------------------------------------------------------
 Version: 0.17.5
 Date: 08.05.2026
   Bugfixes:

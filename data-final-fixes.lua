@@ -246,6 +246,24 @@ if mods["aai-industry"] then
     end
 end
 
+
+if mods["space-exploration"] then
+    local area_drill = data.raw["mining-drill"]["rmd-area-mining-drill"]
+    if area_drill then
+        area_drill.resource_categories = area_drill.resource_categories or {}
+        local has_hard_resource = false
+        for _, category in pairs(area_drill.resource_categories) do
+            if category == "hard-resource" then
+                has_hard_resource = true
+                break
+            end
+        end
+        if not has_hard_resource then
+            table.insert(area_drill.resource_categories, "hard-resource")
+        end
+    end
+end
+
 if mods["water-pumpjack"] and mods["space-age"] then
     local entity = data.raw["offshore-pump"]["water-pumpjack"]
     if entity then
