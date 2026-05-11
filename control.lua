@@ -538,7 +538,8 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid" or resource_category == "hard-resource"
+        local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid" or
+        resource_category == "hard-resource"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
 
         local is_researched = is_fluid_mining_researched(force, resource_name)
@@ -654,7 +655,7 @@ local function on_built_entity(event)
         end
     else
         if not ((script.active_mods["Subsurface"] and string.find(surface.name, "_subsurface_"))
-            or is_space_exploration_resource_surface(surface)) then
+                or is_space_exploration_resource_surface(surface)) then
             entity.destroy({ raise_destroy = true })
             surface.create_entity({
                 name = item_name,
@@ -817,20 +818,19 @@ local function surface_has_resource_autoplace(surface, resource_name, resource_p
 
     local control_name = get_resource_autoplace_control_name(resource_name, resource_prototype)
     local autoplace_controls = map_gen_settings.autoplace_controls
+    local autoplace_settings = map_gen_settings.autoplace_settings
+    local entity_settings = autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings
+
+    local entity_setting = entity_settings and entity_settings[resource_name]
+    if entity_setting and is_autoplace_control_enabled(entity_setting) then
+        return true
+    end
 
     if control_name and autoplace_controls and is_autoplace_control_enabled(autoplace_controls[control_name]) then
         return true
     end
 
     if autoplace_controls and is_autoplace_control_enabled(autoplace_controls[resource_name]) then
-        return true
-    end
-
-    local autoplace_settings = map_gen_settings.autoplace_settings
-    local entity_settings = autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings
-    local entity_setting = entity_settings and entity_settings[resource_name]
-
-    if entity_setting and (not control_name or not autoplace_controls or not autoplace_controls[control_name]) then
         return true
     end
 
@@ -851,19 +851,11 @@ local function show_resource_selector_gui(player)
     local resource_prototypes = prototypes.get_entity_filtered({ { filter = "type", type = "resource" } })
 
     for name, prototype in pairs(resource_prototypes) do
-        local allow = false
-
-        if surface.planet and surface.planet.name == "nauvis-factory-floor" then
-            allow = true
-        end
-
         local player_settings = storage.players and storage.players[player.index]
+        local ignore_planetary_restrictions = player_settings and player_settings.ignore_planetary_restrictions == true
 
-        if player_settings and player_settings.ignore_planetary_restrictions == true then
-            allow = true
-        elseif surface_has_resource_autoplace(surface, name, prototype) then
-            allow = true
-        end
+        local allow = ignore_planetary_restrictions
+            or surface_has_resource_autoplace(surface, name, prototype)
 
         if name == "kr-mineral-water" then
             allow = false
@@ -1320,7 +1312,8 @@ local function blueprint_validate_resource_checks(player, entity, resource_name)
 
     if is_drill then
         local resource_category = resource_prototype.resource_category
-        local is_minable        = resource_category == "basic-solid" or resource_category == "hard-solid" or resource_category == "hard-resource"
+        local is_minable        = resource_category == "basic-solid" or resource_category == "hard-solid" or
+        resource_category == "hard-resource"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
 
         local is_researched     = is_fluid_mining_researched(force, resource_name)

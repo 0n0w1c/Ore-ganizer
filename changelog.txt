@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.1
+Date: 11.05.2026
+  Bugfixes:
+    - Broken logic for Resource selector's Ignore planetary restrictions option
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.18.0
 Date: 11.05.2026
   Bugfixes:
