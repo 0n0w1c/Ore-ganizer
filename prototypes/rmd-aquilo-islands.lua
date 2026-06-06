@@ -1,99 +1,60 @@
 if not mods["space-age"] or mods["EverythingOnNauvis"] then return end
 
-local util = require("util")
-
-data.extend({
-    {
-        type = "fluid",
-        name = "rmd-aquilo-islands",
-        default_temperature = 25,
-        max_temperature = 25,
-        base_color = { r = 1, g = 1, b = 1 },
-        flow_color = { r = 1, g = 1, b = 1 },
-        icon = MOD_PATH .. "/graphics/icons/rmd-transparent-x64.png",
-        icon_size = 64,
-        hidden = true,
-        auto_barrel = false,
-        auto_recycle = false,
-        order = "z[fluid]-z[rmd-aquilo-islands]"
-    }
-})
-
-local hidden = false
-if mods["EverythingOnNauvis"] or mods["EON-FulgoraDiscovered"] then hidden = true end
-
-data.extend({
-    {
-        type = "autoplace-control",
-        name = "rmd_aquilo_islands",
-        localised_name = { "autoplace-control-name.rmd_aquilo_islands" },
-        localised_description = { "autoplace-control-description.rmd_aquilo_islands" },
-        category = "resource",
-        order = "z[rmd-aquilo-islands]",
-        hidden = hidden
-    }
-})
-
-data.extend({
+data:extend({
     {
         type = "noise-expression",
-        name = "aquilo_starting_rmd_aquilo_islands_spots",
+        name = "rmd_aquilo_resource_island_fallback_factor",
         expression =
-        "starting_spot_at_angle{angle = aquilo_angle + 90, distance = 20, radius = aquilo_spot_size * 0.6, x_distortion = 0, y_distortion = 0}",
+        "1 - min(1, max(control:aquilo_crude_oil:size, control:fluorine_vent:size, control:lithium_brine:size))",
     },
     {
         type = "noise-expression",
-        name = "aquilo_rmd_aquilo_islands_spots",
+        name = "aquilo_starting_rmd_aquilo_crude_oil_island_spots",
         expression =
-        "aquilo_spot_noise{seed = 568,count = 3,skip_offset = 1,region_size = 600 + 400 / control:rmd_aquilo_islands:frequency,density = 1,radius = aquilo_spot_size * 1.2 * sqrt(control:rmd_aquilo_islands:size),favorability = 1}",
+        "starting_spot_at_angle{angle = aquilo_angle, distance = 40, radius = aquilo_spot_size * 0.8, x_distortion = 0, y_distortion = 0}",
     },
     {
         type = "noise-expression",
-        name = "rmd_aquilo_islands_probability",
-        expression = "aquilo_rmd_aquilo_islands_spots * 0.01"
+        name = "aquilo_starting_rmd_aquilo_lithium_brine_island_spots",
+        expression =
+        "starting_spot_at_angle{angle = aquilo_angle + 120, distance = 80, radius = aquilo_spot_size * 0.6, x_distortion = 0, y_distortion = 0}",
     },
     {
         type = "noise-expression",
-        name = "rmd_aquilo_islands_richness",
-        expression = "200000"
+        name = "aquilo_starting_rmd_aquilo_fluorine_vent_island_spots",
+        expression =
+        "starting_spot_at_angle{angle = aquilo_angle + 240, distance = 160, radius = aquilo_spot_size * 0.6, x_distortion = 0, y_distortion = 0}",
+    },
+    {
+        type = "noise-expression",
+        name = "aquilo_rmd_aquilo_crude_oil_island_spots",
+        expression =
+        "aquilo_spot_noise{seed = 567,count = 4,skip_offset = 0,region_size = 1000,density = 1,radius = aquilo_spot_size,favorability = 1}",
+    },
+    {
+        type = "noise-expression",
+        name = "aquilo_rmd_aquilo_lithium_brine_island_spots",
+        expression =
+        "aquilo_spot_noise{seed = 567,count = 3,skip_offset = 1,region_size = 1000,density = 1,radius = aquilo_spot_size * 1.2,favorability = 1}",
+    },
+    {
+        type = "noise-expression",
+        name = "aquilo_rmd_aquilo_fluorine_vent_island_spots",
+        expression =
+        "aquilo_spot_noise{seed = 567,count = 2,skip_offset = 2,region_size = 1000,density = 1,radius = aquilo_spot_size * 1.5,favorability = 1}",
+    },
+    {
+        type = "noise-expression",
+        name = "rmd_aquilo_island_fallback_peaks",
+        expression =
+            "(-1000000 * (1 - rmd_aquilo_resource_island_fallback_factor)) + " ..
+            "(rmd_aquilo_resource_island_fallback_factor * " ..
+            "1.5 * (0.5 + max(" ..
+            "aquilo_starting_rmd_aquilo_crude_oil_island_spots, " ..
+            "aquilo_rmd_aquilo_crude_oil_island_spots, " ..
+            "aquilo_starting_rmd_aquilo_lithium_brine_island_spots, " ..
+            "aquilo_rmd_aquilo_lithium_brine_island_spots, " ..
+            "aquilo_starting_rmd_aquilo_fluorine_vent_island_spots, " ..
+            "aquilo_rmd_aquilo_fluorine_vent_island_spots)))",
     }
 })
-
-local aquilo_islands = util.table.deepcopy(data.raw["resource"]["fluorine-vent"])
-
-aquilo_islands.name = "rmd-aquilo-islands"
-aquilo_islands.icon = MOD_PATH .. "/graphics/icons/rmd-transparent-x64.png"
-aquilo_islands.icon_size = 64
-aquilo_islands.hidden = true
-aquilo_islands.map_color = { r = 0.5, g = 0.5, b = 0.5, a = 0 }
-aquilo_islands.stateless_visualisation = nil
-aquilo_islands.autoplace = {
-    control = "rmd_aquilo_islands",
-    probability_expression = "rmd_aquilo_islands_probability",
-    richness_expression = "rmd_aquilo_islands_richness"
-}
-aquilo_islands.stages = {
-    sheet = {
-        filename = MOD_PATH .. "/graphics/icons/rmd-transparent-x64.png",
-        width = 64,
-        height = 64,
-        frame_count = 1,
-        variation_count = 1,
-        priority = "extra-high"
-    }
-}
-aquilo_islands.stage_counts = { 0 }
-aquilo_islands.minable = {
-    mining_time = 1,
-    results = {
-        {
-            type = "fluid",
-            name = "rmd-aquilo-islands",
-            amount_min = 1,
-            amount_max = 1,
-            probability = 1
-        }
-    }
-}
-
-data:extend({ aquilo_islands })

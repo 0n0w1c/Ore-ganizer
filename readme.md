@@ -23,8 +23,7 @@ When placing blueprints of Resource mining drills, they will appear blue and tha
 
 No on_tick code or entity tracking — very UPS-friendly. 
 
-Map generator preset — “No resources”*  
-Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://github.com/0n0w1c/Ore-ganizer/blob/main/faq.md)).  
+Map generator preset — “No resources”  
 
 ---
 
@@ -58,7 +57,6 @@ Includes the *Aquilo islands* map generator resource setting (see [FAQ](https://
 [Bob's Ores](https://mods.factorio.com/mod/bobores)  
 [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)  
 [Everything On Nauvis](https://mods.factorio.com/mod/EverythingOnNauvis)  
-[Everything On Nauvis - Fuulgora Discovered!](https://mods.factorio.com/mod/EON-FulgoraDiscovered)  
 [Factorissimo 3](https://mods.factorio.com/mod/factorissimo-2-notnotmelon)  
 [IR3 Assets: mining drills](https://mods.factorio.com/mod/IR3_Assets_mining_drills)  
 [IR3 Assets: resources](https://mods.factorio.com/mod/IR3_Assets_resources)  

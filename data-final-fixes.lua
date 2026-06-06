@@ -13,6 +13,7 @@ local recycling = {}
 if mods["quality"] then recycling = require("__quality__/prototypes/recycling") end
 
 local recipes = data.raw["recipe"]
+local excluded_controls = {}
 
 if mods["quality"] then
     recycling.generate_recycling_recipe(recipes["rmd-burner-mining-drill"])
@@ -62,65 +63,60 @@ if settings.startup["rmd-hide-recipes"] and settings.startup["rmd-hide-recipes"]
 end
 
 if mods["space-age"] and not mods["EverythingOnNauvis"] then
-    local aquilo = data.raw["planet"] and data.raw["planet"]["aquilo"]
-    if aquilo and aquilo.map_gen_settings then
-        aquilo.map_gen_settings.autoplace_settings.entity.settings["rmd-aquilo-islands"] = {}
-        aquilo.map_gen_settings.autoplace_controls =
-        {
-            aquilo_crude_oil = {},
-            fluorine_vent = {},
-            lithium_brine = {},
-            rmd_aquilo_islands = {}
-        }
-    end
+    local original_aquilo_island_peaks = data.raw["noise-expression"] and
+        data.raw["noise-expression"]["aquilo_island_peaks"]
+    local original_expression = original_aquilo_island_peaks and original_aquilo_island_peaks.expression or
+        "1.7 * (0.3 + aquilo_starting_island)"
 
     data.raw["noise-expression"]["aquilo_island_peaks"] =
     {
         type = "noise-expression",
         name = "aquilo_island_peaks",
-        expression =
-        "max(1.7 * (0.3 + aquilo_starting_island), 1.5 * (0.5 + max(aquilo_starting_crude_oil, aquilo_crude_oil_spots, aquilo_starting_lithium_brine, aquilo_lithium_brine_spots, aquilo_starting_flourine_vent, aquilo_flourine_vent_spots, aquilo_starting_rmd_aquilo_islands_spots, aquilo_rmd_aquilo_islands_spots)))"
+        expression = "max((" .. original_expression .. "), rmd_aquilo_island_fallback_peaks)"
     }
 end
 
-if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
-    EXCLUDED_CONTROLS["crude-oil"] = true
-    EXCLUDED_CONTROLS["kr-imersite"] = true
-    EXCLUDED_CONTROLS["kr-mineral-water"] = true
-end
-
 if mods["EverythingOnNauvis"] then
-    EXCLUDED_CONTROLS["ammonia_ocean"] = true
-    EXCLUDED_CONTROLS["vulcanus_volcanism"] = true
+    excluded_controls["ammonia_ocean"] = true
+    excluded_controls["vulcanus_volcanism"] = true
 end
 
-if mods["EON-FulgoraDiscovered"] then
-    EXCLUDED_CONTROLS["ammonia_ocean"] = true
-    EXCLUDED_CONTROLS["vulcanus_volcanism"] = true
+if mods["Krastorio2"] or mods["Krastorio2-spaced-out"] then
+    excluded_controls["crude-oil"] = true
+    excluded_controls["kr-imersite"] = true
+    excluded_controls["kr-mineral-water"] = true
 end
+
 
 if mods["Spaghetorio"] then
-    EXCLUDED_CONTROLS["sp-core-rift"] = true
-    EXCLUDED_CONTROLS["sp-blunagium"] = true
-    EXCLUDED_CONTROLS["sp-grobgnum"] = true
-    EXCLUDED_CONTROLS["sp-imersite"] = true
-    EXCLUDED_CONTROLS["sp-rukite"] = true
-    EXCLUDED_CONTROLS["sp-yemnuth"] = true
-    EXCLUDED_CONTROLS["sp-algae"] = true
-    EXCLUDED_CONTROLS["sp-wheat"] = true
-    EXCLUDED_CONTROLS["sp-honeycomb-fungus"] = true
+    excluded_controls["sp-core-rift"] = true
+    excluded_controls["sp-blunagium"] = true
+    excluded_controls["sp-grobgnum"] = true
+    excluded_controls["sp-imersite"] = true
+    excluded_controls["sp-rukite"] = true
+    excluded_controls["sp-yemnuth"] = true
+    excluded_controls["sp-algae"] = true
+    excluded_controls["sp-wheat"] = true
+    excluded_controls["sp-honeycomb-fungus"] = true
 end
 
 local disabled_controls = {}
 
 for name, control in pairs(data.raw["autoplace-control"]) do
     if control.category == "resource" then
-        if not EXCLUDED_CONTROLS[name] then
+        if not excluded_controls[name] then
             disabled_controls[name] = { size = 0 }
         end
     end
 end
 
+data.raw["map-gen-presets"] = data.raw["map-gen-presets"] or {}
+data.raw["map-gen-presets"]["default"] = data.raw["map-gen-presets"]["default"] or {}
+
+-- Keep Ore-ganizer's player-facing map-generation preset intact.
+-- The Aquilo island fallback is deliberately separate from this preset: the preset
+-- still disables resource controls, while the fallback only repairs Aquilo terrain
+-- when those native Aquilo resource controls are disabled.
 data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
 {
     order = "z",

@@ -7,10 +7,6 @@ BROKEN_ICON = MOD_PATH .. "/graphics/icons/cancel.png"
 DISABLED = "disabled"
 FLUID_MULTIPLIER = 200
 
-EXCLUDED_CONTROLS =
-{
-    ["rmd_aquilo_islands"] = true
-}
 
 COLLISION_MASK =
 {

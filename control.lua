@@ -539,7 +539,7 @@ local function validate_resource_checks(player, entity, entity_name, resource_na
     if is_drill then
         local resource_category = resource_prototype.resource_category
         local is_minable = resource_category == "basic-solid" or resource_category == "hard-solid" or
-        resource_category == "hard-resource"
+            resource_category == "hard-resource"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
 
         local is_researched = is_fluid_mining_researched(force, resource_name)
@@ -1156,29 +1156,6 @@ local function on_cutscene_cancelled(event)
     player.character.insert { name = "rmd-burner-mining-drill", count = 1 }
 end
 
-local function remove_aquilo_island_resources(surface, area)
-    if prototypes.entity["rmd-aquilo-islands"] then
-        local resources = surface.find_entities_filtered { name = "rmd-aquilo-islands", type = "resource", area = area }
-        for _, resource in ipairs(resources) do
-            if resource.valid then resource.destroy() end
-        end
-    end
-end
-
-local function on_surface_created(event)
-    local surface = game.surfaces[event.surface_index]
-    if surface.name == "aquilo" then
-        remove_aquilo_island_resources(surface)
-    end
-end
-
-local function on_chunk_generated(event)
-    local surface = event.surface
-    if surface.name == "aquilo" then
-        remove_aquilo_island_resources(surface, event.area)
-    end
-end
-
 local function on_player_cursor_stack_changed(event)
     local player = game.get_player(event.player_index)
     if not player or not player.valid then return end
@@ -1313,7 +1290,7 @@ local function blueprint_validate_resource_checks(player, entity, resource_name)
     if is_drill then
         local resource_category = resource_prototype.resource_category
         local is_minable        = resource_category == "basic-solid" or resource_category == "hard-solid" or
-        resource_category == "hard-resource"
+            resource_category == "hard-resource"
         local is_required_fluid = resource_prototype.mineable_properties.required_fluid ~= nil
 
         local is_researched     = is_fluid_mining_researched(force, resource_name)
@@ -1541,13 +1518,6 @@ local function on_cancelled_deconstruction(event)
 end
 
 local function register_event_handlers()
-    local removes_aquilo = script.active_mods["EverythingOnNauvis"] or script.active_mods["EON-FulgoraDiscovered"]
-
-    if not removes_aquilo then
-        script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
-        script.on_event(defines.events.on_surface_created, on_surface_created)
-    end
-
     if RESOURCE_AMOUNT_TTL > 0 then
         script.on_event(defines.events.on_selected_entity_changed, on_selected_entity_changed)
     else
