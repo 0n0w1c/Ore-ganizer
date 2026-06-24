@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.19.2
+Date: 24.06.2026
+  Bugfixes:
+    - Updated Resource slow electric mining drill displayer to support 2.1 mirroring/flipping
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.19.1
 Date: 23.06.2026
   Bugfixes:

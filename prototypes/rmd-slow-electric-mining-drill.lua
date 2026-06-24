@@ -14,92 +14,10 @@ local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
 local icons = make_rmd_icons(mining_drill, { -8, -8 })
+local radius = 1
+local recycler_prototype = data.raw["furnace"] and data.raw["furnace"]["recycler"]
 
-local rmd_mining_drill_displayer =
-{
-    type                               = "simple-entity-with-owner",
-    name                               = NAME .. "-displayer",
-    localised_name                     = { "", { "item-name." .. NAME .. "-displayer" } },
-    localised_description              = mining_drill.localised_description,
-    placeable_by                       = { item = NAME, count = 1 },
-    minable                            = { mining_time = 0.5, result = NAME },
-    icon                               = BROKEN_ICON,
-    icon_size                          = 64,
-    icons                              = icons,
-    radius_visualisation_specification =
-    {
-        sprite =
-        {
-            filename = DRILL_GRAPHICS .. "electric-mining-drill-radius-visualization.png",
-            width = 12,
-            height = 12,
-            shift = { 0, 0 },
-        },
-        distance = 1
-    },
-    flags                              = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
-    max_health                         = mining_drill.max_health,
-    collision_box                      = { { -0.7, -0.7 }, { 0.7, 0.7 } },
-    selection_box                      = { { -1, -1 }, { 1, 1 } },
-    collision_mask                     = COLLISION_MASK,
-    hidden_in_factoriopedia            = true,
-    factoriopedia_alternative          = NAME,
-    integration_patch                  = copy_displayer_integration_patch(mining_drill),
-    picture                            = make_animated_mining_drill_displayer_picture(mining_drill)
-}
-
-local SCALE_FACTOR               = 2 / 3
-
-local function rescale_direction_table(dir_table, factor)
-    local function rescale_layer(layer, factor)
-        if layer.scale then
-            layer.scale = layer.scale * factor
-        else
-            layer.scale = factor
-        end
-        if layer.shift then
-            layer.shift[1] = layer.shift[1] * factor
-            layer.shift[2] = layer.shift[2] * factor
-        end
-    end
-
-    for _, dir in pairs({ "north", "east", "south", "west" }) do
-        local dir_data = dir_table[dir]
-        if dir_data then
-            if dir_data.layers then
-                for _, layer in ipairs(dir_data.layers) do
-                    rescale_layer(layer, factor)
-                end
-            else
-                rescale_layer(dir_data, factor)
-            end
-        end
-    end
-end
-
-rescale_direction_table(rmd_mining_drill_displayer.integration_patch, SCALE_FACTOR)
-rescale_direction_table(rmd_mining_drill_displayer.picture, SCALE_FACTOR)
-
-local rmd_mining_drill_entity                     = table.deepcopy(mining_drill)
-
-rmd_mining_drill_entity.name                      = NAME
-rmd_mining_drill_entity.localised_name            = { "item-name.rmd-slow-electric-mining-drill" }
-rmd_mining_drill_entity.placeable_by              = { item = NAME, count = 1 }
-rmd_mining_drill_entity.minable.result            = "rmd-slow-electric-mining-drill"
-rmd_mining_drill_entity.mining_speed              = 0.25
-rmd_mining_drill_entity.energy_usage              = scale_energy_usage(mining_drill.energy_usage, SCALE_FACTOR)
-rmd_mining_drill_entity.resource_searching_radius = 0.99
-rmd_mining_drill_entity.module_slots              = 2
-rmd_mining_drill_entity.vector_to_place_result    = { -0.5, -1.3 }
-rmd_mining_drill_entity.resource_categories       = { "basic-solid" }
-rmd_mining_drill_entity.wet_mining_graphics_set   = nil
-rmd_mining_drill_entity.input_fluid_box           = nil
-rmd_mining_drill_entity.next_upgrade              = nil
-rmd_mining_drill_entity.collision_box             = { { -0.7, -0.7 }, { 0.7, 0.7 } }
-rmd_mining_drill_entity.selection_box             = { { -1, -1 }, { 1, 1 } }
-rmd_mining_drill_entity.icon                      = BROKEN_ICON
-rmd_mining_drill_entity.icon_size                 = 64
-rmd_mining_drill_entity.icons                     = icons
+local SCALE_FACTOR = 2 / 3
 
 local function rescale_drill_entity(entity, factor)
     local function rescale_layer(layer)
@@ -175,6 +93,8 @@ local function rescale_drill_entity(entity, factor)
     end
 
     local function rescale_circuit_connectors(connectors, factor)
+        if not connectors then return end
+
         local function scale_offset(pos)
             if pos then
                 if pos.x and pos.y then
@@ -213,7 +133,79 @@ local function rescale_drill_entity(entity, factor)
     end
 end
 
+local rmd_mining_drill_entity                     = table.deepcopy(mining_drill)
+
+rmd_mining_drill_entity.name                      = NAME
+rmd_mining_drill_entity.localised_name            = { "item-name.rmd-slow-electric-mining-drill" }
+rmd_mining_drill_entity.placeable_by              = { item = NAME, count = 1 }
+rmd_mining_drill_entity.minable.result            = "rmd-slow-electric-mining-drill"
+rmd_mining_drill_entity.mining_speed              = 0.25
+rmd_mining_drill_entity.energy_usage              = scale_energy_usage(mining_drill.energy_usage, SCALE_FACTOR)
+rmd_mining_drill_entity.resource_searching_radius = 0.99
+rmd_mining_drill_entity.module_slots              = 2
+rmd_mining_drill_entity.vector_to_place_result    = { -0.5, -1.3 }
+rmd_mining_drill_entity.resource_categories       = { "basic-solid" }
+rmd_mining_drill_entity.wet_mining_graphics_set   = nil
+rmd_mining_drill_entity.input_fluid_box           = nil
+rmd_mining_drill_entity.next_upgrade              = nil
+rmd_mining_drill_entity.collision_box             = { { -0.7, -0.7 }, { 0.7, 0.7 } }
+rmd_mining_drill_entity.selection_box             = { { -1, -1 }, { 1, 1 } }
+rmd_mining_drill_entity.icon                      = BROKEN_ICON
+rmd_mining_drill_entity.icon_size                 = 64
+rmd_mining_drill_entity.icons                     = icons
+
 rescale_drill_entity(rmd_mining_drill_entity, SCALE_FACTOR)
+
+local display_graphics_set = table.deepcopy(rmd_mining_drill_entity.graphics_set)
+local flipped_display_graphics_set = table.deepcopy(rmd_mining_drill_entity.graphics_set_flipped)
+
+local rmd_mining_drill_displayer =
+{
+    type                               = "furnace",
+    name                               = NAME .. "-displayer",
+    localised_name                     = { "", { "item-name." .. NAME .. "-displayer" } },
+    localised_description              = mining_drill.localised_description,
+    placeable_by                       = { item = NAME, count = 1 },
+    minable                            = { mining_time = 0.5, result = NAME },
+    icon                               = BROKEN_ICON,
+    icon_size                          = 64,
+    icons                              = icons,
+    radius_visualisation_specification =
+    {
+        sprite =
+        {
+            filename = DRILL_GRAPHICS .. "electric-mining-drill-radius-visualization.png",
+            width = 12,
+            height = 12,
+            shift = { 0, 0 },
+        },
+        distance = radius
+    },
+    flags                              = { "placeable-neutral", "placeable-player", "player-creation", "not-upgradable" },
+    max_health                         = mining_drill.max_health,
+    collision_box                      = rmd_mining_drill_entity.collision_box,
+    selection_box                      = rmd_mining_drill_entity.selection_box,
+    collision_mask                     = COLLISION_MASK,
+    hidden_in_factoriopedia            = true,
+    factoriopedia_alternative          = NAME,
+    crafting_categories                = recycler_prototype and table.deepcopy(recycler_prototype.crafting_categories) or
+        { "smelting" },
+    crafting_speed                     = 1,
+    source_inventory_size              = recycler_prototype and recycler_prototype.source_inventory_size or 1,
+    result_inventory_size              = recycler_prototype and recycler_prototype.result_inventory_size or 1,
+    energy_usage                       = "1W",
+    energy_source                      =
+    {
+        type = "electric",
+        usage_priority = "secondary-input",
+        drain = "0W"
+    },
+    allowed_effects                    = {},
+    vector_to_place_result             = table.deepcopy(rmd_mining_drill_entity.vector_to_place_result),
+    use_mirroring                      = rmd_mining_drill_entity.use_mirroring,
+    graphics_set                       = display_graphics_set,
+    graphics_set_flipped               = flipped_display_graphics_set or display_graphics_set
+}
 
 local rmd_mining_drill_item = table.deepcopy(data.raw["item"][TO_COPY])
 if not rmd_mining_drill_item or rmd_mining_drill_item.hidden then return end
