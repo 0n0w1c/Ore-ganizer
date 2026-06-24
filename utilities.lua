@@ -236,28 +236,60 @@ local function append_pumpjack_pipe_cover_layers(target_layers, pipe_covers, dir
 end
 
 
-function make_pumpjack_displayer_picture(mining_drill, custom_base_by_direction, custom_shift_by_direction)
-    if not (mining_drill and mining_drill.base_picture) then return nil end
+local function get_pumpjack_base_picture(mining_drill, direction, flipped)
+    if not mining_drill then return nil end
+
+    if mining_drill.base_picture and not flipped then
+        return mining_drill.base_picture
+    end
+
+    local graphics_set = flipped and mining_drill.graphics_set_flipped or mining_drill.graphics_set
+    local working_visualisations = graphics_set
+        and graphics_set.working_visualisations
+
+    if not working_visualisations then return nil end
+
+    local animation_key = direction .. "_animation"
+
+    for _, visualisation in ipairs(working_visualisations) do
+        if visualisation.always_draw and visualisation[animation_key] then
+            return visualisation[animation_key]
+        end
+    end
+
+    for _, visualisation in ipairs(working_visualisations) do
+        if visualisation[animation_key] then
+            return visualisation[animation_key]
+        end
+    end
+
+    return nil
+end
+
+function make_pumpjack_displayer_picture(mining_drill, custom_base_by_direction, custom_shift_by_direction, flipped)
+    if not mining_drill then return nil end
 
     custom_base_by_direction = custom_base_by_direction or {}
     custom_shift_by_direction = custom_shift_by_direction or {}
 
     local picture = {}
-    local base_layers = normalize_sprite_layers(mining_drill.base_picture)
-    local horsehead_animation = mining_drill.graphics_set
-        and mining_drill.graphics_set.animation
-        and mining_drill.graphics_set.animation.north
-    local output_fluid_box = mining_drill.output_fluid_box
-    local pipe_covers = output_fluid_box and output_fluid_box.pipe_covers
+    local graphics_set = flipped and mining_drill.graphics_set_flipped or mining_drill.graphics_set
+    local horsehead_animation = graphics_set
+        and graphics_set.animation
+        and graphics_set.animation.north
     local directions = { "north", "east", "south", "west" }
 
-    for index, direction in ipairs(directions) do
+    for _, direction in ipairs(directions) do
         local direction_layers = {}
+        local base_picture = get_pumpjack_base_picture(mining_drill, direction, flipped)
+        local base_layers = normalize_sprite_layers(base_picture)
 
         for index, base_layer in ipairs(base_layers) do
             local copied_base_layer = make_static_picture_layer(base_layer)
             if index == 1 and custom_base_by_direction[direction] then
                 copied_base_layer.filename = custom_base_by_direction[direction]
+                copied_base_layer.x = nil
+                copied_base_layer.y = nil
                 if custom_shift_by_direction[direction] then
                     copied_base_layer.shift = custom_shift_by_direction[direction]
                 end
@@ -266,6 +298,9 @@ function make_pumpjack_displayer_picture(mining_drill, custom_base_by_direction,
         end
 
         append_filtered_static_layers(direction_layers, horsehead_animation)
+
+        local output_fluid_box = mining_drill.output_fluid_box
+        local pipe_covers = output_fluid_box and output_fluid_box.pipe_covers
         append_pumpjack_pipe_cover_layers(direction_layers, pipe_covers, direction)
 
         picture[direction] = { layers = direction_layers }

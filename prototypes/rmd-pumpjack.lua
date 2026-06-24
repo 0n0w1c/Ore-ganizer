@@ -12,24 +12,27 @@ local NAME            = "rmd-" .. TO_COPY
 local mining_drill    = data.raw["mining-drill"][TO_COPY]
 if not mining_drill then return end
 
-local display_picture = make_pumpjack_displayer_picture(
-    mining_drill,
-    {
-        east = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-E.png",
-        north = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-N.png",
-        south = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-S.png",
-        west = MOD_PATH .. "/graphics/entity/pumpjack/rmd-pumpjack-base-W.png"
-    },
-    {
-        south = { 0.1203125, -0.1884375 }
-    }
-)
+local display_graphics_set = table.deepcopy(mining_drill.graphics_set)
+local flipped_display_graphics_set = table.deepcopy(mining_drill.graphics_set_flipped)
 
-local icons = make_rmd_icons(mining_drill, { -8, -8 })
+local function make_displayer_fluid_boxes(pumpjack)
+    if not (pumpjack and pumpjack.output_fluid_box) then return nil end
+
+    local fluid_box = table.deepcopy(pumpjack.output_fluid_box)
+    fluid_box.production_type = fluid_box.production_type or "output"
+
+    return { fluid_box }
+end
+
+local displayer_fluid_boxes            = make_displayer_fluid_boxes(mining_drill)
+
+local icons                            = make_rmd_icons(mining_drill, { -8, -8 })
+
+local recycler_prototype               = data.raw["furnace"] and data.raw["furnace"]["recycler"]
 
 local rmd_mining_drill_displayer       =
 {
-    type                               = "simple-entity-with-owner",
+    type                               = "furnace",
     name                               = NAME .. "-displayer",
     localised_name                     = { "", { "item-name." .. NAME .. "-displayer" } },
     localised_description              = mining_drill.localised_description,
@@ -56,7 +59,30 @@ local rmd_mining_drill_displayer       =
     collision_mask                     = COLLISION_MASK,
     hidden_in_factoriopedia            = true,
     factoriopedia_alternative          = NAME,
-    picture                            = display_picture
+
+    crafting_categories                = recycler_prototype and table.deepcopy(recycler_prototype.crafting_categories) or
+        { "smelting" },
+    crafting_speed                     = 1,
+    source_inventory_size              = recycler_prototype and recycler_prototype.source_inventory_size or 1,
+    result_inventory_size              = recycler_prototype and recycler_prototype.result_inventory_size or 1,
+    fluid_boxes                        = displayer_fluid_boxes,
+    energy_usage                       = "1W",
+    energy_source                      =
+    {
+        type = "electric",
+        usage_priority = "secondary-input",
+        drain = "0W"
+    },
+    allowed_effects                    = {},
+
+    vector_to_place_result             = recycler_prototype and table.deepcopy(recycler_prototype.vector_to_place_result) or
+        { -0.35, -2.3 },
+    use_mirroring                      = recycler_prototype and recycler_prototype.use_mirroring or true,
+    migrate_horizontal_mirroring       = mining_drill.migrate_horizontal_mirroring,
+
+    graphics_set                       = display_graphics_set,
+    graphics_set_flipped               = flipped_display_graphics_set
+        or display_graphics_set
 }
 
 local rmd_mining_drill_entity          = table.deepcopy(data.raw["mining-drill"][TO_COPY])

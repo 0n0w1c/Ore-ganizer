@@ -9,148 +9,26 @@ if mods["IR3_Assets_mining_drills"] and data.raw["mining-drill"]["steel-derrick"
     require("prototypes/rmd-steel-derrick")
 end
 
-local generated_recycling_recipes = {}
-
-local recycling_enabled = mods["recycler"] and data.raw["recipe-category"] and data.raw["recipe-category"]["recycling"]
-
-local function get_prototype(base_type, name)
-    if not (defines and defines.prototypes and defines.prototypes[base_type]) then return nil end
-
-    for type_name in pairs(defines.prototypes[base_type]) do
-        local prototypes = data.raw[type_name]
-        if prototypes and prototypes[name] then return prototypes[name] end
-    end
-end
-
-local function get_item_localised_name(name)
-    local item = get_prototype("item", name)
-    if not item then return { "item-name." .. name } end
-    if item.localised_name then return item.localised_name end
-
-    local prototype
-    local type_name = "item"
-
-    if item.place_result then
-        prototype = get_prototype("entity", item.place_result)
-        type_name = "entity"
-    elseif item.place_as_equipment_result then
-        prototype = get_prototype("equipment", item.place_as_equipment_result)
-        type_name = "equipment"
-    elseif item.place_as_tile then
-        prototype = data.raw.tile and data.raw.tile[item.place_as_tile.result]
-        type_name = "tile"
-    end
-
-    return prototype and prototype.localised_name or { type_name .. "-name." .. name }
-end
-
-local function copy_item_icons(item)
-    if item.icons then return table.deepcopy(item.icons) end
-    return nil
-end
-
-local function get_single_item_product(recipe)
-    local product_name
-    local product_amount
-
-    if recipe.results then
-        for _, product in pairs(recipe.results) do
-            local product_type = product.type or "item"
-            if product_type == "item" then
-                if product_name then return nil end
-                product_name = product.name or product[1]
-                product_amount = product.amount or product[2] or product.amount_min or product.amount_max
-            end
-        end
-    elseif recipe.result then
-        product_name = recipe.result
-        product_amount = recipe.result_count or 1
-    end
-
-    if not product_name then return nil end
-    return product_name, product_amount or 1
-end
-
-local function add_recycling_recipe_values(result, input)
-    local input_result, result_count = get_single_item_product(input)
-    if not input_result or not input.ingredients then return false end
-
-    local result_item = get_prototype("item", input_result)
-    if not result_item then return false end
-
-    result.results = {}
-    result.ingredients = { { type = "item", name = input_result, amount = 1 } }
-    result.energy_required = (input.energy_required or 0.5) / 16
-
-    for _, ingredient in pairs(input.ingredients) do
-        if type(ingredient) ~= "table" then
-            error("Recipe " .. input.name .. " has malformed ingredients: expected tables, got " .. type(ingredient))
-        end
-
-        if ingredient.type ~= "fluid" then
-            local final_name = ingredient.name or ingredient[1]
-            local final_amount = ingredient.amount or ingredient[2]
-
-            if final_name and final_amount then
-                local final_probability = 4 * result_count * (ingredient.result_count or 1)
-                local remainder = final_amount % final_probability
-
-                table.insert(result.results, {
-                    type = "item",
-                    name = final_name,
-                    amount = final_amount / final_probability,
-                    extra_count_fraction = remainder / final_probability
-                })
-            end
-        end
-    end
-
-    if not next(result.results) then return false end
-
-    result.name = input_result .. "-recycling"
-    result.localised_name = { "recipe-name.recycling", get_item_localised_name(input_result) }
-    result.hidden = true
-    result.enabled = true
-    result.allow_decomposition = false
-    result.unlock_results = false
-    result.subgroup = input.subgroup or result_item.subgroup
-    result.categories = { "recycling" }
-    result.crafting_machine_tint = input.crafting_machine_tint
-
-    local icons = copy_item_icons(result_item)
-    if icons then
-        result.icons = icons
-    else
-        result.icon = result_item.icon
-        result.icon_size = result_item.icon_size
-    end
-
-    return true
+local recycling = nil
+if mods["recycler"] then
+    recycling = require("__recycler__.recycling")
 end
 
 local function generate_recycling_recipe(recipe)
-    if not recycling_enabled then return end
-    if not (recipe and recipe.name) then return end
-    if generated_recycling_recipes[recipe.name] then return end
-
-    local result = { type = "recipe" }
-    if add_recycling_recipe_values(result, recipe) then
-        data.raw.recipe[result.name] = result
-        generated_recycling_recipes[recipe.name] = true
+    if recycling and recipe then
+        recycling.generate_recycling_recipe(recipe)
     end
 end
 
 local recipes = data.raw["recipe"]
 local excluded_controls = {}
 
-if recycling_enabled then
-    generate_recycling_recipe(recipes["rmd-burner-mining-drill"])
-    generate_recycling_recipe(recipes["rmd-electric-mining-drill"])
+generate_recycling_recipe(recipes["rmd-burner-mining-drill"])
+generate_recycling_recipe(recipes["rmd-electric-mining-drill"])
 
-    local recipe = recipes["rmd-steel-derrick"]
-    if recipe then
-        generate_recycling_recipe(recipe)
-    end
+local recipe = recipes["rmd-steel-derrick"]
+if recipe then
+    generate_recycling_recipe(recipe)
 end
 
 if mods["space-age"] then
@@ -241,10 +119,6 @@ end
 data.raw["map-gen-presets"] = data.raw["map-gen-presets"] or {}
 data.raw["map-gen-presets"]["default"] = data.raw["map-gen-presets"]["default"] or {}
 
--- Keep Ore-ganizer's player-facing map-generation preset intact.
--- The Aquilo island fallback is deliberately separate from this preset: the preset
--- still disables resource controls, while the fallback only repairs Aquilo terrain
--- when those native Aquilo resource controls are disabled.
 data.raw["map-gen-presets"]["default"]["rmd-resource-free"] =
 {
     order = "z",

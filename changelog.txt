@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.19.1
+Date: 23.06.2026
+  Bugfixes:
+    - Refactored the recycling changes for 2.1
+    - Resource mining drills for the base mining drills, display, blueprint, and flip correctly
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.19.0
 Date: 23.06.2026
   Bugfixes:

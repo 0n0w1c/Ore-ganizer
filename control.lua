@@ -411,10 +411,12 @@ local function spawn_displayer_ghost(entity, selected_resource, player_index)
         force = entity.force,
         position = entity.position,
         direction = entity.direction,
+        mirror = entity.mirroring,
         quality = entity.quality,
         player = player,
         tags = {
-            selected_resource = selected_resource
+            selected_resource = selected_resource,
+            rmd_mirroring = entity.mirroring
         }
     }
 end
@@ -630,14 +632,18 @@ local function on_built_entity(event)
     local position = entity.position
     local direction = entity.direction
     local quality = entity.quality
+    local mirroring = entity.mirroring
+    if event.tags and event.tags["rmd_mirroring"] ~= nil then
+        mirroring = event.tags["rmd_mirroring"] == true
+    end
 
     get_or_create_player_data(player.index)
 
     local item_name = string.gsub(entity_name, "-displayer$", "")
 
     local resource_name
-    if event.tags and event.tags.selected_resource then
-        resource_name = event.tags.selected_resource
+    if event.tags and event.tags["selected_resource"] then
+        resource_name = event.tags["selected_resource"]
     elseif player then
         resource_name = storage.players[player.index].selected_resource
     end
@@ -662,6 +668,7 @@ local function on_built_entity(event)
                 force = force,
                 position = position,
                 direction = direction,
+                mirror = mirroring,
                 create_build_effect_smoke = true,
                 quality = quality,
                 player = player,
@@ -715,6 +722,7 @@ local function on_built_entity(event)
             force = force,
             position = position,
             direction = direction,
+            mirror = mirroring,
             create_build_effect_smoke = true,
             quality = quality,
             player = player,
@@ -1068,6 +1076,42 @@ local function on_player_changed_surface(event)
     player_data.selected_resource = DISABLED
 end
 
+
+local function snapshot_blueprint_entity(source_entity, blueprint_index)
+    local entity = {
+        entity_number = blueprint_index,
+        name = source_entity.name,
+        position = {
+            x = source_entity.position.x,
+            y = source_entity.position.y
+        },
+        direction = source_entity.direction,
+        mirroring = source_entity.mirroring,
+        mirror = source_entity.mirroring,
+        tags = nil
+    }
+
+    return entity
+end
+
+local function remember_player_blueprint_snapshot(player_index, entities)
+    storage.rmd_blueprint_snapshots = storage.rmd_blueprint_snapshots or {}
+    storage.rmd_blueprint_snapshots[player_index] = entities
+end
+
+local function get_player_blueprint_snapshot(player_index)
+    return storage.rmd_blueprint_snapshots and storage.rmd_blueprint_snapshots[player_index]
+end
+
+local function is_blueprint_setup(blueprint)
+    if not blueprint then return false end
+
+    local setup = blueprint["is_blueprint_setup"]
+    if type(setup) ~= "function" then return false end
+
+    return setup()
+end
+
 local function tag_resource(entity, surface)
     local resource = surface.find_entities_filtered {
         area =
@@ -1080,44 +1124,63 @@ local function tag_resource(entity, surface)
 
     if resource and resource[1] then
         entity.tags = entity.tags or {}
-        entity.tags.selected_resource = resource[1].name
+        entity.tags["selected_resource"] = resource[1].name
     end
 end
 
-local function tag_entities(entities, copy_and_paste, surface)
-    local modified = false
-    for _, entity in pairs(entities) do
-        if string.sub(entity.name, 1, 4) == "rmd-" then
-            modified = true
-            if BLUEPRINT_RESOURCES or copy_and_paste then
-                tag_resource(entity, surface)
-            end
-        end
-    end
-    return modified
-end
 
 local function on_player_setup_blueprint(event)
     local player = game.get_player(event.player_index)
     if not (player and player.valid) then return end
 
-    local surface = player.surface
-    local stack = player.blueprint_to_setup
-    local copy_and_paste = false
+    local target = event.stack or event.record
+    if not target then return end
 
-    if not (stack and stack.valid_for_read) then
-        stack = player.cursor_stack
-        if not (stack and stack.valid_for_read and stack.is_blueprint) then
-            return
+    local mapping = event.mapping and event.mapping.get()
+    if not mapping then return end
+
+    local copy_and_paste = event.stack == nil
+    local entities = {}
+    local modified = false
+
+    for blueprint_index, source_entity in pairs(mapping) do
+        if source_entity and source_entity.valid then
+            local blueprint_entity = snapshot_blueprint_entity(source_entity, blueprint_index)
+
+            if string.sub(blueprint_entity.name, 1, 4) == "rmd-" then
+                modified = true
+
+                if BLUEPRINT_RESOURCES or copy_and_paste then
+                    tag_resource(blueprint_entity, event.surface)
+
+                    if blueprint_entity.tags and blueprint_entity.tags["selected_resource"] then
+                        target.set_blueprint_entity_tag(
+                            blueprint_index,
+                            "selected_resource",
+                            blueprint_entity.tags["selected_resource"]
+                        )
+                    end
+                end
+
+                if blueprint_entity.mirroring ~= nil then
+                    target.set_blueprint_entity_tag(
+                        blueprint_index,
+                        "rmd_mirroring",
+                        blueprint_entity.mirroring
+                    )
+                end
+            end
+
+            entities[#entities + 1] = blueprint_entity
         end
-        copy_and_paste = true
     end
 
-    local entities = stack.get_blueprint_entities()
-    if not entities then return end
+    table.sort(entities, function(a, b)
+        return (a.entity_number or 0) < (b.entity_number or 0)
+    end)
 
-    if tag_entities(entities, copy_and_paste, surface) then
-        stack.set_blueprint_entities(entities)
+    if modified then
+        remember_player_blueprint_snapshot(player.index, entities)
     end
 end
 
@@ -1156,33 +1219,6 @@ local function on_cutscene_cancelled(event)
     player.character.insert { name = "rmd-burner-mining-drill", count = 1 }
 end
 
-local function on_player_cursor_stack_changed(event)
-    local player = game.get_player(event.player_index)
-    if not player or not player.valid then return end
-
-    local cursor = player.cursor_stack
-    if not (cursor and cursor.valid_for_read) then return end
-
-    if cursor.is_selection_tool then
-        if cursor.is_blueprint then
-            local entities = cursor.get_blueprint_entities()
-            if not entities then return end
-
-            if tag_entities(entities, false, player.surface) then
-                cursor.set_blueprint_entities(entities)
-            end
-        elseif cursor.is_blueprint_setup then
-            if cursor.is_blueprint then
-                local entities = cursor.get_blueprint_entities()
-                if not entities then return end
-
-                if tag_entities(entities, false, player.surface) then
-                    cursor.set_blueprint_entities(entities)
-                end
-            end
-        end
-    end
-end
 
 local function on_toggle_resource_selector(event)
     local player = game.get_player(event.player_index)
@@ -1242,17 +1278,25 @@ local function get_entity_map_position(event, blueprint_entity, blueprint_entiti
         max_y         = math.max(max_y, bottom)
     end
 
-    local blueprint_center     =
+    local blueprint_center =
     {
         x = (min_x + max_x) / 2,
         y = (min_y + max_y) / 2
     }
 
-    local anchor_x             = event_position.x
-    local anchor_y             = event_position.y
+    local anchor_x         = event_position.x
+    local anchor_y         = event_position.y
 
-    local rel_x                = blueprint_entity.position.x - blueprint_center.x
-    local rel_y                = blueprint_entity.position.y - blueprint_center.y
+    local rel_x            = blueprint_entity.position.x - blueprint_center.x
+    local rel_y            = blueprint_entity.position.y - blueprint_center.y
+
+    if event.flip_horizontal then
+        rel_x = -rel_x
+    end
+
+    if event.flip_vertical then
+        rel_y = -rel_y
+    end
 
     local rotated_x, rotated_y = rel_x, rel_y
     if direction == defines.direction.east then
@@ -1334,8 +1378,8 @@ local function process_blueprint_entities_on_pre_build(player, surface, entities
     for _, entity in pairs(entities) do
         if string.sub(entity.name, 1, 4) == "rmd-" then
             local resource_name
-            if entity.tags and entity.tags.selected_resource then
-                resource_name = tostring(entity.tags.selected_resource)
+            if entity.tags and entity.tags["selected_resource"] then
+                resource_name = tostring(entity.tags["selected_resource"])
             elseif storage.players[player.index].selected_resource ~= DISABLED then
                 resource_name = storage.players[player.index].selected_resource
             else
@@ -1367,8 +1411,8 @@ local function on_pre_build(event)
 
     local cursor = player.cursor_stack
     if cursor and cursor.valid_for_read then
-        if cursor.is_blueprint and cursor.is_blueprint_setup() then
-            local entities = cursor.get_blueprint_entities()
+        if cursor.is_blueprint and is_blueprint_setup(cursor) then
+            local entities = get_player_blueprint_snapshot(player.index)
             process_blueprint_entities_on_pre_build(player, surface, entities, event)
             return
         end
@@ -1378,8 +1422,8 @@ local function on_pre_build(event)
             local index = cursor.active_index
             if inventory and inventory.valid and index and index >= 1 and index <= #inventory then
                 local bp = inventory[index]
-                if bp and bp.valid_for_read and bp.is_blueprint and bp.is_blueprint_setup() then
-                    local entities = bp.get_blueprint_entities()
+                if bp and bp.valid_for_read and bp.is_blueprint and is_blueprint_setup(bp) then
+                    local entities = get_player_blueprint_snapshot(player.index)
                     process_blueprint_entities_on_pre_build(player, surface, entities, event)
                     return
                 end
@@ -1391,9 +1435,8 @@ local function on_pre_build(event)
     if not record then return end
 
     if record.type == "blueprint" then
-        if record.is_blueprint_setup and record.is_blueprint_setup() then
-            local entities = record.get_blueprint_entities()
-            process_blueprint_entities_on_pre_build(player, surface, entities, event)
+        if is_blueprint_setup(record) then
+            process_blueprint_entities_on_pre_build(player, surface, get_player_blueprint_snapshot(player.index), event)
         end
         return
     end
@@ -1403,10 +1446,9 @@ local function on_pre_build(event)
             local selected = record.get_selected_record(player)
             if selected
                 and selected.type == "blueprint"
-                and selected.is_blueprint_setup
-                and selected.is_blueprint_setup() then
-                local entities = selected.get_blueprint_entities()
-                process_blueprint_entities_on_pre_build(player, surface, entities, event)
+                and is_blueprint_setup(selected) then
+                process_blueprint_entities_on_pre_build(player, surface, get_player_blueprint_snapshot(player.index),
+                    event)
             end
         end
     end
@@ -1534,7 +1576,6 @@ local function register_event_handlers()
     script.on_event(defines.events.on_cancelled_deconstruction, on_cancelled_deconstruction)
     script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
     script.on_event(defines.events.on_player_setup_blueprint, on_player_setup_blueprint)
-    script.on_event(defines.events.on_player_cursor_stack_changed, on_player_cursor_stack_changed)
     script.on_event(defines.events.on_undo_applied, on_undo_applied)
     script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
     script.on_event(defines.events.on_player_pipette, on_player_pipette)
@@ -1562,6 +1603,7 @@ end
 script.on_init(function()
     storage.players = {}
     storage.rmd_auto_reconstruct = {}
+    storage.rmd_blueprint_snapshots = {}
     register_event_handlers()
 end)
 
@@ -1571,6 +1613,7 @@ end)
 
 script.on_configuration_changed(function()
     storage.rmd_auto_reconstruct = storage.rmd_auto_reconstruct or {}
+    storage.rmd_blueprint_snapshots = storage.rmd_blueprint_snapshots or {}
     clean_auto_reconstruct_storage()
 
     for _, player in pairs(game.players) do
