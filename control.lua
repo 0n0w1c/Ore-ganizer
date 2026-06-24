@@ -1099,6 +1099,12 @@ local function remember_player_blueprint_snapshot(player_index, entities)
     storage.rmd_blueprint_snapshots[player_index] = entities
 end
 
+local function clear_player_blueprint_snapshot(player_index)
+    if storage.rmd_blueprint_snapshots then
+        storage.rmd_blueprint_snapshots[player_index] = nil
+    end
+end
+
 local function get_player_blueprint_snapshot(player_index)
     return storage.rmd_blueprint_snapshots and storage.rmd_blueprint_snapshots[player_index]
 end
@@ -1128,10 +1134,32 @@ local function tag_resource(entity, surface)
     end
 end
 
+local function get_blueprint_entity_name_for_setup_source(source_entity)
+    if not (source_entity and source_entity.valid) then return nil, false end
+
+    local name = source_entity.name
+    if not name then return nil, false end
+
+    if DISPLAYER_DRILL_NAMES[name] then
+        return name, true
+    end
+
+    if RMD_ENTITY_NAMES[name] then
+        local displayer_name = name .. "-displayer"
+        if prototypes.entity[displayer_name] then
+            return displayer_name, true
+        end
+    end
+
+    return name, false
+end
+
 
 local function on_player_setup_blueprint(event)
     local player = game.get_player(event.player_index)
     if not (player and player.valid) then return end
+
+    clear_player_blueprint_snapshot(player.index)
 
     local target = event.stack or event.record
     if not target then return end
@@ -1141,33 +1169,29 @@ local function on_player_setup_blueprint(event)
 
     local copy_and_paste = event.stack == nil
     local entities = {}
-    local modified = false
+    local tagged_entities = {}
+    local has_resource_mining_drill = false
 
     for blueprint_index, source_entity in pairs(mapping) do
-        if source_entity and source_entity.valid then
+        if source_entity and source_entity.valid and source_entity.type ~= "resource" then
             local blueprint_entity = snapshot_blueprint_entity(source_entity, blueprint_index)
+            local blueprint_name, is_rmd_blueprint_entity = get_blueprint_entity_name_for_setup_source(source_entity)
+            blueprint_entity.name = blueprint_name or blueprint_entity.name
 
-            if string.sub(blueprint_entity.name, 1, 4) == "rmd-" then
-                modified = true
+            if is_rmd_blueprint_entity then
+                has_resource_mining_drill = true
 
                 if BLUEPRINT_RESOURCES or copy_and_paste then
                     tag_resource(blueprint_entity, event.surface)
-
-                    if blueprint_entity.tags and blueprint_entity.tags["selected_resource"] then
-                        target.set_blueprint_entity_tag(
-                            blueprint_index,
-                            "selected_resource",
-                            blueprint_entity.tags["selected_resource"]
-                        )
-                    end
                 end
 
                 if blueprint_entity.mirroring ~= nil then
-                    target.set_blueprint_entity_tag(
-                        blueprint_index,
-                        "rmd_mirroring",
-                        blueprint_entity.mirroring
-                    )
+                    blueprint_entity.tags = blueprint_entity.tags or {}
+                    blueprint_entity.tags["rmd_mirroring"] = blueprint_entity.mirroring
+                end
+
+                if blueprint_entity.tags then
+                    tagged_entities[#tagged_entities + 1] = blueprint_entity
                 end
             end
 
@@ -1175,13 +1199,27 @@ local function on_player_setup_blueprint(event)
         end
     end
 
+    if not has_resource_mining_drill then
+        return
+    end
+
     table.sort(entities, function(a, b)
         return (a.entity_number or 0) < (b.entity_number or 0)
     end)
 
-    if modified then
-        remember_player_blueprint_snapshot(player.index, entities)
+    if target.set_blueprint_entities then
+        target.set_blueprint_entities(entities)
     end
+
+    for _, entity in ipairs(tagged_entities) do
+        if entity.tags then
+            for tag_name, tag_value in pairs(entity.tags) do
+                target.set_blueprint_entity_tag(entity.entity_number, tag_name, tag_value)
+            end
+        end
+    end
+
+    remember_player_blueprint_snapshot(player.index, entities)
 end
 
 local function on_gui_check_state_changed(event)
@@ -1376,19 +1414,8 @@ local function process_blueprint_entities_on_pre_build(player, surface, entities
     if not entities then return end
 
     for _, entity in pairs(entities) do
-        if string.sub(entity.name, 1, 4) == "rmd-" then
-            local resource_name
-            if entity.tags and entity.tags["selected_resource"] then
-                resource_name = tostring(entity.tags["selected_resource"])
-            elseif storage.players[player.index].selected_resource ~= DISABLED then
-                resource_name = storage.players[player.index].selected_resource
-            else
-                player.create_local_flying_text {
-                    text = { "", { "rmd-message.rmd-error-no-resource" } },
-                    create_at_cursor = true
-                }
-                return
-            end
+        if is_displayer_drill(entity.name) and entity.tags and entity.tags["selected_resource"] then
+            local resource_name = tostring(entity.tags["selected_resource"])
 
             if blueprint_validate_resource_checks(player, entity, resource_name) then
                 local entity_map_position = get_entity_map_position(event, entity, entities)
