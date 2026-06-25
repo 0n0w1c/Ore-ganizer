@@ -448,3 +448,13 @@ for _, mining_drill in pairs(mining_drills) do
         normalize_emissions_per_minute(mining_drill.energy_source)
     end
 end
+
+local function set_missing_fast_replaceable_group(entity_type, entity_name, group)
+    local entities = data.raw[entity_type]
+    local entity = entities and entities[entity_name]
+    if entity and entity.fast_replaceable_group == nil then
+        entity.fast_replaceable_group = group
+    end
+end
+
+set_missing_fast_replaceable_group("mining-drill", "rmd-steam-mining-drill", "rmd-steam-mining-drill")

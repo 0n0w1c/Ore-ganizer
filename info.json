@@ -1,6 +1,6 @@
 {
     "name": "ore-ganizer",
-    "version": "0.19.3",
+    "version": "0.19.4",
     "title": "Ore-ganizer",
     "author": "0n0w1c",
     "description": "Take control of your resources",
@@ -17,7 +17,7 @@
         "? factorissimo-2-notnotmelon",
         "? IR3_Assets_resources",
         "? IR3_Assets_mining_drills",
-        "? IR3_Assets_steamworks",
+        "? IR3_Assets_steamworks >= 0.6.1",
         "? Krastorio2",
         "? Krastorio2-spaced-out",
         "? OmegaDrill",

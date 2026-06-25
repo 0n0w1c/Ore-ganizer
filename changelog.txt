@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.19.4
+Date: 25.06.2026
+  Bugfixes:
+    - IR3 Assets:steamworks: updated fluidbox filters for 2.1
+    - IR3 Assets:steamworks: added a migration for existing Resource steam mining drills
+  Changes:
+    - None
+---------------------------------------------------------------------------------------------------
 Version: 0.19.3
 Date: 24.06.2026
   Bugfixes:

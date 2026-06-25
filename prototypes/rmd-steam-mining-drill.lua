@@ -73,6 +73,15 @@ rmd_mining_drill_entity.icon           = BROKEN_ICON
 rmd_mining_drill_entity.icon_size      = 64
 rmd_mining_drill_entity.icons          = icons
 
+-- Factorio 2.1.7 tightened fluid mixing checks. Make the copied Resource steam
+-- mining drill explicitly match the Steamworks 165 degree steam fluidbox so new
+-- placements do not create a mismatched/ambiguous fluid segment.
+if rmd_mining_drill_entity.energy_source and rmd_mining_drill_entity.energy_source.fluid_box then
+    rmd_mining_drill_entity.energy_source.fluid_box.filter = "steam"
+    rmd_mining_drill_entity.energy_source.fluid_box.minimum_temperature = 165
+    rmd_mining_drill_entity.energy_source.fluid_box.maximum_temperature = 165
+end
+
 local rmd_mining_drill_item            = table.deepcopy(data.raw["item"][TO_COPY])
 if not rmd_mining_drill_item or rmd_mining_drill_item.hidden then return end
 
